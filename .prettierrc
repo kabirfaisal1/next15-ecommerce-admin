@@ -1,0 +1,26 @@
+{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "arrowParens": "avoid",
+  "bracketSpacing": true,
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": true,
+  "semi": true,
+  "quoteProps": "as-needed",
+  "jsxBracketSameLine": true,
+  "jsxSingleQuote": true,
+  "endOfLine": "auto",
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx", "*.cy.ts"],
+      "options": {
+        "semi": true,
+        "singleQuote": true,
+        "jsxSingleQuote": true,
+        "trailingComma": "all",
+        "jsxBracketSameLine": false
+      }
+    }
+  ]
+}
