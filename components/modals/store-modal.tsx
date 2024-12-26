@@ -3,6 +3,9 @@
 import * as zod from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 // local import
 import { Modal } from '@/components/ui/modal';
@@ -39,6 +42,9 @@ export const StoreModal = () => {
 	// Use the custom hook to manage the modal state
 	const storeModal = useStoreModal();
 
+	// State to track the loading state of the form
+	const [loading, setLoading] = useState(false);
+
 	/**
 	 * Initializes a form using the `useForm` hook with Zod schema validation.
 	 */
@@ -55,7 +61,18 @@ export const StoreModal = () => {
 	 */
 	const onSubmit = async (values: zod.infer<typeof formSchema>) => {
 		console.log(values);
-		// TODO: Create Store API Calls
+
+		try {
+			setLoading(true);
+			// Make an API call to create a new store with the form values
+			const response = await axios.post('/api/stores', values);
+
+			toast.success('Store created successfully');
+		} catch (error) {
+			toast.error('Failed to create store');
+		} finally {
+			setLoading(false);
+		}
 	};
 	return (
 		<Modal
@@ -86,6 +103,7 @@ export const StoreModal = () => {
 										<FormControl>
 											<Input
 												id='storeModal-FormInput'
+												disabled={loading}
 												data-testid='storeModal-FormInput'
 												placeholder='E-Commerce'
 												{...field}
@@ -105,6 +123,7 @@ export const StoreModal = () => {
 							>
 								<Button
 									id='form-CancelButtons'
+									disabled={loading}
 									data-testid='form-CancelButtons'
 									variant='outline'
 									onClick={storeModal.onClose}
@@ -112,6 +131,7 @@ export const StoreModal = () => {
 									Cancel
 								</Button>
 								<Button
+									disabled={loading}
 									type='submit'
 									id='form-ContinueButtons'
 									data-testid='form-ContinueButtons'
