@@ -28,7 +28,10 @@ import { Button } from '@/components/ui/button';
  * @property {ZodString} name - The name of the store, which is required and cannot be empty.
  */
 const formSchema = zod.object({
-	name: zod.string().nonempty('Store name is required'),
+	name: zod
+		.string()
+		.nonempty('Store name is required')
+		.min(3, 'Store name is too short'),
 });
 
 // StoreModal component to render a modal for creating a new store
@@ -88,7 +91,9 @@ export const StoreModal = () => {
 												{...field}
 											/>
 										</FormControl>
-										<FormMessage id='FormMessage' data-testid='FormMessage' />
+										<FormMessage id='FormMessage' data-testid='FormMessage'>
+											{form.formState.errors.name?.message}
+										</FormMessage>
 									</FormItem>
 								)}
 							/>
