@@ -1,8 +1,13 @@
+// golbal layout for the app
+
+// golbal Importing
 import { ClerkProvider } from '@clerk/nextjs';
 import { Inter } from 'next/font/google';
 
+// local Importing
 import { ModalProvider } from '@/providers/modal-provider';
 
+// Importing CSS
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });

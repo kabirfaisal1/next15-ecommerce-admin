@@ -1,6 +1,9 @@
 'use client';
+
+// global import
 import { useEffect } from 'react';
 
+// local import
 import { useStoreModal } from '@/hooks/use-store-modal';
 
 const SetupPage = () => {
@@ -12,7 +15,7 @@ const SetupPage = () => {
 			onOpen();
 		}
 	}, [isOpen, onOpen]);
-	return <div className='p-4'>Root Page.tsx</div>;
+	return <div className='p-4'>Root Page</div>;
 };
 
 export default SetupPage;

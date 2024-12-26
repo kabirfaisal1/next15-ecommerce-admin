@@ -16,8 +16,17 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 
+/**
+ * Schema for the store form validation using Zod.
+ *
+ * This schema validates that the `name` field is a non-empty string.
+ *
+ * @constant
+ * @type {ZodObject}
+ * @property {ZodString} name - The name of the store, which is required and cannot be empty.
+ */
 const formSchema = zod.object({
 	name: zod.string().nonempty('Store name is required'),
 });
@@ -27,13 +36,20 @@ export const StoreModal = () => {
 	// Use the custom hook to manage the modal state
 	const storeModal = useStoreModal();
 
+	/**
+	 * Initializes a form using the `useForm` hook with Zod schema validation.
+	 */
 	const form = useForm<zod.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			name: '',
 		},
-	}); // Form hook to manage form state
+	});
 
+	/**
+	 * This function is called when the form is submitted. It logs the form values
+	 * to the console and is intended to be extended to include API calls for creating a store.
+	 */
 	const onSubmit = async (values: zod.infer<typeof formSchema>) => {
 		console.log(values);
 		// TODO: Create Store API Calls
@@ -68,7 +84,7 @@ export const StoreModal = () => {
 											<Input
 												id='storeModal-FormInput'
 												data-testid='storeModal-FormInput'
-												placeholder='e-Commerce'
+												placeholder='E-Commerce'
 												{...field}
 											/>
 										</FormControl>
@@ -80,7 +96,7 @@ export const StoreModal = () => {
 							<div
 								id='form-buttons'
 								data-testid='form-buttons'
-								className='pt-6 space-x-2 flex items-center justify-end'
+								className='pt-6 space-x-2 flex items-center justify-end w-full'
 							>
 								<Button
 									id='form-CancelButtons'

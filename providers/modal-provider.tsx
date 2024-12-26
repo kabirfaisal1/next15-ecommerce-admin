@@ -1,8 +1,10 @@
 'use client';
 
-import { StoreModal } from '@/components/modals/store-modal';
-
+// global import
 import { useEffect, useState } from 'react';
+
+// local import
+import { StoreModal } from '@/components/modals/store-modal';
 
 // ModalProvider component ensures that the modal is only rendered on the client-side
 // by using the useState and useEffect hooks to track the mounting state.
