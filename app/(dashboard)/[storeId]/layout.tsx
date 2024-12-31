@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 // local import
-// import Navbar from '@/components/navbar';
 import prismadb from '@/lib/prismadb';
+import Navbar from '@/components/custom/navbar';
 
 export default async function DashboardLayout({
 	children,
@@ -35,7 +35,7 @@ export default async function DashboardLayout({
 
 	return (
 		<React.Fragment>
-			{/* <Navbar /> */}This will be the navbar
+			<Navbar />
 			{children}
 		</React.Fragment>
 	);
