@@ -25,7 +25,7 @@ export async function POST ( req: Request )
         if ( !name ) return new NextResponse( 'Store name is required', { status: 400 } );
 
         // Create a new store record in the database with the provided name and userId
-        const store = await prismadb.store.create( { data: { name, userId } } );
+        const store = await prismadb.stores.create( { data: { name, userId } } );
 
         // Return the created store record as a JSON response with a 201 Created status
         return NextResponse.json( store, { status: 201 } );

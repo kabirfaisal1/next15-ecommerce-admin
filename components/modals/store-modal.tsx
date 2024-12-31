@@ -59,6 +59,18 @@ export const StoreModal = () => {
 	 * This function is called when the form is submitted. It logs the form values
 	 * to the console and is intended to be extended to include API calls for creating a store.
 	 */
+	/**
+	 * Handles the form submission to create a new store.
+	 *
+	 * @param values - The form values inferred from the form schema.
+	 * @returns A promise that resolves when the API call is complete.
+	 *
+	 * @remarks
+	 * This function sets the loading state to true before making an API call to create a new store.
+	 * If the API call is successful, a success toast is displayed and the user is redirected to the new store's page.
+	 * If the API call fails, an error toast is displayed and the error is logged to the console.
+	 * The loading state is reset to false after the API call completes, regardless of success or failure.
+	 */
 	const onSubmit = async (values: zod.infer<typeof formSchema>) => {
 		console.log(values);
 
@@ -66,9 +78,9 @@ export const StoreModal = () => {
 			setLoading(true);
 			// Make an API call to create a new store with the form values
 			const response = await axios.post('/api/stores', values);
-
 			toast.success('Store created successfully');
-			console.log(response.data);
+
+			window.location.assign(`/${response.data.id}`);
 		} catch (error) {
 			toast.error('Uh oh! Something went wrong');
 			console.error(error);
