@@ -90,34 +90,36 @@ export function MainNav({
 							>
 								<NavigationMenuTrigger>{route.label}</NavigationMenuTrigger>
 							</NavigationMenuLink>
-							<NavigationMenuContent className='hidden md:block'>
-								{route.children.map(child => (
-									<NavigationMenuLink
-										key={child.href}
-										href={child.href}
-										id={child.id}
-										data-testid={child.id}
-										className={cn(
-											'block text-sm font-medium transition-colors hover:text-primary mb-2',
-											child.active
-												? 'text-black dark:text-white font-bold'
-												: 'text-muted-foreground',
-										)}
-										style={{
-											display: 'block',
-											textAlign: 'center',
-											margin: '20px auto',
-											padding: '10px 0',
-											borderBottom:
-												child !== route.children[route.children.length - 1]
-													? '1px dotted #ccc'
-													: 'none',
-										}}
-									>
-										{child.label}
-									</NavigationMenuLink>
-								))}
-							</NavigationMenuContent>
+                            <NavigationMenuContent className='hidden md:block'>
+                                <div className='flex flex-col items-stretch justify-between'>
+                                    {route.children.map(child => (
+                                        <NavigationMenuLink
+                                            key={child.href}
+                                            href={child.href}
+                                            id={child.id}
+                                            data-testid={child.id}
+                                            className={cn(
+                                                'block text-sm font-medium transition-colors hover:text-primary mb-2',
+                                                child.active
+                                                    ? 'text-black dark:text-white font-bold'
+                                                    : 'text-muted-foreground',
+                                            )}
+                                            style={{
+                                                width: '100%',
+                                                textAlign: 'center',
+                                                padding: '10px 20px',
+                                                margin: '5px 0',
+                                                borderBottom:
+                                                    child !== route.children[route.children.length - 1]
+                                                        ? '1px dotted #ccc'
+                                                        : 'none',
+                                            }}
+                                        >
+                                            {child.label}
+                                        </NavigationMenuLink>
+                                    ))}
+                                </div>
+                            </NavigationMenuContent>
 						</NavigationMenuItem>
 					) : (
 						<NavigationMenuLink
