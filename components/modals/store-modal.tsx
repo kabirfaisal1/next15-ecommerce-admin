@@ -8,7 +8,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 // local import
-import { Modal } from '@/components/ui/modal';
+import { Modal } from '@/components/custom/modal';
 import { useStoreModal } from '@/hooks/use-store-modal';
 import {
 	Form,

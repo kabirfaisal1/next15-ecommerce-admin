@@ -8,9 +8,9 @@ import {
 	NavigationMenu,
 	NavigationMenuLink,
 	NavigationMenuList,
-	NavigationMenuTrigger,
-	NavigationMenuItem,
-	NavigationMenuContent,
+	// NavigationMenuTrigger,
+	// NavigationMenuItem,
+	// NavigationMenuContent,
 } from '@/components/ui/navigation-menu';
 
 export function MainNav({
