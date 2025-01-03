@@ -1,15 +1,25 @@
 import prismadb from '@/lib/prismadb';
-import React from 'react';
 
 interface DashboardPageProps {
 	params: { storeId: string };
 }
 
-const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
-	const store = await prismadb.stores.findUnique({
+// This is a Server Component by default in the `app` directory
+const DashboardPage = async ({ params }: DashboardPageProps) => {
+	const store = await prismadb.stores.findFirst({
 		where: { id: params.storeId },
 	});
+	// const { userId } = await auth();
 
+	// if (!userId) {
+	// 	redirect('/sign-in');
+	// }
+
+	// const stores = await params.stores.findFirst({
+	// 	where: {
+	// 		userId,
+	// 	},
+	// });
 	return (
 		<div>
 			<h1>
