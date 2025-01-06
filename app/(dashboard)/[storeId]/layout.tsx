@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 // local import
-import Navbar from '@/components/custom/navbar';
+import Navbar from '@/components/navigation-menu/navbar';
 import prismadb from '@/lib/prismadb';
 
 export default async function DashboardLayout({
