@@ -7,12 +7,15 @@ import { MainNav } from '@/components/navigation-menu/main-nav';
 import prismadb from '@/lib/prismadb';
 
 const Navbar = async () => {
+	// Get the authenticated user's ID
 	const { userId } = await auth();
 
+	// Redirect to sign-in page if user is not authenticated
 	if (!userId) {
 		redirect('/sign-in');
 	}
 
+	// Fetch stores associated with the authenticated user
 	const stores = await prismadb.stores.findMany({
 		where: {
 			userId,

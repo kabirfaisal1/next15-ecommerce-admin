@@ -19,6 +19,16 @@ export function MainNav({
 }: React.HTMLAttributes<HTMLElement>) {
 	const pathname = usePathname();
 	const params = useParams();
+	/**
+	 * An array of route objects used for navigation in the application.
+	 * Each route object contains the following properties:
+	 *
+	 * @property {string} href - The URL path for the route.
+	 * @property {string} label - The display label for the route.
+	 * @property {boolean} active - Indicates if the route is currently active based on the pathname.
+	 * @property {string} id - A unique identifier for the route.
+	 * @property {Array<Object>} [children] - An optional array of child route objects, each containing the same properties as the parent route.
+	 */
 	const routes = [
 		{
 			href: `/${params.storeId}/settings`,

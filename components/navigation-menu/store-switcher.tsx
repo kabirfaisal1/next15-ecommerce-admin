@@ -32,6 +32,17 @@ interface StoreSwitcherProps extends PopoverTriggerProps {
 	items: { id: string; name: string }[];
 }
 
+/**
+ * StoreSwitcher component allows users to switch between different stores.
+ * It displays a button that triggers a popover containing a searchable list of stores.
+ * Users can select a store from the list or create a new store.
+ *
+ * @param {Object} props - The component props.
+ * @param {string} [props.className] - Additional class names for the button.
+ * @param {Array} [props.items=[]] - List of store items to display in the switcher.
+ *
+ * @returns {JSX.Element} The rendered StoreSwitcher component.
+ */
 export default function StoreSwitcher({
 	className,
 	items = [],

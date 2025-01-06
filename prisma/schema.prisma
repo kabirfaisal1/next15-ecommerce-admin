@@ -8,12 +8,26 @@ generator client {
   provider = "prisma-client-js"
 }
 
+/// The datasource block defines the connection to the database.
+/// 
+/// - `provider`: Specifies the database type. In this case, it is set to "cockroachdb".
+/// - `url`: The environment variable `DATABASE_URL` is used to provide the database connection string.
+/// - `relationMode`: Defines the relation mode for the database. Here, it is set to "prisma".
 datasource db {
   provider = "cockroachdb"
   url      = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
+
+/// The `Stores` model represents a store entity in the database.
+/// 
+/// Fields:
+/// - `id`: A unique identifier for the store, generated as a UUID.
+/// - `name`: The name of the store.
+/// - `userId`: The identifier of the user who owns the store.
+/// - `createdAt`: The timestamp when the store was created, with a default value of the current time.
+/// - `updatedAt`: The timestamp when the store was last updated, automatically set to the current time on update.
 model Stores {
   id        String   @id @default(uuid())
   name      String

@@ -22,10 +22,30 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
+/**
+ * Props for the SettingsForm component.
+ *
+ * @interface SettingFormProps
+ * @property {Store} initialData - The initial data for the store settings.
+ */
 interface SettingFormProps {
 	initialData: Store;
 }
 
+/**
+ * Schema for the settings form validation.
+ *
+ * This schema validates the following fields:
+ * - `name`: A non-empty string with a minimum length of 3 characters.
+ *
+ * @constant
+ * @type {z.ZodObject}
+ * @property {z.ZodString} name - The name of the store. It must be a non-empty string with a minimum length of 3 characters.
+ * @example
+ * const formSchema = z.object({
+ *   name: z.string().nonempty('Store name is required').min(3, 'Store name is too short'),
+ * });
+ */
 const formSchema = z.object({
 	name: z
 		.string()
@@ -33,17 +53,40 @@ const formSchema = z.object({
 		.min(3, 'Store name is too short'),
 });
 
+/**
+ * Type alias for the values of the settings form.
+ *
+ * This type is inferred from the `formSchema` using Zod's `infer` utility.
+ * It represents the shape of the data that the settings form will handle.
+ *
+ * @typedef {SettingFormValues}
+ */
 type SettingFormValues = z.infer<typeof formSchema>;
 
 export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
 
+	/**
+	 * Initializes a form using the `useForm` hook with validation schema and default values.
+	 *
+	 * @template SettingFormValues - The type of the form values.
+	 * @param {object} options - The options for the form.
+	 * @param {Resolver} options.resolver - The resolver function for form validation using Zod schema.
+	 * @param {SettingFormValues} options.defaultValues - The initial data for the form fields.
+	 * @returns {UseFormReturn<SettingFormValues>} The form instance with methods and state.
+	 */
 	const form = useForm<SettingFormValues>({
 		resolver: zodResolver(formSchema),
 		defaultValues: initialData,
 	});
 
+	/**
+	 * Handles the form submission.
+	 *
+	 * @param {SettingFormValues} data - The form data to be submitted.
+	 * @returns {Promise<void>} A promise that resolves when the submission is complete.
+	 */
 	const onSubmit = async (data: SettingFormValues) => {
 		console.log(data);
 	};
