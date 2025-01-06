@@ -18,10 +18,12 @@ const SettingsPage: React.FC<SettingPageProps> = async ({
 	const resolvedParams = await params;
 	const { userId } = await auth();
 
+	// Check if the user is authenticated
 	if (!userId) {
 		redirect('/sign-in');
 	}
 
+	// Fetch the store data from the database
 	const store = await prismadb.stores.findUnique({
 		where: {
 			id: resolvedParams.storeId,
@@ -29,6 +31,7 @@ const SettingsPage: React.FC<SettingPageProps> = async ({
 		},
 	});
 
+	// If the store does not exist, redirect to the home page
 	if (!store) {
 		redirect('/');
 	}
