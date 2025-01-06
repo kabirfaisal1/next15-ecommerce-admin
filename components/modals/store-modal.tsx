@@ -1,5 +1,6 @@
 'use client';
 // global import
+import React from 'react';
 import * as zod from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,7 +9,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 // local import
-import { Modal } from '@/components/custom/modal';
+import { Modal } from '@/components/ui/modal';
 import { useStoreModal } from '@/hooks/use-store-modal';
 import {
 	Form,
@@ -95,7 +96,7 @@ export const StoreModal = () => {
 			isOpen={storeModal.isOpen} // Modal open state
 			onClose={storeModal.onClose} // Function to close the modal
 		>
-			<>
+			<React.Fragment>
 				<div className='space-y-4 py-2 pd-4'>
 					<Form {...form}>
 						<form
@@ -156,7 +157,7 @@ export const StoreModal = () => {
 						</form>
 					</Form>
 				</div>
-			</>
+			</React.Fragment>
 		</Modal>
 	);
 };

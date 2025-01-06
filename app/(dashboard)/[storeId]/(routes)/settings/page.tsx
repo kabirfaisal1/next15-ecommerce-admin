@@ -4,16 +4,16 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 // local import
-import Navbar from '@/components/navigation-menu/navbar';
 import prismadb from '@/lib/prismadb';
+import { SettingForm } from './components/settings-form';
 
-export default async function DashboardLayout({
-	children,
+interface SettingPageProps {
+	params: { storeId: string };
+}
+// This is a Server Component by default in the `app` directory
+const SettingsPage: React.FC<SettingPageProps> = async ({
 	params,
-}: {
-	children: React.ReactNode;
-	params: Promise<{ storeId: string }>;
-}) {
+}: SettingPageProps) => {
 	// Resolve the params promise to get the storeId
 	const resolvedParams = await params;
 	const { userId } = await auth();
@@ -34,9 +34,13 @@ export default async function DashboardLayout({
 	}
 
 	return (
-		<React.Fragment>
-			<Navbar />
-			{children}
-		</React.Fragment>
+		<div className='flec-col'>
+			<div className='flec-1 space-y-4 p-8 pt-6'>
+				{/* This is the SettingForm content of the page */}
+				<SettingForm initialData={store} />
+			</div>
+		</div>
 	);
-}
+};
+
+export default SettingsPage;
