@@ -1,5 +1,6 @@
 'use client';
 // global import
+import React from 'react';
 import * as zod from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -95,7 +96,7 @@ export const StoreModal = () => {
 			isOpen={storeModal.isOpen} // Modal open state
 			onClose={storeModal.onClose} // Function to close the modal
 		>
-			<>
+			<React.Fragment>
 				<div className='space-y-4 py-2 pd-4'>
 					<Form {...form}>
 						<form
@@ -156,7 +157,7 @@ export const StoreModal = () => {
 						</form>
 					</Form>
 				</div>
-			</>
+			</React.Fragment>
 		</Modal>
 	);
 };
