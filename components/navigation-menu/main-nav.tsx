@@ -95,7 +95,7 @@ export function MainNav({
 			data-testid='main-NavigationMenu'
 			{...props}
 		>
-			<NavigationMenuList>
+			<NavigationMenuList className='flex space-x-4'>
 				{routes.map(route => (
 					// This is the code for nested navigation
 					// route.children ? (
