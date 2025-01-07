@@ -2,11 +2,14 @@
 //global import
 import * as z from 'zod';
 import React from 'react';
-import { Store } from '@prisma/client';
+import { Stores } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trash } from 'lucide-react';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import { useParams, useRouter } from 'next/navigation';
 
 //local import
 import Heading from '@/components/ui/heading';
@@ -21,6 +24,8 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { AlertModal } from '@/components/modals/alert-modal';
+import { ApiAlert } from '@/components/ui/api-alert';
 
 /**
  * Props for the SettingsForm component.
@@ -29,7 +34,7 @@ import { Input } from '@/components/ui/input';
  * @property {Store} initialData - The initial data for the store settings.
  */
 interface SettingFormProps {
-	initialData: Store;
+	initialData: Stores;
 }
 
 /**
@@ -64,6 +69,8 @@ const formSchema = z.object({
 type SettingFormValues = z.infer<typeof formSchema>;
 
 export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
+	const params = useParams();
+	const router = useRouter();
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
 
@@ -89,10 +96,49 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 	 */
 	const onSubmit = async (data: SettingFormValues) => {
 		console.log(data);
+		try {
+			setLoading(true);
+			// Make an API call to create a new store with the form values
+			await axios.patch(`/api/stores/${params.storeId}`, data);
+			// Refresh the router to reflect the changes
+			router.refresh();
+			toast.success('Store updated successfully');
+		} catch (error) {
+			toast.error('Uh oh! Something went wrong');
+			console.error(error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const onDelete = async () => {
+		try {
+			setLoading(true);
+			// Make an API call to create a new store with the form values
+			await axios.delete(`/api/stores/${params.storeId}`);
+			// Refresh the router to reflect the changes
+			router.refresh();
+			router.push('/');
+			toast.success('Store deleted successfully');
+		} catch (error) {
+			toast.error(
+				'Make sure you remove all the products and categories first.',
+			);
+			console.error(error);
+		} finally {
+			setLoading(false);
+			setOpen(false);
+		}
 	};
 
 	return (
 		<React.Fragment>
+			<AlertModal
+				isOpen={open}
+				onClose={() => setOpen(false)}
+				onConfirm={onDelete}
+				loading={loading}
+			/>
 			<div className='flex items-center justify-between'>
 				<Heading title='Settings' description='Manage Store Preferences' />
 				<Button
@@ -161,6 +207,13 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 					</div>
 				</form>
 			</Form>
+			<Separator />
+			<ApiAlert
+				title='NEXT_PUBLIC_API_URL'
+				variant='public'
+				description={`${origin}/api/stores/${params.storeId}`}
+				id='api-alert'
+			/>
 		</React.Fragment>
 	);
 };
