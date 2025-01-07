@@ -26,6 +26,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { AlertModal } from '@/components/modals/alert-modal';
 import { ApiAlert } from '@/components/ui/api-alert';
+import { useOrigin } from '@/hooks/use-origin';
 
 /**
  * Props for the SettingsForm component.
@@ -73,6 +74,7 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 	const router = useRouter();
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const origin = useOrigin();
 
 	/**
 	 * Initializes a form using the `useForm` hook with validation schema and default values.
@@ -208,10 +210,12 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 				</form>
 			</Form>
 			<Separator />
+
 			<ApiAlert
 				title='NEXT_PUBLIC_API_URL'
 				variant='public'
-				description={`${origin}/api/stores/${params.storeId}`}
+				description={`${origin ? `${origin}/api/${params.storeId}` : ''}`}
+				// description={`${origin ? `${origin}/api/stores${params.storeId}` : ''}`}
 				id='api-alert'
 			/>
 		</React.Fragment>
