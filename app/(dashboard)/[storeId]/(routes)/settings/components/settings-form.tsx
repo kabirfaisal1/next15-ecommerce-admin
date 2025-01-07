@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { AlertModal } from '@/components/modals/alert-modal';
+import { ApiAlert } from '@/components/ui/api-alert';
 
 /**
  * Props for the SettingsForm component.
@@ -206,6 +207,13 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 					</div>
 				</form>
 			</Form>
+			<Separator />
+			<ApiAlert
+				title='NEXT_PUBLIC_API_URL'
+				variant='public'
+				description={`${origin}/api/stores/${params.storeId}`}
+				id='api-alert'
+			/>
 		</React.Fragment>
 	);
 };
