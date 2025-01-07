@@ -31,6 +31,12 @@ export function MainNav({
 	 */
 	const routes = [
 		{
+			href: `/${params.storeId}`,
+			label: 'Store Overview',
+			active: pathname === `/${params.storeId}`,
+			id: 'store_overview',
+		},
+		{
 			href: `/${params.storeId}/settings`,
 			label: 'Settings',
 			active: pathname === `/${params.storeId}/settings`,
@@ -139,11 +145,12 @@ export function MainNav({
 						id={route.id}
 						data-testid={route.id}
 						className={cn(
-							'text-sm font-medium transition-colors hover:text-primary',
+							'pt-4 text-sm font-medium transition-colors hover:text-primary',
 							route.active
-								? 'text-black dark:text-white font-bold'
+								? 'text-black dark:text-white'
 								: 'text-muted-foreground',
 						)}
+						style={{ marginRight: '16px' }} // Add margin to ensure space between buttons
 					>
 						{route.label}
 					</NavigationMenuLink>
