@@ -2,15 +2,13 @@
 // global imports
 import { cn } from '@/lib/utils';
 import { usePathname, useParams } from 'next/navigation';
+import { ChartNoAxesGantt, MonitorCog } from 'lucide-react';
 
 // local imports
 import {
 	NavigationMenu,
 	NavigationMenuLink,
 	NavigationMenuList,
-	// NavigationMenuTrigger,
-	// NavigationMenuItem,
-	// NavigationMenuContent,
 } from '@/components/ui/navigation-menu';
 
 export function MainNav({
@@ -35,12 +33,14 @@ export function MainNav({
 			label: 'Store Overview',
 			active: pathname === `/${params.storeId}`,
 			id: 'store_overview',
+			icon: <ChartNoAxesGantt />,
 		},
 		{
 			href: `/${params.storeId}/settings`,
 			label: 'Settings',
 			active: pathname === `/${params.storeId}/settings`,
 			id: 'store_settings',
+			icon: <MonitorCog />,
 		},
 	];
 
@@ -64,7 +64,7 @@ export function MainNav({
 								: 'text-muted-foreground',
 						)}
 					>
-						{route.label}
+						{route.icon} {route.label}
 					</NavigationMenuLink>
 				))}
 			</NavigationMenuList>

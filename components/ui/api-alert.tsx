@@ -1,6 +1,8 @@
+// global import
 import { Copy, Server } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
+// local import
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge, BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -35,14 +37,24 @@ export const ApiAlert: React.FC<ApiAlertProps> = ({
 
 	return (
 		<Alert>
-			<Server className='h-4 w-4' />
+			<Server
+				id={`${id}_serverIcon`}
+				data-testid={`${id}_serverIcon`}
+				className='h-4 w-4'
+			/>
 			<AlertTitle
 				className='flex items-center gap-x-2'
 				id={`${id}_${title}`}
 				data-testid={`${id}_${title}`}
 			>
 				{title}
-				<Badge variant={variantMap[variant]}>{textMap[variant]}</Badge>
+				<Badge
+					variant={variantMap[variant]}
+					id={`${id}_badge`}
+					data-testid={`${id}_badge`}
+				>
+					{textMap[variant]}
+				</Badge>
 			</AlertTitle>
 			<AlertDescription className='mt-4 flex items-center justify-between'>
 				<code
