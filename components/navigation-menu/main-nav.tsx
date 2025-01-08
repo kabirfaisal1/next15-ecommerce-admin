@@ -2,7 +2,6 @@
 // global imports
 import { cn } from '@/lib/utils';
 import { usePathname, useParams } from 'next/navigation';
-import { ChartNoAxesGantt, MonitorCog } from 'lucide-react';
 
 // local imports
 import {
@@ -33,14 +32,18 @@ export function MainNav({
 			label: 'Store Overview',
 			active: pathname === `/${params.storeId}`,
 			id: 'store_overview',
-			icon: <ChartNoAxesGantt />,
+		},
+		{
+			href: `/${params.storeId}/billboards`,
+			label: 'Billboards',
+			active: pathname === `/${params.storeId}/billboards`,
+			id: 'billboards',
 		},
 		{
 			href: `/${params.storeId}/settings`,
 			label: 'Settings',
 			active: pathname === `/${params.storeId}/settings`,
 			id: 'store_settings',
-			icon: <MonitorCog />,
 		},
 	];
 
