@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { AlertModal } from '@/components/modals/alert-modal';
+import ImageUpload from '@/components/ui/image-upload';
 
 /**
  * Props for the BillboardsForm component.
@@ -53,12 +54,9 @@ interface BillboardFormProps {
 const formSchema = z.object({
 	label: z
 		.string()
-		.nonempty('Billboard name is required')
-		.min(3, 'Billboard name is too short'),
-	imageUrl: z
-		.string()
-		.url('Invalid URL format')
-		.min(1, 'Image URL is required'),
+		.nonempty('Billboard label is required')
+		.min(3, 'Billboard label is too short'),
+	imageUrl: z.string().nonempty('Billboard image is required'),
 });
 
 /**
@@ -78,7 +76,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 	const router = useRouter();
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const origin = useOrigin();
+	// const origin = useOrigin();
 
 	const title = initialData ? 'Edit Billboard.' : 'Create Billboard';
 	const description = initialData ? 'Edit Billboard.' : 'Add a new Billboard';
@@ -175,7 +173,38 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 					className='space-y-8 w-full'
 					onSubmit={form.handleSubmit(onSubmit)}
 				>
-					<div className='grid grid-cols-3 gap-8'>
+					<FormField
+						control={form.control}
+						name='imageUrl'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel
+									id='Billboard-imageUrl'
+									data-testid='Billboard-imageUrl'
+								>
+									Background image
+								</FormLabel>
+								<FormControl>
+									<ImageUpload
+										value={Array.isArray(field.value) ? field.value.map((image: { url: string }) => image.url) : []}
+										disabled={loading}
+										onChange={url => {
+											const newValue = Array.isArray(field.value) ? [...field.value, { url }] : [{ url }];
+											field.onChange(newValue);
+										}}
+										onRemove={url => {
+											const newValue = Array.isArray(field.value) ? field.value.filter(
+												(current: { url: string }) => current.url !== url,
+											) : [];
+											field.onChange(newValue);
+										}}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<div className='md:grid md:grid-cols-3 gap-8'>
 						<FormField
 							control={form.control}
 							name='label'

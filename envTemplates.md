@@ -41,3 +41,14 @@ NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL=/
 # Database URL
 DATABASE_URL=postgresql://<UserName>:<Token>.cockroachlabs.cloud:<CloudID>/defaultdb?sslmode=verify-full
 ```
+
+# Cloudinary
+```
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME= <Your Cloud Name>
+
+NEXT_PUBLIC_CLOUDINARY_API_KEY="<Your API Key>"
+CLOUDINARY_API_SECRET="<Your API Secret>"
+ 
+NEXT_PUBLIC_CLOUDINARY_SECURE_DISTRIBUTION="<Your Secure Distribution / CNAME>"
+NEXT_PUBLIC_CLOUDINARY_PRIVATE_CDN="<true|false>"
+```
