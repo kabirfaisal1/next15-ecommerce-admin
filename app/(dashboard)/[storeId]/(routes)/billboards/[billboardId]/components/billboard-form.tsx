@@ -34,6 +34,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
+import toast from 'react-hot-toast';
 
 const formSchema = z.object({
 	label: z.string().min(1, 'Name is required'),
@@ -72,18 +73,30 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 		}
 	};
 
-	const title = initialData ? 'Edit billboard' : 'Create billboard';
+	const title = initialData ? 'Edit billboard' : 'Create Billboard';
 	const description = initialData ? 'Edit billboard' : 'Add a new billboard';
 	const action = initialData ? 'Save changes' : 'Create billboard';
+	const toastMessage = initialData
+		? 'Billboard updated'
+		: 'Billboard created successfully';
 
 	const onSubmit = async (data: BillboardFormValues) => {
 		setLoading(true);
 		setError(null);
 		try {
-			await axios.patch(`/api/stores/${params.storeId}`, data);
+			if (initialData) {
+				await axios.patch(
+					`/api/${params.storeId}/billboards/${params.billboardId}`,
+					data,
+				);
+			} else {
+				await axios.post(`/api/${params.storeId}/billboards`, data);
+			}
 			router.refresh();
+			toast.success(toastMessage);
 		} catch (err) {
 			handleAPIError(err);
+			toast.error('uh oh! something went wrong');
 		} finally {
 			setLoading(false);
 		}
@@ -94,10 +107,18 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 		setError(null);
 
 		try {
-			await axios.delete(`/api/stores/${params.storeId}`);
+			await axios.delete(
+				`/api/${params.storeId}/billboards/${params.billboardId}`,
+			);
 			router.push('/');
+			toast.success('Billboard deleted successfully');
 		} catch (err) {
 			handleAPIError(err);
+			toast.error(
+				`Make sure you remove all categories using for billboard: ${
+					typeof params.label === 'string' ? params.label.toUpperCase() : ''
+				}`,
+			);
 		} finally {
 			setLoading(false);
 			setDialogOpen(false);
