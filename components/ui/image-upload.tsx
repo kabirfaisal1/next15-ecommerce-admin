@@ -6,7 +6,7 @@ import { CldUploadWidget } from 'next-cloudinary'; // Replace 'some-library' wit
 
 // local import
 import { Button } from '@/components/ui/button';
-import { ImagePlusIcon, Trash } from 'lucide-react';
+import { ImagePlus, Trash } from 'lucide-react';
 import Image from 'next/image';
 
 interface ImageUploadProps {
@@ -22,24 +22,27 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 	onRemove,
 	value,
 }) => {
-	// State to track if the component is mounted
 	const [isMounted, setIsMounted] = useState(false);
 
-	// useEffect hook to set the isMounted state to true after the component mounts
 	useEffect(() => {
 		setIsMounted(true);
 	}, []);
 
-	const onUpload = (result: { info: { secure_url: string } }) => {
-		onChange(result.info.secure_url);
+	const onUpload = (results: { info?: { secure_url: string } | string }) => {
+		if (typeof results.info === 'object' && results.info?.secure_url) {
+			console.log('secure_url', results.info.secure_url);
+			onChange(results.info.secure_url);
+		} else {
+			console.error('Upload failed or info is missing');
+		}
 	};
 
-	// If the component is not mounted, return null to prevent server-side rendering
-	if (!isMounted) return null;
+	if (!isMounted) {
+		return null;
+	}
 
 	return (
-		<React.Fragment>
-			{/* Display the uploaded images */}
+		<div>
 			<div className='mb-4 flex items-center gap-4'>
 				{value.map(url => (
 					<div
@@ -48,54 +51,40 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 					>
 						<div className='z-10 absolute top-2 right-2'>
 							<Button
-								key={`remove-${url}`}
-								id='image-remove'
-								data-testid='image-remove'
 								type='button'
-								onClick={() => {
-									onRemove(url);
-								}}
-								variant='destructive'
-								size='sm'
+								onClick={() => onRemove(url)}
+								variant={'destructive'}
+								size={'icon'}
+								data-testid='remove-image'
 							>
 								<Trash className='h-4 w-4' />
 							</Button>
 						</div>
-						{url && (
-							<Image
-								layout='fill'
-								className='object-cover'
-								alt='Image'
-								src={url}
-								id='image'
-								data-testid='image'
-							/>
-						)}
+						<Image
+							className='object-cover'
+							alt='image'
+							src={url}
+							layout='fill'
+							data-testid='image-preview'
+						/>
 					</div>
 				))}
 			</div>
-			{/* this is to open the image upload widget */}
-			<CldUploadWidget onUploadAdded={onUpload} uploadPreset='ecommerce'>
-				{({ open }) => {
-					const onClick = () => {
-						open();
-					};
-					return (
-						<Button
-							type='button'
-							onClick={onClick}
-							disabled={disabled}
-							variant='secondary'
-							id='image-upload'
-							data-testid='image-upload'
-						>
-							<ImagePlusIcon className='h-4 w-4 mr-2' />
-							Upload Image
-						</Button>
-					);
-				}}
+			<CldUploadWidget onSuccess={onUpload} uploadPreset='ecommerce'>
+				{({ open }) => (
+					<Button
+						onClick={() => open?.()}
+						type='button'
+						disabled={disabled}
+						variant={'secondary'}
+						data-testid='upload-image'
+					>
+						<ImagePlus />
+						upload image
+					</Button>
+				)}
 			</CldUploadWidget>
-		</React.Fragment>
+		</div>
 	);
 };
 

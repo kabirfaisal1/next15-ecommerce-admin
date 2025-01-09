@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trash } from 'lucide-react';
-import toast from 'react-hot-toast';
+// import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
 
@@ -24,234 +24,200 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { AlertModal } from '@/components/modals/alert-modal';
+// import { AlertModal } from '@/components/modals/alert-modal';
 import ImageUpload from '@/components/ui/image-upload';
+import { Alert } from '@/components/ui/alert';
+import {
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
 
-/**
- * Props for the BillboardsForm component.
- *
- * @interface BillboardFormProps
- * @property {Billboard} initialData - The initial data for the Billboard Billboards.
- */
+const formSchema = z.object({
+	label: z.string().min(1, 'Name is required'),
+	imgUrl: z.string().min(1),
+});
+
+type BillboardFormValues = z.infer<typeof formSchema>;
+
 interface BillboardFormProps {
 	initialData: Billboards | null;
 }
 
-/**
- * Schema for the Billboards form validation.
- *
- * This schema validates the following fields:
- * - `name`: A non-empty string with a minimum length of 3 characters.
- *
- * @constant
- * @type {z.ZodObject}
- * @property {z.ZodString} name - The name of the Billboard. It must be a non-empty string with a minimum length of 3 characters.
- * @example
- * const formSchema = z.object({
- *   name: z.string().nonempty('Billboard name is required').min(3, 'Billboard name is too short'),
- * });
- */
-const formSchema = z.object({
-	label: z
-		.string()
-		.nonempty('Billboard label is required')
-		.min(3, 'Billboard label is too short'),
-	imageUrl: z.string().nonempty('Billboard image is required'),
-});
-
-/**
- * Type alias for the values of the Billboards form.
- *
- * This type is inferred from the `formSchema` using Zod's `infer` utility.
- * It represents the shape of the data that the Billboards form will handle.
- *
- * @typedef {BillboardFormValues}
- */
-type BillboardFormValues = z.infer<typeof formSchema>;
-
 export const BillboardForm: React.FC<BillboardFormProps> = ({
 	initialData,
 }) => {
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [dialogOpen, setDialogOpen] = useState(false);
+
 	const params = useParams();
 	const router = useRouter();
-	const [open, setOpen] = useState(false);
-	const [loading, setLoading] = useState(false);
-	// const origin = useOrigin();
 
-	const title = initialData ? 'Edit Billboard.' : 'Create Billboard';
-	const description = initialData ? 'Edit Billboard.' : 'Add a new Billboard';
-	const toastMessage = initialData
-		? 'Billboard Updated successfully'
-		: 'Billboard Created';
-	const action = initialData ? 'Update' : 'Create';
-
-	/**
-	 * Initializes a form using the `useForm` hook with validation schema and default values.
-	 *
-	 * @template BillboardFormValues - The type of the form values.
-	 * @param {object} options - The options for the form.
-	 * @param {Resolver} options.resolver - The resolver function for form validation using Zod schema.
-	 * @param {BillboardFormValues} options.defaultValues - The initial data for the form fields.
-	 * @returns {UseFormReturn<BillboardFormValues>} The form instance with methods and state.
-	 */
 	const form = useForm<BillboardFormValues>({
 		resolver: zodResolver(formSchema),
-		defaultValues: initialData || { label: '', imageUrl: '' },
+		defaultValues: {
+			label: initialData?.label || '',
+			imgUrl: initialData?.imageUrl || '',
+		},
 	});
 
-	/**
-	 * Handles the form submission.
-	 *
-	 * @param {BillboardFormValues} data - The form data to be submitted.
-	 * @returns {Promise<void>} A promise that resolves when the submission is complete.
-	 */
+	const handleAPIError = (err: unknown) => {
+		if (axios.isAxiosError(err)) {
+			setError(err.response?.data?.message || 'An unexpected error occurred.');
+		} else {
+			setError('An unexpected error occurred.');
+		}
+	};
+
+	const title = initialData ? 'Edit billboard' : 'Create billboard';
+	const description = initialData ? 'Edit billboard' : 'Add a new billboard';
+	const action = initialData ? 'Save changes' : 'Create billboard';
+
 	const onSubmit = async (data: BillboardFormValues) => {
-		console.log(data);
+		setLoading(true);
+		setError(null);
 		try {
-			setLoading(true);
-			// Make an API call to create a new Billboard with the form values
-			await axios.patch(`/api/Billboards/${params.BillboardId}`, data);
-			// Refresh the router to reflect the changes
+			await axios.patch(`/api/stores/${params.storeId}`, data);
 			router.refresh();
-			toast.success('Billboard updated successfully');
-		} catch (error) {
-			toast.error('Uh oh! Something went wrong');
-			console.error(error);
+		} catch (err) {
+			handleAPIError(err);
 		} finally {
 			setLoading(false);
 		}
 	};
 
 	const onDelete = async () => {
+		setLoading(true);
+		setError(null);
+
 		try {
-			setLoading(true);
-			// Make an API call to create a new Billboard with the form values
-			await axios.delete(`/api/Billboards/${params.BillboardId}`);
-			// Refresh the router to reflect the changes
-			router.refresh();
+			await axios.delete(`/api/stores/${params.storeId}`);
 			router.push('/');
-			toast.success('Billboard deleted successfully');
-		} catch (error) {
-			toast.error(
-				'Make sure you remove all the products and categories first.',
-			);
-			console.error(error);
+		} catch (err) {
+			handleAPIError(err);
 		} finally {
 			setLoading(false);
-			setOpen(false);
+			setDialogOpen(false);
 		}
 	};
 
 	return (
-		<React.Fragment>
-			<AlertModal
-				isOpen={open}
-				onClose={() => setOpen(false)}
-				onConfirm={onDelete}
-				loading={loading}
-			/>
+		<div className='space-y-6'>
 			<div className='flex items-center justify-between'>
 				<Heading title={title} description={description} />
+
 				{initialData && (
 					<Button
 						variant='destructive'
 						size='icon'
+						onClick={() => setDialogOpen(true)}
 						disabled={loading}
-						onClick={() => setOpen(true)} // Add the function to save the Billboards
-						id='Billboard-delete-button'
-						data-testid='Billboard-delete-button'
+						data-testid='billboards-delete-button'
 					>
 						<Trash className='h-4 w-4' />
 					</Button>
 				)}
 			</div>
 			<Separator />
+			{error && (
+				<Alert variant='destructive'>
+					<span>{error}</span>
+				</Alert>
+			)}
+
 			<Form {...form}>
-				<form
-					id='Billboard-Form'
-					data-testid='Billboard-Form'
-					className='space-y-8 w-full'
-					onSubmit={form.handleSubmit(onSubmit)}
-				>
+				<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
 					<FormField
+						data-testid='billboards-formField'
 						control={form.control}
-						name='imageUrl'
+						name='imgUrl'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel
-									id='Billboard-imageUrl'
-									data-testid='Billboard-imageUrl'
-								>
-									Background image
+								<FormLabel data-testid='billboards-backgroundImage-label'>
+									Background Image
 								</FormLabel>
+
 								<FormControl>
 									<ImageUpload
-										value={Array.isArray(field.value) ? field.value.map((image: { url: string }) => image.url) : []}
+										value={field.value ? [field.value] : []}
 										disabled={loading}
-										onChange={url => {
-											const newValue = Array.isArray(field.value) ? [...field.value, { url }] : [{ url }];
-											field.onChange(newValue);
-										}}
-										onRemove={url => {
-											const newValue = Array.isArray(field.value) ? field.value.filter(
-												(current: { url: string }) => current.url !== url,
-											) : [];
-											field.onChange(newValue);
-										}}
+										onChange={url => field.onChange(url)}
+										onRemove={() => field.onChange('')}
 									/>
 								</FormControl>
-								<FormMessage />
 							</FormItem>
 						)}
 					/>
-					<div className='md:grid md:grid-cols-3 gap-8'>
+					<div className='grid grid-cols-3 gap-8'>
 						<FormField
 							control={form.control}
 							name='label'
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel
-										id='Billboard-FormNameLabel'
-										data-testid='Billboard-FormNameLabel'
-									>
-										Label
-									</FormLabel>
+									<FormLabel>Label</FormLabel>
+
 									<FormControl>
 										<Input
-											id='Billboard-FormNameInput'
+											data-testid='billboards-labelInput'
 											disabled={loading}
-											data-testid='Billboard-FormNameInput'
-											placeholder='Billboard label'
+											placeholder='Billboard name'
 											{...field}
 										/>
 									</FormControl>
-									<FormMessage id='FormMessage' data-testid='FormMessage'>
-										{form.formState.errors.label?.message}
-									</FormMessage>
+									<FormMessage>{fieldState.error?.message}</FormMessage>
 								</FormItem>
 							)}
 						/>
 					</div>
-					{/* Form Button */}
-					<div
-						id='BillboardForm-buttons'
-						data-testid='form-buttons'
-						className='pt-6 space-x-2 '
+					<Button
+						type='submit'
+						data-testid='billboards-submitButton'
+						disabled={loading}
 					>
-						<Button
-							disabled={loading}
-							type='submit'
-							id='BillboardForm-ContinueButtons'
-							data-testid='BillboardForm-ContinueButtons'
-							className='ml-auto'
-							variant='default'
-						>
-							{action} Billboard
-						</Button>
-					</div>
+						{loading ? 'Saving...' : action}
+					</Button>
 				</form>
 			</Form>
 			<Separator />
-		</React.Fragment>
+
+			<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Confirm Deletion</DialogTitle>
+					</DialogHeader>
+					<p>
+						Are you sure you want to delete this billboard? This action cannot
+						be undone.
+					</p>
+					<DialogFooter>
+						<Button
+							variant='outline'
+							onClick={() => setDialogOpen(false)}
+							disabled={loading}
+							data-testid='billboards-cancelButton'
+						>
+							Cancel
+						</Button>
+						<Button
+							data-testid='billboards-deleteButton'
+							variant='destructive'
+							onClick={onDelete}
+							disabled={loading}
+						>
+							{loading ? 'Deleting...' : 'Delete'}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* <ApiAlert
+       title="NEXT_PUBLIC_API_URL" 
+        description={`${origin}/api/${params.storeId}`} 
+        variant="public"
+      /> */}
+		</div>
 	);
 };
