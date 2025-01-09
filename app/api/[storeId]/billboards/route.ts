@@ -28,9 +28,9 @@ export async function POST (
 
         // If label is not present in the request body, return a 400 Bad Request response
         if ( !label ) return new NextResponse( "Label name is required", { status: 400 } );
-
+        console.log( "imageUrl is: ", imageUrl );
         // If imageUrl is not present in the request body, return a 400 Bad Request response
-        if ( !imageUrl ) return new NextResponse( "ImageUrl name is required", { status: 400 } );
+        if ( !imageUrl ) return new NextResponse( "imageUrl name is required", { status: 400 } );
 
         // If storeId is not present in the request body, return a 400 Bad Request response
         if ( !params.storeId ) return new NextResponse( "Store id is required", { status: 400 } );

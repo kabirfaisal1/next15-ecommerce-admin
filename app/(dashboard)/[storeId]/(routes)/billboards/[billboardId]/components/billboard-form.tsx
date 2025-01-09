@@ -38,7 +38,7 @@ import toast from 'react-hot-toast';
 
 const formSchema = z.object({
 	label: z.string().min(1, 'Name is required'),
-	imgUrl: z.string().min(1),
+	imageUrl: z.string().min(1),
 });
 
 type BillboardFormValues = z.infer<typeof formSchema>;
@@ -61,7 +61,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			label: initialData?.label || '',
-			imgUrl: initialData?.imageUrl || '',
+			imageUrl: initialData?.imageUrl || '',
 		},
 	});
 
@@ -87,7 +87,6 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 			if (initialData) {
 				await axios.patch(
 					`/api/${params.storeId}/billboards/${params.billboardId}`,
-					data,
 				);
 			} else {
 				await axios.post(`/api/${params.storeId}/billboards`, data);
@@ -96,6 +95,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 			toast.success(toastMessage);
 		} catch (err) {
 			handleAPIError(err);
+			console.log(err);
 			toast.error('uh oh! something went wrong');
 		} finally {
 			setLoading(false);
@@ -154,7 +154,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 					<FormField
 						data-testid='billboards-formField'
 						control={form.control}
-						name='imgUrl'
+						name='imageUrl'
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel data-testid='billboards-backgroundImage-label'>
