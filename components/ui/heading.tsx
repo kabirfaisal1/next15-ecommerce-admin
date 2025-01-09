@@ -10,14 +10,12 @@ const Heading: React.FC<HeadingProps> = ({ title, description }) => {
 		<div>
 			<h2
 				className='text-3xl font-bold tracking-tight'
-				id='heading-title'
 				data-testid='heading-title'
 			>
 				{title}
 			</h2>
 			<p
 				className='text-sm text-muted-foreground'
-				id='heading-description'
 				data-testid='heading-description'
 			>
 				{description}

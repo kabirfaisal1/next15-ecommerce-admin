@@ -1,4 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Project Summary
+
+The Next.js 15 App Router is a powerful tool that enables you to easily create complex client-side routing in Next.js applications. This project uses the Next.js 15 App Router to build a fully functional E-Commerce platform with an Admin Dashboard, providing seamless navigation and an enhanced user experience.
+
+## Tools and Libraries Used <TODO: add icons and link>
+
+This project leverages a variety of tools and libraries to achieve its functionality:
+
+- `@clerk`: 
+- `@prisma`: 
+- `@radix`:
+- `axios`
+- `class-variance-authority`
+- `clsx`
+- `cmdk`
+- `lucide-react`
+- `next`
+- `next-cloudinary`: 
+- `prisma`: 
+- `react`: 
+- `tailwind`
+- `zod`:
+- `zustand`: 
+- `cypress`
+- `thunder client`
 
 ## Getting Started
 

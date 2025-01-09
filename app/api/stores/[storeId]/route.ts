@@ -19,8 +19,8 @@ export async function PATCH ( req: Request,
         // Destructure the 'name' property from the parsed body
         const { name } = body;
 
-        // If userId is not present, return a 401 Unauthorized response
-        if ( !userId ) return new NextResponse( 'Unauthorized', { status: 401 } );
+        // If userId is not present, return a 401 Unauthenticated response
+        if ( !userId ) return new NextResponse( 'Unauthenticated', { status: 401 } );
 
         // If name is not present in the request body, return a 400 Bad Request response
         if ( !name ) return new NextResponse( 'Name is required', { status: 400 } );
@@ -41,8 +41,11 @@ export async function PATCH ( req: Request,
         // Log the error to the console
         console.log( `[Store_PATCH] <==: ${error} ==>` );
 
-        // Log an error message to the console
-        console.error( 'Error in PATCH /api/store?[id]' );
+        // Return a 500 Internal Server Error response with the error message in the response body
+        if ( error instanceof Error )
+        {
+            return new NextResponse( `Internal error: ${error.message}`, { status: 500 } );
+        }
 
         // Return a 500 Internal Server Error response
         return new NextResponse( 'Internal error : ', { status: 500 } );
@@ -57,8 +60,8 @@ export async function DELETE ( req: Request,
         // Extract userId from the authentication function
         const { userId } = await auth();
 
-        // If userId is not present, return a 401 Unauthorized response
-        if ( !userId ) return new NextResponse( 'Unauthorized', { status: 403 } );
+        // If userId is not present, return a 401 Unauthenticated response
+        if ( !userId ) return new NextResponse( 'Unauthenticated', { status: 403 } );
 
         // Find the store record with the provided storeId
         if ( !params.storeId ) return new NextResponse( 'Store ID is required', { status: 400 } );
@@ -75,8 +78,11 @@ export async function DELETE ( req: Request,
         // Log the error to the console
         console.log( `[Store_DELETE] <==: ${error} ==>` );
 
-        // Log an error message to the console
-        console.error( 'Error in DELETE /api/store?[id]' );
+        // Return a 500 Internal Server Error response with the error message in the response body
+        if ( error instanceof Error )
+        {
+            return new NextResponse( `Internal error: ${error.message}`, { status: 500 } );
+        }
 
         // Return a 500 Internal Server Error response
         return new NextResponse( 'Internal error : ', { status: 500 } );

@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 // local import
 import prismadb from "@/lib/prismadb";
 
+// function to POST a new store record in the database
 export async function POST ( req: Request )
 {
     try
@@ -18,8 +19,9 @@ export async function POST ( req: Request )
         // Destructure the 'name' property from the parsed body
         const { name } = body;
 
-        // If userId is not present, return a 401 Unauthorized response
-        if ( !userId ) return new NextResponse( 'Unauthorized', { status: 401 } );
+
+        // If userId is not present, return a 403 Unauthenticated response
+        if ( !userId ) return new NextResponse( "Unauthenticated", { status: 403 } );
 
         // If name is not present in the request body, return a 400 Bad Request response
         if ( !name ) return new NextResponse( 'Store name is required', { status: 400 } );
@@ -33,10 +35,13 @@ export async function POST ( req: Request )
     } catch ( error )
     {
         // Log the error to the console
-        console.log( `[Stores_Post] <==: ${error} ==>` );
+        console.log( `[Store_POST] <==: ${error} ==>` );
 
-        // Log an error message to the console
-        console.error( 'Error in POST /api/store' );
+        // Return a 500 Internal Server Error response with the error message in the response body
+        if ( error instanceof Error )
+        {
+            return new NextResponse( `Internal error: ${error.message}`, { status: 500 } );
+        }
 
         // Return a 500 Internal Server Error response
         return new NextResponse( 'Internal error : ', { status: 500 } );
