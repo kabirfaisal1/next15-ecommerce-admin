@@ -3,15 +3,16 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { Billboards } from '@prisma/client';
 
 //local imports
 import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { BillboardColumn, columns } from './columns';
+import { DataTable } from '@/components/ui/data-table';
 
 interface BillboardClientProps {
-	data: Billboards[];
+	data: BillboardColumn[];
 }
 
 export const BillboardClient: React.FC<BillboardClientProps> = ({ data }) => {
@@ -32,6 +33,7 @@ export const BillboardClient: React.FC<BillboardClientProps> = ({ data }) => {
 				</Button>
 			</div>
 			<Separator />
+			<DataTable columns={columns} data={data} />
 		</React.Fragment>
 	);
 };
