@@ -13,7 +13,7 @@ interface ApiAlertProps {
 	title: string;
 	description: string;
 	variant: 'public' | 'admin';
-	id: string;
+	testid?: string;
 }
 
 const textMap: Record<ApiAlertProps['variant'], string> = {
@@ -30,7 +30,7 @@ export const ApiAlert: React.FC<ApiAlertProps> = ({
 	title,
 	description,
 	variant = 'public',
-	id,
+	testid,
 }) => {
 	const onCopy = (description: string) => {
 		navigator.clipboard.writeText(description);
@@ -39,38 +39,27 @@ export const ApiAlert: React.FC<ApiAlertProps> = ({
 
 	return (
 		<Alert>
-			<Server
-				id={`${id}_serverIcon`}
-				data-testid={`${id}_serverIcon`}
-				className='h-4 w-4'
-			/>
 			<AlertTitle
 				className='flex items-center gap-x-2'
-				id={`${id}_${title}`}
-				data-testid={`${id}_${title}`}
+				data-testid={`${testid}_${title}`}
 			>
+				<Server className='h-6 w-6' />
 				{title}
-				<Badge
-					variant={variantMap[variant]}
-					id={`${id}_badge`}
-					data-testid={`${id}_badge`}
-				>
+				<Badge variant={variantMap[variant]} data-testid={`${testid}_badge`}>
 					{textMap[variant]}
 				</Badge>
 			</AlertTitle>
 			<AlertDescription className='mt-4 flex items-center justify-between'>
 				<code
 					className='relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold'
-					id={`${id}_code`}
-					data-testid={`${id}_code`}
+					data-testid={`${testid}_code`}
 				>
 					{description}
 				</code>
 				<Button
 					variant='outline'
 					size='sm'
-					id={`${id}_copyButton`}
-					data-testid={`${id}_copyButton`}
+					data-testid={`${testid}_copyButton`}
 					onClick={() => onCopy(description)}
 				>
 					<Copy className='h-4 w-4' />

@@ -100,7 +100,6 @@ export const StoreModal = () => {
 				<div className='space-y-4 py-2 pd-4'>
 					<Form {...form}>
 						<form
-							id='storeModal-Form'
 							data-testid='storeModal-Form'
 							onSubmit={form.handleSubmit(onSubmit)}
 						>
@@ -109,22 +108,18 @@ export const StoreModal = () => {
 								name='name'
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel
-											id='storeModal-FormLabel'
-											data-testid='storeModal-FormLabel'
-										>
+										<FormLabel data-testid='storeModal-FormLabel'>
 											Name
 										</FormLabel>
 										<FormControl>
 											<Input
-												id='storeModal-FormInput'
 												disabled={loading}
 												data-testid='storeModal-FormInput'
 												placeholder='E-Commerce'
 												{...field}
 											/>
 										</FormControl>
-										<FormMessage id='FormMessage' data-testid='FormMessage'>
+										<FormMessage data-testid='FormMessage'>
 											{form.formState.errors.name?.message}
 										</FormMessage>
 									</FormItem>
@@ -132,12 +127,10 @@ export const StoreModal = () => {
 							/>
 							{/* Form Button */}
 							<div
-								id='form-buttons'
 								data-testid='form-buttons'
 								className='pt-6 space-x-2 flex items-center justify-end w-full'
 							>
 								<Button
-									id='form-CancelButtons'
 									disabled={loading}
 									data-testid='form-CancelButtons'
 									variant='outline'
@@ -148,7 +141,6 @@ export const StoreModal = () => {
 								<Button
 									disabled={loading}
 									type='submit'
-									id='form-ContinueButtons'
 									data-testid='form-ContinueButtons'
 								>
 									Continue

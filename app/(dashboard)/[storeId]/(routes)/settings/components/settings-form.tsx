@@ -148,7 +148,6 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 					size='icon'
 					disabled={loading}
 					onClick={() => setOpen(true)} // Add the function to save the settings
-					id='store-delete-button'
 					data-testid='store-delete-button'
 				>
 					<Trash className='h-4 w-4' />
@@ -157,7 +156,6 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 			<Separator />
 			<Form {...form}>
 				<form
-					id='setting-Form'
 					data-testid='setting-Form'
 					className='space-y-8 w-full'
 					onSubmit={form.handleSubmit(onSubmit)}
@@ -168,22 +166,18 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 							name='name'
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel
-										id='setting-FormNameLabel'
-										data-testid='setting-FormNameLabel'
-									>
+									<FormLabel data-testid='setting-FormNameLabel'>
 										Name
 									</FormLabel>
 									<FormControl>
 										<Input
-											id='setting-FormNameInput'
 											disabled={loading}
 											data-testid='setting-FormNameInput'
 											placeholder='Store Name'
 											{...field}
 										/>
 									</FormControl>
-									<FormMessage id='FormMessage' data-testid='FormMessage'>
+									<FormMessage data-testid='FormMessage'>
 										{form.formState.errors.name?.message}
 									</FormMessage>
 								</FormItem>
@@ -191,15 +185,10 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 						/>
 					</div>
 					{/* Form Button */}
-					<div
-						id='settingForm-buttons'
-						data-testid='form-buttons'
-						className='pt-6 space-x-2 '
-					>
+					<div data-testid='form-buttons' className='pt-6 space-x-2 '>
 						<Button
 							disabled={loading}
 							type='submit'
-							id='settingForm-ContinueButtons'
 							data-testid='settingForm-ContinueButtons'
 							className='ml-auto'
 							variant='default'
@@ -216,7 +205,7 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 				variant='public'
 				description={`${origin ? `${origin}/api/${params.storeId}` : ''}`}
 				// description={`${origin ? `${origin}/api/stores${params.storeId}` : ''}`}
-				id='api-alert'
+				testid='api-alert'
 			/>
 		</React.Fragment>
 	);

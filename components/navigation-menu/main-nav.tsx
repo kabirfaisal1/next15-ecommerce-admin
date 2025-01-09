@@ -58,7 +58,6 @@ export function MainNav({
 					<NavigationMenuLink
 						key={route.href}
 						href={route.href}
-						id={route.id}
 						data-testid={route.id}
 						className={cn(
 							'pt-4 text-sm font-medium transition-colors hover:text-primary',
@@ -67,7 +66,7 @@ export function MainNav({
 								: 'text-muted-foreground',
 						)}
 					>
-						{route.icon} {route.label}
+						{route.label}
 					</NavigationMenuLink>
 				))}
 			</NavigationMenuList>
