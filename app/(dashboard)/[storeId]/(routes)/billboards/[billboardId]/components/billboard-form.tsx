@@ -97,6 +97,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 			}
 			router.refresh();
 			toast.success(toastMessage);
+			router.push(`/${params.storeId}/billboards`);
 		} catch (err) {
 			handleAPIError(err);
 			console.log(err);
@@ -245,12 +246,6 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
-
-			{/* <ApiAlert
-       title="NEXT_PUBLIC_API_URL" 
-        description={`${origin}/api/${params.storeId}`} 
-        variant="public"
-      /> */}
 		</div>
 	);
 };
