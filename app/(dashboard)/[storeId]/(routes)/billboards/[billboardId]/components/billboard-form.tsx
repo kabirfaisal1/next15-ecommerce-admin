@@ -6,7 +6,7 @@ import { Billboards } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Trash } from 'lucide-react';
+import { Trash, CircleCheckBig } from 'lucide-react';
 // import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
@@ -37,7 +37,10 @@ import {
 import toast from 'react-hot-toast';
 
 const formSchema = z.object({
-	label: z.string().min(1, 'Name is required'),
+	label: z
+		.string()
+		.min(1, 'Name is required')
+		.max(21, 'Name must be less than 21 characters'),
 	imageUrl: z.string().min(1),
 });
 
@@ -87,6 +90,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 			if (initialData) {
 				await axios.patch(
 					`/api/${params.storeId}/billboards/${params.billboardId}`,
+					data,
 				);
 			} else {
 				await axios.post(`/api/${params.storeId}/billboards`, data);
@@ -178,15 +182,23 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 							name='label'
 							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel>Label</FormLabel>
+									<FormLabel data-testid='billboards-labelSubtitle'>
+										Label
+									</FormLabel>
 
 									<FormControl>
-										<Input
-											data-testid='billboards-labelInput'
-											disabled={loading}
-											placeholder='Billboard name'
-											{...field}
-										/>
+										<div className='flex items-center'>
+											<Input
+												data-testid='billboards-labelInput'
+												disabled={loading}
+												placeholder='Billboard name'
+												maxLength={21}
+												{...field}
+											/>
+											{!fieldState.error && field.value && (
+												<CircleCheckBig className='ml-2 h-4 w-4 text-green-500' />
+											)}
+										</div>
 									</FormControl>
 									<FormMessage>{fieldState.error?.message}</FormMessage>
 								</FormItem>

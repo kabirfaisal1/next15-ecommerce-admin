@@ -6,7 +6,7 @@ import { Stores } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Trash } from 'lucide-react';
+import { Trash, CircleCheckBig } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
@@ -164,18 +164,24 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 						<FormField
 							control={form.control}
 							name='name'
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<FormItem>
 									<FormLabel data-testid='setting-FormNameLabel'>
 										Name
 									</FormLabel>
 									<FormControl>
-										<Input
-											disabled={loading}
-											data-testid='setting-FormNameInput'
-											placeholder='Store Name'
-											{...field}
-										/>
+										<div className='flex items-center'>
+											<Input
+												disabled={loading}
+												data-testid='setting-FormNameInput'
+												placeholder='Store Name'
+												maxLength={21}
+												{...field}
+											/>
+											{!fieldState.error && field.value && (
+												<CircleCheckBig className='h-4 w-4 text-green-500' />
+											)}
+										</div>
 									</FormControl>
 									<FormMessage data-testid='FormMessage'>
 										{form.formState.errors.name?.message}

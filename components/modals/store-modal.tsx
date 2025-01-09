@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-
+import { CircleCheckBig } from 'lucide-react';
 // local import
 import { Modal } from '@/components/ui/modal';
 import { useStoreModal } from '@/hooks/use-store-modal';
@@ -35,7 +35,8 @@ const formSchema = zod.object({
 	name: zod
 		.string()
 		.nonempty('Store name is required')
-		.min(3, 'Store name is too short'),
+		.min(3, 'Store name is too short')
+		.max(21, 'Store name is too long'),
 });
 
 // StoreModal component to render a modal for creating a new store
@@ -106,18 +107,24 @@ export const StoreModal = () => {
 							<FormField
 								control={form.control}
 								name='name'
-								render={({ field }) => (
+								render={({ field, fieldState }) => (
 									<FormItem>
 										<FormLabel data-testid='storeModal-FormLabel'>
 											Name
 										</FormLabel>
 										<FormControl>
-											<Input
-												disabled={loading}
-												data-testid='storeModal-FormInput'
-												placeholder='E-Commerce'
-												{...field}
-											/>
+											<div className='flex items-center'>
+												<Input
+													disabled={loading}
+													data-testid='storeModal-FormInput'
+													placeholder='E-Commerce'
+													maxLength={21}
+													{...field}
+												/>
+												{!fieldState.error && field.value.length >= 3 && (
+													<CircleCheckBig className='h-4 w-4 text-green-500' />
+												)}
+											</div>
 										</FormControl>
 										<FormMessage data-testid='FormMessage'>
 											{form.formState.errors.name?.message}
@@ -134,7 +141,10 @@ export const StoreModal = () => {
 									disabled={loading}
 									data-testid='form-CancelButtons'
 									variant='outline'
-									onClick={storeModal.onClose}
+									onClick={() => {
+										form.reset();
+										storeModal.onClose();
+									}}
 								>
 									Cancel
 								</Button>
