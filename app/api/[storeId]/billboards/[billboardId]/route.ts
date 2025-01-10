@@ -60,11 +60,15 @@ export async function DELETE (
             return new NextResponse( "Unauthorized", { status: 405 } );
         }
 
-        const billboard = await prismadb.billboards.delete( {
+        const billboard = await prismadb.billboards.delete({
             where: {
-                id: params.billboardId,
+            id: params.billboardId,
             }
-        } );
+        });
+
+        if (!billboard) {
+            return new NextResponse("Billboard not found", { status: 204 });
+        }
 
         return NextResponse.json( billboard );
     } catch ( error )

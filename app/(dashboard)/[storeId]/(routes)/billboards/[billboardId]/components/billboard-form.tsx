@@ -115,7 +115,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 			await axios.delete(
 				`/api/${params.storeId}/billboards/${params.billboardId}`,
 			);
-			router.push('/');
+			router.push(`/${params.storeId}/billboards`);
 			toast.success('Billboard deleted successfully');
 		} catch (err) {
 			handleAPIError(err);
@@ -215,7 +215,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 					</Button>
 				</form>
 			</Form>
-			<Separator />
+			{/* <Separator /> */}
 
 			<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
 				<DialogContent>
