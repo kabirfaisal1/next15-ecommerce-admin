@@ -91,18 +91,19 @@ export function DataTable<TData, TValue>({
 														header.getContext(),
 												  )}
 
-											{header.column.columnDef.header && header.id !== 'actions' && (
-												<Button
-													variant='ghost'
-													onClick={() =>
-														header.column.toggleSorting(
-															header.column.getIsSorted() === 'asc',
-														)
-													}
-												>
-													<ArrowUpDown className='ml-2 h-4 w-4' />
-												</Button>
-											)}
+											{header.column.columnDef.header &&
+												header.id !== 'actions' && (
+													<Button
+														variant='ghost'
+														onClick={() =>
+															header.column.toggleSorting(
+																header.column.getIsSorted() === 'asc',
+															)
+														}
+													>
+														<ArrowUpDown className='ml-2 h-4 w-4' />
+													</Button>
+												)}
 										</TableHead>
 									);
 								})}
