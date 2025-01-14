@@ -21,7 +21,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { AlertModal } from '@/components/modals/alert-modal';
 import { Alert } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
 
 interface CellActionProps {
 	data: BillboardColumn;
@@ -80,7 +79,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 				onConfirm={onDelete}
 				loading={loading}
 			/>
-			<Separator />
+
 			{error && (
 				<Alert variant='destructive'>
 					<span>{error}</span>
