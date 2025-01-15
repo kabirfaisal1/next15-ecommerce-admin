@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES2017",
     "module": "commonjs",
     "skipLibCheck": true,
     "strict": true,
@@ -11,6 +11,7 @@
   },
   "include": [
     // process only spec files
-    "cypress/**/*.ts"
+    "test/cypress/**/*.ts",
+    "test/cypress/**/*.tsx"
   ]
 }

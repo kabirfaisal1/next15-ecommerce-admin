@@ -64,12 +64,12 @@ export const Modal: React.FC<ModalProps> = ({
 		<Dialog open={isOpen} onOpenChange={onChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle data-testid={`titleFor_${title}`}>{title}</DialogTitle>
-					<DialogDescription data-testid={`descriptionFor_${title}`}>
+					<DialogTitle data-testid={'modal_DialogTitle'}>{title}</DialogTitle>
+					<DialogDescription data-testid={'modal_DialogDescription'}>
 						{description}
 					</DialogDescription>
 				</DialogHeader>
-				<div data-testid={`childrenFor_${title}`}>{children}</div>
+				<div data-testid={`modal_DialogChildren`}>{children}</div>
 			</DialogContent>
 		</Dialog>
 	);
