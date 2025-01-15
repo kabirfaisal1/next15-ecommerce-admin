@@ -2,6 +2,8 @@
 
 export { }; // Ensures this file is treated as a module
 
+import { addClerkCommands } from '@clerk/testing/cypress';
+addClerkCommands( { Cypress, cy } );
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global
 {

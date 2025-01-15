@@ -1,4 +1,5 @@
 import { defineConfig } from "cypress";
+import { clerkSetup } from '@clerk/testing/cypress';
 
 export default defineConfig( {
 
@@ -12,6 +13,14 @@ export default defineConfig( {
     supportFile: "**/support/e2e.ts",
     setupNodeEvents ( on, config )
     {
+      clerkSetup( { config } );
+
+      /**
+       * An object that maps environment names to their corresponding URLs.
+       * - `local`: URL for the local environment.
+       * - `staging`: URL for the staging environment.
+       * - `production`: URL for the production environment.
+       */
       const version = config.env.version || 'local';
       const url: { [ key: string ]: string; } = {
         local: "http://localhost:3000/",
