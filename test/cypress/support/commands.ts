@@ -2,9 +2,11 @@
 
 export { }; // Ensures this file is treated as a module
 
+// Clerk Testing Library
 import { addClerkCommands } from '@clerk/testing/cypress';
-
 addClerkCommands( { Cypress, cy } );
+
+
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global
 {
@@ -12,12 +14,9 @@ declare global
     {
         interface Chainable
         {
-            /**
-             * Custom command to log in to Auth0.
-             * @param username - The username for Auth0.
-             * @param password - The password for Auth0.
-             */
+
             loginToAuth0 (): Chainable<JQuery<HTMLElement>>;
+            getTokens (): Chainable<JQuery<HTMLElement>>;
 
             /**
              * Custom command to perform drag-and-drop.
@@ -49,21 +48,22 @@ Cypress.Commands.add( 'loginToAuth0', () =>
     const version = Cypress.env( 'version' ) || 'local';
     const userType = Cypress.env( 'userType' ) || 'regular'; // Default to 'regular' user
 
+    cy.step( 'Getting environment-specific email' );
     const email =
         version === 'production'
-            ? userType === 'nostore'
+            ? userType === 'noStore'
                 ? Cypress.env( 'ProdNoStoreUserEmail' )
                 : Cypress.env( 'ProdEmail' )
-            : userType === 'nostore'
+            : userType === 'noStore'
                 ? Cypress.env( 'LocalNoStoreUserEmail' )
                 : Cypress.env( 'LocalEmail' );
-    cy.step( `Logging in as ${email}` );
+    cy.step( 'Getting environment-specific Password' );
     const password =
         version === 'production'
-            ? userType === 'nostore'
+            ? userType === 'noStore'
                 ? Cypress.env( 'ProdNoStoreUserPassword' )
                 : Cypress.env( 'ProdPassword' )
-            : userType === 'nostore'
+            : userType === 'noStore'
                 ? Cypress.env( 'LocalNoStoreUserPassword' )
                 : Cypress.env( 'LocalPassword' );
 
@@ -76,21 +76,27 @@ Cypress.Commands.add( 'loginToAuth0', () =>
     cy.get( '#password-field' ).type( password, { log: false } );
     cy.step( `Clicking on Continue Button after entering password` );
     cy.get( '[data-localization-key="formButtonPrimary"]' ).should( 'have.text', 'Continue' ).click();
- 
+
 } );
 
-Cypress.Commands.add(
-    'dragAndDrop',
-    ( dragEl: Cypress.Chainable<JQuery<HTMLElement>>, dropEl: Cypress.Chainable<JQuery<HTMLElement>> ) =>
+Cypress.Commands.add( 'getTokens', () =>
+{
+    cy.step( `Getting tokens` );
+    return cy.window().wait( 10000 ).then( ( win ) =>
     {
-        cy.log( 'cy.dragAndDrop is triggered' );
-        const dataTransfer = new DataTransfer();
+        if ( win.Clerk && win.Clerk.session )
+        {
+            return win.Clerk.session.getToken( { template: 'apiTest' } ).then( ( token: string ) =>
+            {
+                return cy.wrap( token ); // Wrap token to continue Cypress chaining
+            } );
+        } else
+        {
+            throw new Error( 'Clerk session is not available' );
+        }
+    } );
+} );
 
-        dragEl.trigger( 'dragstart', { dataTransfer } );
-        dropEl.trigger( 'drop', { dataTransfer } );
-        dragEl.trigger( 'dragend' );
-    }
-);
 
 Cypress.Commands.add( 'navigation_menu', ( element: string ) =>
 {
@@ -137,3 +143,18 @@ Cypress.Commands.add( 'navigation_menu', ( element: string ) =>
     }
     else ( cy.step( `${element} is not found` ) );
 } );
+
+
+
+Cypress.Commands.add(
+    'dragAndDrop',
+    ( dragEl: Cypress.Chainable<JQuery<HTMLElement>>, dropEl: Cypress.Chainable<JQuery<HTMLElement>> ) =>
+    {
+        cy.log( 'cy.dragAndDrop is triggered' );
+        const dataTransfer = new DataTransfer();
+
+        dragEl.trigger( 'dragstart', { dataTransfer } );
+        dropEl.trigger( 'drop', { dataTransfer } );
+        dragEl.trigger( 'dragend' );
+    }
+);

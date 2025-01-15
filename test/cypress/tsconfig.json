@@ -4,10 +4,7 @@
     "module": "commonjs",
     "skipLibCheck": true,
     "strict": true,
-    "types": [
-      // load Cypress global type
-      "cypress"
-    ]
+      "types": ["cypress", "node", "@clerk/types"]
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]
