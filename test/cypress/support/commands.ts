@@ -76,6 +76,7 @@ Cypress.Commands.add( 'loginToAuth0', () =>
     cy.get( '#password-field' ).type( password, { log: false } );
     cy.step( `Clicking on Continue Button after entering password` );
     cy.get( '[data-localization-key="formButtonPrimary"]' ).should( 'have.text', 'Continue' ).click();
+ 
 } );
 
 Cypress.Commands.add(

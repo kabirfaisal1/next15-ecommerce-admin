@@ -1,5 +1,6 @@
-/// <reference types="cypress" />
+import StoreForm from '../../components/modal-dialog/create_storeModal';
 
+const storeForm = new StoreForm();
 describe( 'Google', () =>
 {
     beforeEach( () =>
@@ -13,9 +14,9 @@ describe( 'Google', () =>
 
     it( 'Create store for first time', () =>
     {
-        cy.step( 'Click on the "Create Store" button' );
-        cy.get( '[data-testid="modal_DialogTitle"]' ).should( 'be.visible' ).and( 'have.text', 'Create Store' );
-        cy.get( '[data-testid="modal_DialogDescription"]' ).should( 'be.visible' ).and( 'have.text', 'Add a new store to manage products and categories' );
-        cy.get( '[data-testid="storeModal-FormLabel"]' ).should( 'be.visible' ).and( 'have.text', 'Name' );
+
+        storeForm.verifyModalDialogTitle();
+        storeForm.verifyModalDescription();
+        storeForm.verifyStoreFormLabel();
     } );
 } );
