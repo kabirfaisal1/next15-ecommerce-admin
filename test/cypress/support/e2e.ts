@@ -14,6 +14,6 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import '@testing-library/cypress/add-commands';
+
 import './commands';
 import 'cypress-plugin-steps';

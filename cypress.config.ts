@@ -1,6 +1,9 @@
 import { defineConfig } from "cypress";
-import { clerkSetup } from '@clerk/testing/cypress';
+// import { clerkSetup } from '@clerk/testing/cypress';
+import dotenv from 'dotenv';
 
+// Load .env file
+dotenv.config();
 
 export default defineConfig( {
   e2e: {
@@ -35,7 +38,6 @@ export default defineConfig( {
         LocalNoStoreUserEmail: process.env.LocalNoStoreUserEmail,
         LocalNoStoreUserPassword: process.env.LocalNoStoreUserPassword,
       };
-
       return config;
     },
   },

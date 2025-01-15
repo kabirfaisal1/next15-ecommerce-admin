@@ -57,7 +57,7 @@ Cypress.Commands.add( 'loginToAuth0', () =>
             : userType === 'nostore'
                 ? Cypress.env( 'LocalNoStoreUserEmail' )
                 : Cypress.env( 'LocalEmail' );
-
+    cy.step( `Logging in as ${email}` );
     const password =
         version === 'production'
             ? userType === 'nostore'
@@ -67,9 +67,15 @@ Cypress.Commands.add( 'loginToAuth0', () =>
                 ? Cypress.env( 'LocalNoStoreUserPassword' )
                 : Cypress.env( 'LocalPassword' );
 
-    cy.get( '.email' ).type( email );
-    cy.get( '.password' ).type( password );
-    // Implement the Auth0 login logic here
+    cy.step( `Entering Email` );
+    cy.get( '#identifier-field' ).type( email );
+    cy.step( `Clicking on Continue Button after entering email` );
+    cy.get( '[data-localization-key="formButtonPrimary"]' ).should( 'have.text', 'Continue' ).click();
+
+    cy.step( `Entering password` );
+    cy.get( '#password-field' ).type( password, { log: false } );
+    cy.step( `Clicking on Continue Button after entering password` );
+    cy.get( '[data-localization-key="formButtonPrimary"]' ).should( 'have.text', 'Continue' ).click();
 } );
 
 Cypress.Commands.add(

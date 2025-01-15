@@ -6,12 +6,9 @@
     "strict": true,
     "types": [
       // load Cypress global type
-      "cypress","cypress-plugin-steps"
+      "cypress"
     ]
   },
-  "include": [
-    // process only spec files
-    "test/cypress/**/*.ts",
-    "test/cypress/**/*.tsx"
-  ]
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
 }
