@@ -12,9 +12,9 @@ declare global
     {
         interface Chainable
         {
-            getTokens (): Chainable<JQuery<HTMLElement>>;
+            loginToAuth0 (): Chainable;
             getTokens (): Chainable;
-            getTokens (): Cypress.Chainable<JQuery<HTMLElement>>;
+
 
             dragAndDrop (
                 dragEl: Chainable<JQuery<HTMLElement>>,
@@ -22,7 +22,6 @@ declare global
             ): Chainable<JQuery<HTMLElement>>;
             navigation_menu (
                 element: string,
-
             ): Chainable<JQuery<HTMLElement>>;
         }
     }

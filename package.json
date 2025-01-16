@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack ",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "noStore:test": "npx cypress open --env version=local,userType=nostore",
+    "regular:test": "npx cypress open --env version=local,userType=regular",
+    "noStore:HeadlessTest": "npx cypress run --env version=local,userType=nostore --spec 'test/cypress/e2e/**/*/noStoreUser/**/*'",
+    "regular:HeadlessTest": "npx cypress run --env version=local,userType=regular --spec 'test/cypress/e2e/**/*/regularUser/**/*'"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.9.6",

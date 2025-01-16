@@ -1,4 +1,4 @@
-import StoreForm from '../../components/modal-dialog/create_storeModal';
+import StoreForm from '../../../components/modal-dialog/create_storeModal';
 
 
 const storeForm = new StoreForm();
