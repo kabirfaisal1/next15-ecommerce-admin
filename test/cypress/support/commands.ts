@@ -26,7 +26,7 @@ declare global
         }
     }
 }
-/* eslint-enable @typescript-eslint/no-namespace */
+
 
 
 Cypress.Commands.add( 'loginToAuth0', () =>
@@ -135,7 +135,7 @@ Cypress.Commands.add( 'navigation_menu', ( element: string ) =>
 
 Cypress.Commands.add(
     'dragAndDrop',
-    ( dragEl: Cypress.Chainable<JQuery<HTMLElement>>, dropEl: Cypress.Chainable<JQuery<HTMLElement>> ) =>
+    ( dragEl: Cypress.Chainable, dropEl: Cypress.Chainable ) =>
     {
         cy.log( 'cy.dragAndDrop is triggered' );
         const dataTransfer = new DataTransfer();

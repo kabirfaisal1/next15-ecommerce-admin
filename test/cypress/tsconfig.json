@@ -1,11 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "module": "commonjs",
-    "skipLibCheck": true,
-    "strict": true,
-      "types": ["cypress", "node", "@clerk/types"]
+    "target": "es5",
+    "lib": ["es5", "dom"],
+    "types": ["cypress", "node"]
   },
-  "include": ["**/*.ts", "test/cypress/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["../cypress.config.ts", "**/*.ts"]
 }
