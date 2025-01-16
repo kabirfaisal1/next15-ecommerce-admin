@@ -1,4 +1,11 @@
-describe( 'New User create store', () =>
+
+import { TestList } from './testData/createStore_data';
+import { createRequestBody } from '../../support/utilities/globalHelpers';
+import exp = require( 'constants' );
+
+
+
+describe( 'API Tests', () =>
 {
     let token: string = '';
 
@@ -12,22 +19,25 @@ describe( 'New User create store', () =>
         } );
     } );
 
-
-    it( 'Create store for first time', () =>
+    TestList.forEach( ( test ) =>
     {
-
-        cy.request( {
-            method: 'POST',
-            url: '/api/stores',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: { name: 'cypressTest242' },
-        } ).then( ( response ) =>
+        it( test.testDescription, () =>
         {
-            cy.log( response.body );
-        } );
+            // Generate the request body synchronously using the utility function
+            const requestBody = createRequestBody( test.requestKeys, test.requestValues );
 
+            cy.request( {
+                method: 'POST',
+                url: '/api/stores', // Replace with your endpoint
+                body: requestBody, // Use the JSON object directly
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            } ).then( ( response ) =>
+            {
+                expect( response.status ).to.equal( test.expectedStatus );
+
+            } );
+        } );
     } );
 } );

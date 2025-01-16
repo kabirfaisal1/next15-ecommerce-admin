@@ -26,7 +26,7 @@ export default defineConfig( {
       // Set the base URL dynamically
       config.baseUrl = url[ version ];
 
-      //* Add all user credentials to the environment variables to be used in the tests based on the environment
+      // Add all environment variables
       config.env = {
         ...config.env,
         ProdEmail: process.env.prodEmail,

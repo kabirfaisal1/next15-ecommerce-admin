@@ -1,5 +1,6 @@
 /// <reference types="cypress" />
 
+
 export { }; // Ensures this file is treated as a module
 
 
@@ -23,10 +24,6 @@ declare global
                 element: string,
 
             ): Chainable<JQuery<HTMLElement>>;
-
-            createRequestBody (
-                requestKey: string[], requestQuery: object[]
-            ): Chainable<JQuery<HTMLElement>>;
         }
     }
 }
@@ -35,26 +32,26 @@ declare global
 
 Cypress.Commands.add( 'loginToAuth0', () =>
 {
+
     // Dynamically set email and password based on environment and user type
     const version = Cypress.env( 'version' ) || 'local';
     const userType = Cypress.env( 'userType' ) || 'regular'; // Default to 'regular' user
 
-    cy.step( 'Getting environment-specific email' );
     const email =
         version === 'production'
-            ? userType === 'noStore'
+            ? userType === 'nostore'
                 ? Cypress.env( 'ProdNoStoreUserEmail' )
                 : Cypress.env( 'ProdEmail' )
-            : userType === 'noStore'
+            : userType === 'nostore'
                 ? Cypress.env( 'LocalNoStoreUserEmail' )
                 : Cypress.env( 'LocalEmail' );
-    cy.step( 'Getting environment-specific Password' );
+
     const password =
         version === 'production'
-            ? userType === 'noStore'
+            ? userType === 'nostore'
                 ? Cypress.env( 'ProdNoStoreUserPassword' )
                 : Cypress.env( 'ProdPassword' )
-            : userType === 'noStore'
+            : userType === 'nostore'
                 ? Cypress.env( 'LocalNoStoreUserPassword' )
                 : Cypress.env( 'LocalPassword' );
 
@@ -147,18 +144,5 @@ Cypress.Commands.add(
         dragEl.trigger( 'dragstart', { dataTransfer } );
         dropEl.trigger( 'drop', { dataTransfer } );
         dragEl.trigger( 'dragend' );
-    }
-);
-
-Cypress.Commands.add(
-    'createRequestBody',
-    ( requestKey: string[], requestQuery: object[] ) =>
-    {
-        const jsonBody = Object();
-
-        for ( let i = 0; i < requestKey.length; i++ )
-        {
-            jsonBody.Add( requestKey[ i ], requestQuery[ i ] );
-        }
     }
 );

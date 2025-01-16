@@ -1,7 +1,6 @@
-// Interface defining a contract for a Spark API request key
-interface IEcommerceAPIRequestKeys
+// Define an interface for the API request keys
+export interface IEcommerceAPIRequestKeys
 {
-    // Properties representing various keys that can be used in API requests
     storeName: string;
     userid: string;
     storeId: string;
@@ -11,14 +10,12 @@ interface IEcommerceAPIRequestKeys
 }
 
 // Class implementing the IEcommerceAPIRequestKeys interface
-// This class defines the keys to be used in API requests (like storeId, storeName, etc.)
 export class AdminAPIRequestKeys implements IEcommerceAPIRequestKeys
 {
-    // Property implementations that hold the key names for each piece of claim-related data
-    storeName = "storeName"; // Name of the store
-    userid = "userId"; // User identifier
-    storeId = "storeId"; // Identifier for the store
-    billboardID = "billboardID"; // Identifier for the billboard
-    billboardName = "billboardName"; // Name of the billboard
-    imageUrl = "imageUrl"; // URL for the image
+    storeName = 'name'; // Example key for the store name
+    userid = 'userId'; // Example key for user ID
+    storeId = 'storeId'; // Example key for the store ID
+    billboardID = 'billboardID'; // Example key for billboard ID
+    billboardName = 'billboardName'; // Example key for billboard name
+    imageUrl = 'imageUrl'; // Example key for the image URL
 }
