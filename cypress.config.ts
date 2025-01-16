@@ -1,5 +1,5 @@
 import { defineConfig } from "cypress";
-
+import { Client } from 'pg';
 import dotenv from 'dotenv';
 
 // Load .env file
@@ -26,7 +26,7 @@ export default defineConfig( {
       // Set the base URL dynamically
       config.baseUrl = url[ version ];
 
-      // Add all environment variables
+      //* Add all user credentials to the environment variables to be used in the tests based on the environment
       config.env = {
         ...config.env,
         ProdEmail: process.env.prodEmail,
@@ -38,17 +38,33 @@ export default defineConfig( {
         LocalNoStoreUserEmail: process.env.LocalNoStoreUserEmail,
         LocalNoStoreUserPassword: process.env.LocalNoStoreUserPassword,
       };
+      //* Add a custom command to set environment variables for API Token
       on( 'task', {
-
         setEnv ( { key, value } )
         {
-
           process.env[ key ] = value;
-
           return null;
+        },
 
-        }
+        queryDatabase ( { query, values } )
+        {
+          const client = new Client( {
+            connectionString: process.env.DATABASE_URL,
+          } );
 
+          return client.connect()
+            .then( () => client.query( query, values ) )
+            .then( res =>
+            {
+              client.end();
+              return res.rowCount; // Return the number of affected rows
+            } )
+            .catch( err =>
+            {
+              client.end();
+              throw err;
+            } );
+        },
       } );
 
       return config;

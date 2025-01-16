@@ -1,11 +1,12 @@
 describe( 'New User create store', () =>
 {
     let token: string = '';
+
     beforeEach( () =>
     {
         cy.visit( '/' );
         cy.loginToAuth0();
-        cy.getTokens().then( ( clerkToken ) =>
+        cy.getTokens().then( ( clerkToken: string ) =>
         {
             token = clerkToken;
         } );

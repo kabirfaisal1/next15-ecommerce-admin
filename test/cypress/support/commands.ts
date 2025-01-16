@@ -2,9 +2,6 @@
 
 export { }; // Ensures this file is treated as a module
 
-// Clerk Testing Library
-import { addClerkCommands } from '@clerk/testing/cypress';
-addClerkCommands( { Cypress, cy } );
 
 
 /* eslint-disable @typescript-eslint/no-namespace */
@@ -14,27 +11,21 @@ declare global
     {
         interface Chainable
         {
-
-            loginToAuth0 (): Chainable<JQuery<HTMLElement>>;
             getTokens (): Chainable<JQuery<HTMLElement>>;
+            getTokens (): Chainable;
+            getTokens (): Cypress.Chainable<JQuery<HTMLElement>>;
 
-            /**
-             * Custom command to perform drag-and-drop.
-             * @param dragEl - The element to drag.
-             * @param dropEl - The target element to drop into.
-             */
             dragAndDrop (
                 dragEl: Chainable<JQuery<HTMLElement>>,
                 dropEl: Chainable<JQuery<HTMLElement>>
             ): Chainable<JQuery<HTMLElement>>;
-            /**
-         * Custom command to perform drag-and-drop.
-         * @param dragEl - The element to drag.
-         * @param dropEl - The target element to drop into.
-         */
             navigation_menu (
                 element: string,
 
+            ): Chainable<JQuery<HTMLElement>>;
+
+            createRequestBody (
+                requestKey: string[], requestQuery: object[]
             ): Chainable<JQuery<HTMLElement>>;
         }
     }
@@ -156,5 +147,18 @@ Cypress.Commands.add(
         dragEl.trigger( 'dragstart', { dataTransfer } );
         dropEl.trigger( 'drop', { dataTransfer } );
         dragEl.trigger( 'dragend' );
+    }
+);
+
+Cypress.Commands.add(
+    'createRequestBody',
+    ( requestKey: string[], requestQuery: object[] ) =>
+    {
+        const jsonBody = Object();
+
+        for ( let i = 0; i < requestKey.length; i++ )
+        {
+            jsonBody.Add( requestKey[ i ], requestQuery[ i ] );
+        }
     }
 );
