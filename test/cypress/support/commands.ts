@@ -28,6 +28,7 @@ declare global
             ): Chainable;
             verifyToastMessage ( message: string ): Chainable;
             assertValueCopiedToClipboard ( message: string ): Chainable;
+            deleteObjects ( object: boolean ): Chainable;
 
         }
     }
@@ -127,7 +128,7 @@ Cypress.Commands.add( 'navigation_menu', ( element: string ) =>
         cy.url().should( 'include', element.toLowerCase() );
         cy.step( 'Checking Settings heading title to be visible' );
         cy.get( '[data-testid="heading-title"]' ).should( 'be.visible' ).and( 'have.text', 'Settings' );
-        cy.get( '[data-testid="heading-description"]' ).should( 'be.visible' ).and( 'have.text', 'Manage your store settings' );
+        cy.get( '[data-testid="heading-description"]' ).should( 'be.visible' ).and( 'have.text', 'Manage Store Preferences' );
     }
 
     else if ( element === 'User Button' ) 
@@ -196,3 +197,21 @@ Cypress.Commands.add( 'assertValueCopiedToClipboard', ( value: string ) =>
         } );
     } );
 } );
+
+Cypress.Commands.add( 'deleteObjects', ( object: boolean ) =>
+{
+    cy.step( `Checking delete Dialog Title` );
+    cy.get( '[data-testid="modal_DialogTitle"]' ).should( 'be.visible' ).and( 'have.text', 'Are you sure ?' );
+    cy.step( `Checking delete Dialog Description` );
+    cy.get( '[data-testid="modal_DialogDescription"]' ).should( 'be.visible' ).and( 'have.text', 'This action cannot be undone' );
+    if ( object === true )
+    {
+        cy.step( `Clicking on Confirm Delete Button` );
+        cy.get( '[data-testid="modal_DialogChildren"] button' ).contains( 'Confirm' ).should( 'be.visible' ).click();
+    } else
+    {
+        cy.step( `Clicking on Cancel Delete Button` );
+        cy.get( '[data-testid="modal_DialogChildren"] button' ).contains( 'Cancel' ).should( 'be.visible' ).click();
+    }
+} );
+

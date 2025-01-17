@@ -23,12 +23,12 @@ class AdminSettingPage
     updateStoreName ( storeName: string )
     {
         cy.step( `Updating store Name ${storeName}` );
-        this.elements.setting_FormNameInputField().should( 'be.visible' ).type( storeName ).should( 'have.value', storeName );
+        this.elements.setting_FormNameInputField().should( 'be.visible' ).clear().type( storeName ).should( 'have.value', storeName );
     }
     clickOnSaveButton ()
     {
         cy.step( 'Clicking on store name Save button' );
-        this.elements.settingForm_ContinueButton().should( 'be.visible' ).should( 'have.text', 'Continue' ).click();
+        this.elements.settingForm_ContinueButton().should( 'be.visible' ).should( 'have.text', 'Save Changes' ).click();
     }
     verifyAPIAlert ( storeId: string )
     {
@@ -43,6 +43,12 @@ class AdminSettingPage
         this.elements.settingAPI_AlertClipboard().should( 'be.visible' ).click();
         cy.assertValueCopiedToClipboard( storeId );
 
+    }
+    deleteStore ( confirm: boolean ) 
+    {
+        cy.step( `Clicking on Trash Button` );
+        this.elements.store_DeleteButton().should( 'be.visible' ).click();
+        cy.deleteObjects( confirm );
     }
     noNameError ( expectedError: string ) 
     {
