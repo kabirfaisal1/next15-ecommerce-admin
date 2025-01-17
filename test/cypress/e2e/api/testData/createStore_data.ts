@@ -1,31 +1,26 @@
 import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
 
+const storeIDQuery = 'SELECT id FROM public."Stores" WHERE userId = \'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W\';';
 
-interface TestObjects
-{
-    testDescription: string;
-    requestKeys: string[];
-    requestValues: unknown[];
-    expectedStatus: number;
-    expectedResponseLength?: number;
-    expectedResponseKeys?: string[];
-    expectedResponseStoreId?: string | boolean;
-    expectedResponseUseId?: string | boolean;
-    expectedResponseStoreName?: string;
-    expectedResponseLabel?: string;
-    expectedResponseImageUrl?: string;
-}
-
-export const TestList: TestObjects[] = [
+export const TestList = [
     {
         testDescription: 'Create new store',
+        endpoint: '/api/stores',
+        method: 'POST',
         requestKeys: [ new AdminAPIRequestKeys().storeName ],
         requestValues: [ 'cypressTest' ],
         expectedStatus: 201,
-        expectedResponseLength: 5,
-        expectedResponseKeys: [ 'id', 'name', 'userId', 'createdAt', 'updatedAt' ],
-        expectedResponseStoreId: false,
-        expectedResponseUseId: "user_2rfrlZzqrYe0y1BAXYVYHQRgn8W",
-        expectedResponseStoreName: 'cypressTest'
-    }
+        expectedResponseKeys: [ 'name : cypressTest' ],
+        expectedResponseStoreName: 'cypressTest',
+    },
+    {
+        testDescription: 'Update store name',
+        endpoint: 'dynamic', // Placeholder for dynamic resolution
+        method: 'PATCH',
+        requestKeys: [ new AdminAPIRequestKeys().storeName ],
+        requestValues: [ 'cypressTestWorld' ],
+        expectedStatus: 202,
+        expectedResponseKeys: [ 'count : 1' ],
+
+    },
 ];

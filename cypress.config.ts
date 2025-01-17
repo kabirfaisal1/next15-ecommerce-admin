@@ -45,24 +45,35 @@ export default defineConfig( {
           process.env[ key ] = value;
           return null;
         },
+      } );
 
-        queryDatabase ( { query, values } )
+      on( 'task', {
+        queryDatabase ( query )
         {
+          if ( !query )
+          {
+            throw new Error( 'The query passed to queryDatabase is null or undefined' );
+          }
+
           const client = new Client( {
-            connectionString: process.env.DATABASE_URL,
+            connectionString: process.env.DATABASE_URL, // Use DATABASE_URL from the environment
+            ssl: {
+              rejectUnauthorized: true, // Enforce SSL verification (adjust if needed)
+            },
           } );
 
-          return client.connect()
-            .then( () => client.query( query, values ) )
-            .then( res =>
+          return client
+            .connect()
+            .then( () => client.query( query ) )
+            .then( ( result ) =>
             {
               client.end();
-              return res.rowCount; // Return the number of affected rows
+              return result.rows; // Return the query results
             } )
-            .catch( err =>
+            .catch( ( err ) =>
             {
               client.end();
-              throw err;
+              throw err; // Handle and propagate the error
             } );
         },
       } );

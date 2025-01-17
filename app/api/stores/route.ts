@@ -25,7 +25,18 @@ export async function POST ( req: Request )
 
         // If name is not present in the request body, return a 400 Bad Request response
         if ( !name ) return new NextResponse( 'Store name is required', { status: 400 } );
+        // Check if a store with the same name already exists for this user
+        const existingStore = await prismadb.stores.findFirst({
+            where: {
+                name,
+                userId
+            }
+        });
 
+        // If a store with the same name already exists, return a 409 Conflict response
+        if (existingStore) {
+            return new NextResponse('Store name already exists', { status: 409 });
+        }
         // Create a new store record in the database with the provided name and userId
         const store = await prismadb.stores.create( { data: { name, userId } } );
 

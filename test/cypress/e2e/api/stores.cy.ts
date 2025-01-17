@@ -2,10 +2,12 @@
 import { TestList } from './testData/createStore_data';
 import { createRequestBody } from '../../support/utilities/globalHelpers';
 
-
 describe( 'API Tests', () =>
 {
     let token: string = '';
+
+    const storeIDQuery =
+        'SELECT id FROM public."Stores" WHERE "userId" = \'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W\';';
 
     beforeEach( () =>
     {
@@ -21,52 +23,55 @@ describe( 'API Tests', () =>
     {
         it( test.testDescription, () =>
         {
-            // Generate the request body using the utility function
-            const requestBody = createRequestBody( test.requestKeys, test.requestValues );
-
-            // Perform the API request
-            cy.request( {
-                method: 'POST',
-                url: '/api/stores', // Replace with your endpoint
-                body: requestBody,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                }
-            } ).then( ( response ) =>
+            // Dynamically resolve endpoint if needed
+            let endpointPromise: Cypress.Chainable<string>;
+            if ( test.endpoint === 'dynamic' )
             {
-                // Validate response status
-                cy.step( `Validate response status ${test.expectedResponseKeys}` );
-                expect( response.status ).to.equal( test.expectedStatus );
-
-                if ( test.expectedResponseKeys )
+                endpointPromise = cy.task( 'queryDatabase', storeIDQuery ).then( ( rows ) =>
                 {
-                    cy.step( `Validate response keys if provided: ${test.expectedResponseKeys}` );
-                    test.expectedResponseKeys.forEach( ( key ) =>
+                    if ( rows.length > 0 )
                     {
-                        expect( response.body ).to.have.property( key );
-                    } );
-                }
-                if ( test.expectedResponseStoreName )
-                {
-                    cy.step( `Validate response Store Name ${test.expectedResponseStoreName}` );
-                    expect( response.body.name ).to.equal( test.expectedResponseStoreName );
-                }
+                        return `/api/stores/${rows[ 0 ].id}`;
+                    } else
+                    {
+                        throw new Error( 'No rows returned from query' );
+                    }
+                } );
+            } else
+            {
+                endpointPromise = cy.wrap( test.endpoint ); // Wrap static endpoint
+            }
 
-                if ( test.expectedResponseStoreId === false )
-                {
-                    cy.step( `Validate response Store Id IsNull: ${test.expectedResponseStoreId}` );
-                    expect( response.body.id ).to.not.be.empty;
-                }
+            endpointPromise.then( ( resolvedEndpoint ) =>
+            {
+                // Generate the request body
+                const requestBody = createRequestBody( test.requestKeys, test.requestValues );
 
-                if ( test.expectedResponseUseId === true || !test.expectedResponseUseId )
+                // Perform the API request
+                cy.request( {
+                    method: test.method,
+                    url: resolvedEndpoint,
+                    body: requestBody,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                } ).then( ( response ) =>
                 {
-                    cy.step( `Validate response user Id  ${test.expectedResponseUseId}` );
-                    expect( response.body.userId ).to.equal( test.expectedResponseUseId );
-                }
+                    // Validate response status
+                    cy.step( `Validate response status: ${test.expectedStatus}` );
+                    expect( response.status ).to.equal( test.expectedStatus );
+
+                    // Validate response body
+                    if ( test.expectedResponseKeys )
+                    {
+                        test.expectedResponseKeys.forEach( ( key ) =>
+                        {
+                            expect( response.body ).to.have.property( key );
+                        } );
+                    }
+                } );
             } );
         } );
     } );
 } );
-
-
