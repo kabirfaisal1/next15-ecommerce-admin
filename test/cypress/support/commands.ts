@@ -161,6 +161,7 @@ Cypress.Commands.add( 'apiStoreEndpoint', ( testData: string, userId?: string, o
 
     if ( userId )
     {
+        cy.step( `Running SQL Query to find storeID` );
         storeIDQuery = `SELECT id FROM public."Stores" WHERE "userId" = '${userId}' ORDER BY "createdAt" ${orderBy};`;
     }
     cy.step( `storeIDQuery: ${storeIDQuery}` );
@@ -170,6 +171,7 @@ Cypress.Commands.add( 'apiStoreEndpoint', ( testData: string, userId?: string, o
         {
             if ( rows.length > 0 )
             {
+                cy.step( `Returning endpoint with storeId: ${rows[ 0 ].id}` );
                 return `/api/stores/${rows[ 0 ].id}`;
             } else
             {
@@ -178,6 +180,7 @@ Cypress.Commands.add( 'apiStoreEndpoint', ( testData: string, userId?: string, o
         } );
     } else
     {
+        cy.step( `Returning testData: ${testData}` );
         return cy.wrap( testData ); // Always return a Cypress chainable
     }
 } );
@@ -193,6 +196,7 @@ Cypress.Commands.add( 'assertValueCopiedToClipboard', ( value: string ) =>
     {
         win.navigator.clipboard.readText().then( text =>
         {
+            cy.step( `Checking if the value copied to clipboard contains: ${value}` );
             expect( text ).to.include( value );
         } );
     } );
@@ -201,7 +205,7 @@ Cypress.Commands.add( 'assertValueCopiedToClipboard', ( value: string ) =>
 Cypress.Commands.add( 'deleteObjects', ( object: boolean ) =>
 {
     cy.step( `Checking delete Dialog Title` );
-    cy.get( '[data-testid="modal_DialogTitle"]' ).should( 'be.visible' ).and( 'have.text', 'Are you sure ?' );
+    cy.get( '[data-testid="modal_DialogTitle"]' ).should( 'be.visible' ).and( 'have.text', 'Are you sure?' );
     cy.step( `Checking delete Dialog Description` );
     cy.get( '[data-testid="modal_DialogDescription"]' ).should( 'be.visible' ).and( 'have.text', 'This action cannot be undone' );
     if ( object === true )

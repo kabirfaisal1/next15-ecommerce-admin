@@ -105,27 +105,26 @@ describe( 'No Store Admin User', () =>
         const storeId = Cypress.env( 'storeId' );
 
         // Intercept the store creation API call before triggering it
-        cy.intercept( 'DELETE', `/api/stores/${storeId}` ).as( 'updateStore' );
+        cy.intercept( 'DELETE', `/api/stores/${storeId}` ).as( 'deleteStore' );
 
         // Enter the store name and submit the form
         adminSettingPage.goToSetting( storeId );
-        adminSettingPage.updateStoreName( 'Updated Cypress Store' );
-        adminSettingPage.clickOnSaveButton();
+        adminSettingPage.deleteStore( true );
 
         // Wait for the intercepted API call to complete
-        cy.wait( '@updateStore' ).then( ( interception ) =>
+        cy.wait( '@deleteStore' ).then( ( interception ) =>
         {
             // Assert that the response status code is 201
-            expect( interception.response.statusCode ).to.eq( 202 );
+            expect( interception.response.statusCode ).to.eq( 200 );
 
             // Extract the storeId from the response body
-            const updateCount = interception.response.body.count;
+            const deleteStoreCount = interception.response.body.count;
 
             // Assert that the storeId exists in the response
-            expect( updateCount ).to.exist;
+            expect( deleteStoreCount ).to.exist;
 
             // Wait for the page to reload and verify the URL contains the storeId
-            cy.url().should( 'include', storeId );
+            cy.url().should( 'not.include', storeId );
         } );
 
         // cy.verifyToastMessage( 'Store updated successfully' ); //TODO: Implement this
