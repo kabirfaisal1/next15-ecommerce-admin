@@ -15,8 +15,6 @@ declare global
         {
             loginToAuth0 ( userType: string ): Chainable;
             getTokens (): Chainable;
-
-
             dragAndDrop (
                 dragEl: Chainable<JQuery<HTMLElement>>,
                 dropEl: Chainable<JQuery<HTMLElement>>
@@ -24,10 +22,11 @@ declare global
             navigation_menu (
                 element: string,
             ): Chainable<JQuery<HTMLElement>>;
-            formatEndpoint (
+            apiStoreEndpoint (
                 testData: string,
                 userId?: string, orderBy?: string
             ): Chainable;
+            verifyToastMessage ( message: string ): Chainable;
         }
     }
 }
@@ -152,9 +151,8 @@ Cypress.Commands.add(
     }
 );
 
-Cypress.Commands.add( 'formatEndpoint', ( testData: string, userId?: string, orderBy?: string = '' ): Cypress.Chainable<string> =>
+Cypress.Commands.add( 'apiStoreEndpoint', ( testData: string, userId?: string, orderBy?: string = '' ): Cypress.Chainable<string> =>
 {
-    // const storeIDQuery = `SELECT id FROM public."Stores" WHERE "userId" = 'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W';`;
     let storeIDQuery = ''; // Initialize the query with an empty string
 
     if ( userId )
@@ -179,3 +177,9 @@ Cypress.Commands.add( 'formatEndpoint', ( testData: string, userId?: string, ord
         return cy.wrap( testData ); // Always return a Cypress chainable
     }
 } );
+
+// Cypress.Commands.add( 'verifyToastMessage', ( message: string ) =>
+// {
+//     cy.get( 'class="g3958317564"' ).should( 'be.visible' ).and( 'have.text', message );
+// } );
+

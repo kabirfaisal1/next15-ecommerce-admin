@@ -74,14 +74,11 @@ export const StoreModal = () => {
 	 * The loading state is reset to false after the API call completes, regardless of success or failure.
 	 */
 	const onSubmit = async (values: zod.infer<typeof formSchema>) => {
-		console.log(values);
-
 		try {
 			setLoading(true);
 			// Make an API call to create a new store with the form values
 			const response = await axios.post('/api/stores', values);
 			toast.success('Store created successfully');
-
 			window.location.assign(`/${response.data.id}`);
 		} catch (error) {
 			toast.error('Uh oh! Something went wrong');

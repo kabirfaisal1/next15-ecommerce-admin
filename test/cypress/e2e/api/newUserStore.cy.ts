@@ -21,7 +21,7 @@ describe( 'New Admin User with no store', () =>
         {
             let requestBody: Record<string, unknown> | null = null;
             // Dynamically resolve endpoint if needed
-            cy.formatEndpoint( test.endpoint, test.queryUser, "DESC" ).then( ( resolvedEndpoint ) =>
+            cy.apiStoreEndpoint( test.endpoint, test.queryUser, "DESC" ).then( ( resolvedEndpoint ) =>
             {
                 cy.step( `Performing API request to: ${resolvedEndpoint}` );
                 // Generate the request body if both keys and values exist and match
