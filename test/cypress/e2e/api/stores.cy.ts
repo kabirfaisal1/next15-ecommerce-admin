@@ -34,20 +34,20 @@ describe( 'API Tests', () =>
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${token}`,
                     },
-                }).then( ( response ) =>
+                } ).then( ( response ) =>
                 {
                     // Validate response status
                     cy.step( `Validate response status: ${test.expectedStatus}` );
                     expect( response.status ).to.equal( test.expectedStatus );
 
-                    // Validate response body
-                    if ( test.expectedResponseKeys )
+                    let data = response.body;
+
+                    if ( !data )
                     {
-                        test.expectedResponseKeys.forEach( ( key ) =>
-                        {
-                            expect( response.body ).to.have.property( key );
-                        } );
+                        cy.storeAPIValidations( data, test );
                     }
+
+
                 } );
             } );
         } );

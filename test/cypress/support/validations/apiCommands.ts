@@ -9,7 +9,7 @@ declare global
     {
         interface Chainable
         {
-            storeAPI ( response: any, expectedResults: TestObjects ): void;
+            storeAPIValidations ( response: any, expectedResults: TestObjects ): void;
             getStoreID ( query: string ): void;
         }
     }
@@ -19,7 +19,7 @@ declare global
 
 
 // Custom Command Implementation
-Cypress.Commands.add( 'storeAPI', ( response: any, expectedResults: TestObjects ) =>
+Cypress.Commands.add( 'storeAPIValidations', ( response: any, expectedResults: TestObjects ) =>
 {
     if ( expectedResults.expectedResponseStoreName )
     {
