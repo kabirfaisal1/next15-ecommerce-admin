@@ -29,7 +29,7 @@ export const TestList: TestData[] = [
         expectedStatus: 201,
         expectedResponseKeys: [ 'id', 'name', 'userId', 'createdAt', 'updatedAt' ],
         expectedResponseStoreId: true,
-        expectedResponseStoreName: 'NO_STORE_USER',
+        expectedResponseStoreName: 'Add New STORE',
         expectedResponseUseId: 'user_2qOt3xdN0TBsnKSVgczTsusMYZW',
     },
     {

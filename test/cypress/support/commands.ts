@@ -27,6 +27,8 @@ declare global
                 userId?: string, orderBy?: string
             ): Chainable;
             verifyToastMessage ( message: string ): Chainable;
+            assertValueCopiedToClipboard ( message: string ): Chainable;
+
         }
     }
 }
@@ -125,6 +127,7 @@ Cypress.Commands.add( 'navigation_menu', ( element: string ) =>
         cy.url().should( 'include', element.toLowerCase() );
         cy.step( 'Checking Settings heading title to be visible' );
         cy.get( '[data-testid="heading-title"]' ).should( 'be.visible' ).and( 'have.text', 'Settings' );
+        cy.get( '[data-testid="heading-description"]' ).should( 'be.visible' ).and( 'have.text', 'Manage your store settings' );
     }
 
     else if ( element === 'User Button' ) 
@@ -178,8 +181,18 @@ Cypress.Commands.add( 'apiStoreEndpoint', ( testData: string, userId?: string, o
     }
 } );
 
-// Cypress.Commands.add( 'verifyToastMessage', ( message: string ) =>
-// {
-//     cy.get( 'class="g3958317564"' ).should( 'be.visible' ).and( 'have.text', message );
-// } );
+Cypress.Commands.add( 'verifyToastMessage', ( message: string ) =>
+{
+    cy.get( 'class="g03958317564"' ).should( 'be.visible' ).and( 'have.text', message );
+} );
 
+Cypress.Commands.add( 'assertValueCopiedToClipboard', ( value: string ) =>
+{
+    cy.window().then( win =>
+    {
+        win.navigator.clipboard.readText().then( text =>
+        {
+            expect( text ).to.include( value );
+        } );
+    } );
+} );

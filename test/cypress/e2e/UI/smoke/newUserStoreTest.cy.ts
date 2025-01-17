@@ -1,8 +1,10 @@
-import StoreForm from '../../../components/modal-dialog/create_storeModal';
+import StoreForm from '../../../components/uiModal-dialog/uiStoreModal';
+import AdminSettingPage from '../../../components/pages/uiAdminSettingPage';
 
 
 
 const storeForm = new StoreForm();
+const adminSettingPage = new AdminSettingPage();
 describe( 'No Store Admin User', () =>
 {
     beforeEach( () =>
@@ -38,7 +40,7 @@ describe( 'No Store Admin User', () =>
         storeForm.noNameError( 'Store name is too short' );
     } );
 
-    it( 'Create Store Successfully', () =>
+    it.only( 'Create Store Successfully', () =>
     {
         // Intercept the store creation API call before triggering it
         cy.intercept( 'POST', '/api/stores' ).as( 'createStore' );
@@ -66,7 +68,7 @@ describe( 'No Store Admin User', () =>
             cy.url().should( 'include', storeId );
         } );
     } );
-    it.only( 'Create Store Successfully', () =>
+    it.only( 'Update Store name Successfully', () =>
     {
         // Access the storeId from Cypress environment
         const storeId = Cypress.env( 'storeId' );
@@ -75,8 +77,9 @@ describe( 'No Store Admin User', () =>
         cy.intercept( 'PATCH', `/api/stores/${storeId}` ).as( 'updateStore' );
 
         // Enter the store name and submit the form
-        storeForm.enterStoreName( 'cypressUITest' );
-        storeForm.clickOnContinueButton();
+        adminSettingPage.goToSetting( storeId );
+        adminSettingPage.updateStoreName( 'Updated Cypress Store' );
+        adminSettingPage.clickOnSaveButton();
 
         // Wait for the intercepted API call to complete
         cy.wait( '@updateStore' ).then( ( interception ) =>
@@ -93,5 +96,7 @@ describe( 'No Store Admin User', () =>
             // Wait for the page to reload and verify the URL contains the storeId
             cy.url().should( 'include', storeId );
         } );
+
+        cy.verifyToastMessage( 'Store updated successfully' );
     } );
 } );
