@@ -1,14 +1,15 @@
-import { TestList } from './testData/createStore_data';
+import { TestList } from './testData/newUserStore_data';
 import { createRequestBody } from '../../support/utilities/globalHelpers';
 
-describe( 'API Tests', () =>
+
+describe( 'Existing Admin User adding store', () =>
 {
     let token: string = '';
 
     beforeEach( () =>
     {
         cy.visit( '/' );
-        cy.loginToAuth0( "No Store" );
+        cy.loginToAuth0( "Regular" );
         cy.getTokens().then( ( clerkToken: string ) =>
         {
             token = clerkToken;
