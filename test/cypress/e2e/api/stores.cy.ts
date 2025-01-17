@@ -8,7 +8,7 @@ describe( 'API Tests', () =>
     beforeEach( () =>
     {
         cy.visit( '/' );
-        cy.loginToAuth0();
+        cy.loginToAuth0( "No Store" );
         cy.getTokens().then( ( clerkToken: string ) =>
         {
             token = clerkToken;
@@ -19,11 +19,17 @@ describe( 'API Tests', () =>
     {
         it( test.testDescription, () =>
         {
+            let requestBody: Record<string, unknown> | null = null;
             // Dynamically resolve endpoint if needed
-            cy.formatEndpoint( test.endpoint ).then( ( resolvedEndpoint ) =>
+            cy.formatEndpoint( test.endpoint, test.queryUser, "DESC" ).then( ( resolvedEndpoint ) =>
             {
-                // Generate the request body
-                const requestBody = createRequestBody( test.requestKeys, test.requestValues );
+                cy.step( `Performing API request to: ${resolvedEndpoint}` );
+                // Generate the request body if both keys and values exist and match
+                if ( test.requestKeys?.length && test.requestValues?.length )
+                {
+                    requestBody = createRequestBody( test.requestKeys, test.requestValues );
+                }
+
 
                 // Perform the API request
                 cy.request( {   // Use object literal to ensure correct typing  
@@ -40,15 +46,19 @@ describe( 'API Tests', () =>
                     cy.step( `Validate response status: ${test.expectedStatus}` );
                     expect( response.status ).to.equal( test.expectedStatus );
 
-                    let data = response.body;
+                    const data = response.body;
 
-                    if ( !data )
+                    if ( data )
                     {
                         cy.storeAPIValidations( data, test );
+                    } else
+                    {
+                        cy.step( 'No data returned in the response body to validate' );
                     }
 
 
                 } );
+
             } );
         } );
     } );

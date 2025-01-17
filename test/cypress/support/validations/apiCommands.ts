@@ -29,38 +29,26 @@ Cypress.Commands.add( 'storeAPIValidations', ( response: any, expectedResults: T
 
     if ( expectedResults.expectedResponseKeys )
     {
+        cy.step( `Validated response keys: ${expectedResults.expectedResponseKeys}` );
         expectedResults.expectedResponseKeys.forEach( ( key ) =>
         {
             expect( response ).to.have.property( key );
         } );
-        cy.step( `Validated response keys: ${expectedResults.expectedResponseKeys}` );
+       
     }
 
     if ( expectedResults.expectedResponseStoreId === false )
     {
-        expect( response.id ).to.not.be.empty;
         cy.step( `Validated response Store Id is not null` );
+        expect( response.id ).to.not.be.empty;
+       
     }
 
     if ( expectedResults.expectedResponseUseId !== undefined )
     {
-        expect( response.userId ).to.equal( expectedResults.expectedResponseUseId );
         cy.step( `Validated response User Id: ${expectedResults.expectedResponseUseId}` );
+        expect( response.userId ).to.equal( expectedResults.expectedResponseUseId );
+     
     }
 } );
 
-Cypress.Commands.add( 'getStoreID', ( query ) =>
-{
-    return cy.task( 'queryDatabase', query ).then( ( rows ) =>
-    {
-        if ( rows.length > 0 )
-        {
-            const storeID = rows[ 0 ].id;
-            cy.step( `Validated response Store Id: ${storeID}` );
-            return storeID; // Return the ID
-        } else
-        {
-            throw new Error( 'No rows returned from query' );
-        }
-    } );
-} );

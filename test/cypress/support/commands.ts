@@ -13,7 +13,7 @@ declare global
     {
         interface Chainable
         {
-            loginToAuth0 (): Chainable;
+            loginToAuth0 ( userType: string ): Chainable;
             getTokens (): Chainable;
 
 
@@ -26,6 +26,7 @@ declare global
             ): Chainable<JQuery<HTMLElement>>;
             formatEndpoint (
                 testData: string,
+                userId?: string, orderBy?: string
             ): Chainable;
         }
     }
@@ -33,28 +34,29 @@ declare global
 
 
 
-Cypress.Commands.add( 'loginToAuth0', () =>
+Cypress.Commands.add( 'loginToAuth0', ( userType: string ) =>
 {
 
     // Dynamically set email and password based on environment and user type
     const version = Cypress.env( 'version' ) || 'local';
-    const userType = Cypress.env( 'userType' ) || 'regular'; // Default to 'regular' user
-
+    // Ensure userType is properly normalized
+    const normalizedUserType = userType.toLowerCase().replace( /\s+/g, '' ); // Remove spaces and convert to lowercase
+    cy.step( normalizedUserType );
     const email =
         version === 'production'
-            ? userType === 'nostore'
+            ? normalizedUserType === 'nostore'
                 ? Cypress.env( 'ProdNoStoreUserEmail' )
                 : Cypress.env( 'ProdEmail' )
-            : userType === 'nostore'
+            : normalizedUserType === 'nostore'
                 ? Cypress.env( 'LocalNoStoreUserEmail' )
                 : Cypress.env( 'LocalEmail' );
 
     const password =
         version === 'production'
-            ? userType === 'nostore'
+            ? normalizedUserType === 'nostore'
                 ? Cypress.env( 'ProdNoStoreUserPassword' )
                 : Cypress.env( 'ProdPassword' )
-            : userType === 'nostore'
+            : normalizedUserType === 'nostore'
                 ? Cypress.env( 'LocalNoStoreUserPassword' )
                 : Cypress.env( 'LocalPassword' );
 
@@ -150,10 +152,16 @@ Cypress.Commands.add(
     }
 );
 
-Cypress.Commands.add( 'formatEndpoint', ( testData: string ): Cypress.Chainable<string> =>
+Cypress.Commands.add( 'formatEndpoint', ( testData: string, userId?: string, orderBy?: string = '' ): Cypress.Chainable<string> =>
 {
-    const storeIDQuery = `SELECT id FROM public."Stores" WHERE "userId" = 'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W';`;
+    // const storeIDQuery = `SELECT id FROM public."Stores" WHERE "userId" = 'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W';`;
+    let storeIDQuery = ''; // Initialize the query with an empty string
 
+    if ( userId )
+    {
+        storeIDQuery = `SELECT id FROM public."Stores" WHERE "userId" = '${userId}' ORDER BY "createdAt" ${orderBy};`;
+    }
+    cy.step( `storeIDQuery: ${storeIDQuery}` );
     if ( testData === 'dynamic' )
     {
         return cy.task( 'queryDatabase', storeIDQuery ).then( ( rows ) =>
