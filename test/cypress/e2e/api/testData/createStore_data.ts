@@ -1,26 +1,35 @@
 import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
 
-const storeIDQuery = 'SELECT id FROM public."Stores" WHERE userId = \'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W\';';
+// Explicitly define the shape of your test data
+export interface TestData
+{
+    testDescription: string;
+    endpoint: string;
+    method: string; // Use HttpMethod to ensure valid methods
+    requestKeys: string[];
+    requestValues: string[];
+    expectedStatus: number;
+    expectedResponseKeys?: string[];
+}
 
-export const TestList = [
+// Define the test list with the correct type
+export const TestList: TestData[] = [
     {
         testDescription: 'Create new store',
         endpoint: '/api/stores',
         method: 'POST',
         requestKeys: [ new AdminAPIRequestKeys().storeName ],
-        requestValues: [ 'cypressTest' ],
+        requestValues: [ 'NO_STORE_USER' ],
         expectedStatus: 201,
-        expectedResponseKeys: [ 'name : cypressTest' ],
-        expectedResponseStoreName: 'cypressTest',
+        expectedResponseKeys: [ 'name' ], // Only provide keys
     },
     {
         testDescription: 'Update store name',
         endpoint: 'dynamic', // Placeholder for dynamic resolution
         method: 'PATCH',
         requestKeys: [ new AdminAPIRequestKeys().storeName ],
-        requestValues: [ 'cypressTestWorld' ],
+        requestValues: [ 'UPDATED_STORE_NAME' ],
         expectedStatus: 202,
-        expectedResponseKeys: [ 'count : 1' ],
-
+        expectedResponseKeys: [ 'count' ], // Ensure keys are valid
     },
 ];

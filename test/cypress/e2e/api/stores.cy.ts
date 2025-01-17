@@ -1,13 +1,9 @@
-
 import { TestList } from './testData/createStore_data';
 import { createRequestBody } from '../../support/utilities/globalHelpers';
 
 describe( 'API Tests', () =>
 {
     let token: string = '';
-
-    const storeIDQuery =
-        'SELECT id FROM public."Stores" WHERE "userId" = \'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W\';';
 
     beforeEach( () =>
     {
@@ -24,39 +20,21 @@ describe( 'API Tests', () =>
         it( test.testDescription, () =>
         {
             // Dynamically resolve endpoint if needed
-            let endpointPromise: Cypress.Chainable<string>;
-            if ( test.endpoint === 'dynamic' )
-            {
-                endpointPromise = cy.task( 'queryDatabase', storeIDQuery ).then( ( rows ) =>
-                {
-                    if ( rows.length > 0 )
-                    {
-                        return `/api/stores/${rows[ 0 ].id}`;
-                    } else
-                    {
-                        throw new Error( 'No rows returned from query' );
-                    }
-                } );
-            } else
-            {
-                endpointPromise = cy.wrap( test.endpoint ); // Wrap static endpoint
-            }
-
-            endpointPromise.then( ( resolvedEndpoint ) =>
+            cy.formatEndpoint( test.endpoint ).then( ( resolvedEndpoint ) =>
             {
                 // Generate the request body
                 const requestBody = createRequestBody( test.requestKeys, test.requestValues );
 
                 // Perform the API request
-                cy.request( {
-                    method: test.method,
+                cy.request( {   // Use object literal to ensure correct typing  
+                    method: test.method as Cypress.HttpMethod, // Now correctly typed
                     url: resolvedEndpoint,
                     body: requestBody,
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${token}`,
                     },
-                } ).then( ( response ) =>
+                }).then( ( response ) =>
                 {
                     // Validate response status
                     cy.step( `Validate response status: ${test.expectedStatus}` );

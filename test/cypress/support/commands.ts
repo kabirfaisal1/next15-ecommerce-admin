@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+// import { Cypress } from 'cypress';
 
 
 export { }; // Ensures this file is treated as a module
@@ -23,6 +24,9 @@ declare global
             navigation_menu (
                 element: string,
             ): Chainable<JQuery<HTMLElement>>;
+            formatEndpoint (
+                testData: string,
+            ): Chainable;
         }
     }
 }
@@ -145,3 +149,25 @@ Cypress.Commands.add(
         dragEl.trigger( 'dragend' );
     }
 );
+
+Cypress.Commands.add( 'formatEndpoint', ( testData: string ): Cypress.Chainable<string> =>
+{
+    const storeIDQuery = `SELECT id FROM public."Stores" WHERE "userId" = 'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W';`;
+
+    if ( testData === 'dynamic' )
+    {
+        return cy.task( 'queryDatabase', storeIDQuery ).then( ( rows ) =>
+        {
+            if ( rows.length > 0 )
+            {
+                return `/api/stores/${rows[ 0 ].id}`;
+            } else
+            {
+                throw new Error( 'No rows returned from query' );
+            }
+        } );
+    } else
+    {
+        return cy.wrap( testData ); // Always return a Cypress chainable
+    }
+} );
