@@ -146,7 +146,6 @@ Cypress.Commands.add(
     'dragAndDrop',
     ( dragEl: Cypress.Chainable, dropEl: Cypress.Chainable ) =>
     {
-        cy.log( 'cy.dragAndDrop is triggered' );
         const dataTransfer = new DataTransfer();
 
         dragEl.trigger( 'dragstart', { dataTransfer } );
