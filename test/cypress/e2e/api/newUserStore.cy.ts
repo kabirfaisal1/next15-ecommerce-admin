@@ -21,7 +21,7 @@ describe( 'New Admin User with no store', () =>
         {
             let requestBody: Record<string, unknown> | null = null;
             // Dynamically resolve endpoint if needed
-            cy.apiStoreEndpoint( test.endpoint, test.queryUser, "DESC" ).then( ( resolvedEndpoint ) =>
+            cy.generateStoreAPIEndpoint( test.endpoint, test.queryUser, "DESC" ).then( ( resolvedEndpoint ) =>
             {
                 cy.step( `Performing API request to: ${resolvedEndpoint}` );
                 // Generate the request body if both keys and values exist and match
@@ -50,7 +50,7 @@ describe( 'New Admin User with no store', () =>
 
                     if ( data )
                     {
-                        cy.storeAPIValidations( data, test );
+                        cy.validateStoreResponseBody( data, test );
                     } else
                     {
                         cy.step( 'No data returned in the response body to validate' );

@@ -1,5 +1,5 @@
-import StoreForm from '../../../components/uiModal-dialog/uiStoreModal';
-import AdminSettingPage from '../../../components/pages/uiAdminSettingPage';
+import StoreForm from '../../../test_components/uiModal-dialog/uiStoreModal';
+import AdminSettingPage from '../../../test_components/pages/uiAdminSettingPage';
 
 
 

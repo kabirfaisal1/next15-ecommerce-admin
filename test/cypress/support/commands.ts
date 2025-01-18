@@ -22,10 +22,7 @@ declare global
             navigation_menu (
                 element: string,
             ): Chainable<JQuery<HTMLElement>>;
-            apiStoreEndpoint (
-                testData: string,
-                userId?: string, orderBy?: string
-            ): Chainable;
+          
             verifyToastMessage ( message: string ): Chainable;
             assertValueCopiedToClipboard ( message: string ): Chainable;
             deleteObjects ( object: boolean ): Chainable;
@@ -154,35 +151,7 @@ Cypress.Commands.add(
     }
 );
 
-Cypress.Commands.add( 'apiStoreEndpoint', ( testData: string, userId?: string, orderBy?: string = '' ): Cypress.Chainable<string> =>
-{
-    let storeIDQuery = ''; // Initialize the query with an empty string
 
-    if ( userId )
-    {
-        cy.step( `Running SQL Query to find storeID` );
-        storeIDQuery = `SELECT id FROM public."Stores" WHERE "userId" = '${userId}' ORDER BY "createdAt" ${orderBy};`;
-    }
-    cy.step( `storeIDQuery: ${storeIDQuery}` );
-    if ( testData === 'dynamic' )
-    {
-        return cy.task( 'queryDatabase', storeIDQuery ).then( ( rows ) =>
-        {
-            if ( rows.length > 0 )
-            {
-                cy.step( `Returning endpoint with storeId: ${rows[ 0 ].id}` );
-                return `/api/stores/${rows[ 0 ].id}`;
-            } else
-            {
-                throw new Error( 'No rows returned from query' );
-            }
-        } );
-    } else
-    {
-        cy.step( `Returning testData: ${testData}` );
-        return cy.wrap( testData ); // Always return a Cypress chainable
-    }
-} );
 
 Cypress.Commands.add( 'verifyToastMessage', ( message: string ) =>
 {
