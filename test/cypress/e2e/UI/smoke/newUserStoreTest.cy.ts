@@ -7,6 +7,9 @@ const storeForm = new StoreForm();
 const adminSettingPage = new AdminSettingPage();
 describe( 'No Store Admin User', () =>
 {
+    // let storeID: string;
+    const storeIDQuery = `SELECT id FROM public."Stores" WHERE "userId" = 'user_2qOt3xdN0TBsnKSVgczTsusMYZW' ORDER BY "createdAt" ASC;`;
+
     beforeEach( () =>
     {
         // Visit the base URL set in your configuration
@@ -128,5 +131,45 @@ describe( 'No Store Admin User', () =>
         } );
 
         // cy.verifyToastMessage( 'Store updated successfully' ); //TODO: Implement this
+    } );
+    it( 'User can not access other admin store setting', () =>
+    {
+        // Fetch the store ID and use it within the chain
+        cy.task( 'queryDatabase', storeIDQuery ).then( ( rows ) =>
+        {
+            if ( rows.length > 0 )
+            {
+                const storeID = rows[ 0 ].id; // Extract the store ID from the query result
+                cy.step( `Resolved and using storeID: ${storeID}` ); // Log the resolved storeID
+
+                // Use the storeID for navigation and further tests
+                cy.visit( `/${storeID}/settings` );
+                cy.get( 'h1' ).contains( '404' ); //TODO: Verify that the page contains after creating error page
+            } else
+            {
+                throw new Error( 'No rows returned from query' );
+            }
+        } );
+
+    } );
+    it( 'User can not access other admin store billboards', () =>
+    {
+        // Fetch the store ID and use it within the chain
+        cy.task( 'queryDatabase', storeIDQuery ).then( ( rows ) =>
+        {
+            if ( rows.length > 0 )
+            {
+                const storeID = rows[ 0 ].id; // Extract the store ID from the query result
+                cy.step( `Resolved and using storeID: ${storeID}` ); // Log the resolved storeID
+
+                // Use the storeID for navigation and further tests
+                cy.visit( `/${storeID}/billboards` );
+                cy.get( 'h1' ).contains( '404' ); //TODO Verify that the page contains after creating error page
+            } else
+            {
+                throw new Error( 'No rows returned from query' );
+            }
+        } );
+
     } );
 } );
