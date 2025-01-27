@@ -12,6 +12,7 @@ export interface TestData
     expectedStatus: number;
     expectedResponseKeys?: string[];
     expectedResponseStoreName?: string;
+    expectedResponseBillboardName?: string;
     expectedResponseStoreId?: string | boolean;
     expectedResponseUseId?: string;
     expectedResponseCreatedAt?: string;
@@ -24,12 +25,12 @@ export const TestList: TestData[] = [
         testDescription: 'Create new store',
         endpoint: '/api/stores',
         method: 'POST',
-        requestKeys: [ new AdminAPIRequestKeys().storeName ],
-        requestValues: [ 'Add New STORE' ],
+        requestKeys: [ new AdminAPIRequestKeys().billboardName, new AdminAPIRequestKeys().imageUrl ],
+        requestValues: [ 'Testing Billboard', "https://res.cloudinary.com/dzsguot60/image/upload/v1736444639/iz0gqlh3fyelyxqzohnk.png" ],
         expectedStatus: 201,
-        expectedResponseKeys: [ 'id', 'name', 'userId', 'createdAt', 'updatedAt' ],
-        expectedResponseStoreId: true,
-        expectedResponseStoreName: 'Add New STORE',
+        expectedResponseKeys: [ 'id', 'storeId', 'label', 'imageUrl', "createdAt", 'updatedAt' ],
+        expectedResponseBillboardName: 'Testing Billboard',
+        expectedResponseStoreId: '8fe72069-48ae-43bc-b8f4-5614b3fb02db',
         expectedResponseUseId: 'user_2qOt3xdN0TBsnKSVgczTsusMYZW',
     },
     {
