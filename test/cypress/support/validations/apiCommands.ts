@@ -18,6 +18,7 @@ declare global
                 testData: string,
                 userId?: string, orderBy?: string
             ): Chainable;
+            validateBillboardResponseBody ( response: any, expectedResults: TestObjects ): void;
         }
     }
 }
@@ -61,7 +62,7 @@ Cypress.Commands.add( 'generateStoreAPIEndpoint', ( testData: string, userId?: s
         return cy.wrap( testData ); // Wrap testData in cy.wrap to ensure chainability
     }
 } );
-// Define a custom Cypress command to validate the response body of a store API
+
 Cypress.Commands.add( 'validateStoreResponseBody', ( response: any, expectedResults: TestObjects ) =>
 {
 
@@ -111,10 +112,12 @@ Cypress.Commands.add( 'generateBillboardAPIEndpoint', ( testData: string, storei
     let billboardIDQuery = '';
 
     // Check if a userId is provided, construct the SQL query to find the billboard ID
-    if ( userId )
+    if ( storeid )
     {
         cy.step( `Running SQL Query to find billboardID` );
-        billboardIDQuery = `SELECT id FROM public."Billboards" WHERE 'storeId' = '${storeid}' ORDER BY "createdAt" ${orderBy};`;
+
+        billboardIDQuery = ` SELECT id FROM public."Billboards" where "storeId" = '${storeid}' ORDER by "createdAt" DESC;`;
+        cy.step( `billboardIDQuery: ${billboardIDQuery}` );
     }
 
     // Log the constructed query for debugging purposes
@@ -131,7 +134,7 @@ Cypress.Commands.add( 'generateBillboardAPIEndpoint', ( testData: string, storei
             {
                 cy.step( `Returning endpoint with billboardId: ${rows[ 0 ].id}` );
                 // Wrap the endpoint in cy.wrap to ensure it's chainable
-                return cy.wrap( `/billboards/${rows[ 0 ].id}` );
+                return cy.wrap( `api/${storeid}/billboards/${rows[ 0 ].id}` );
             } else
             {
                 // Throw an error if no rows are returned
@@ -143,5 +146,58 @@ Cypress.Commands.add( 'generateBillboardAPIEndpoint', ( testData: string, storei
         // If the testData is not dynamic, return it as-is
         cy.step( `Returning testData: ${testData}` );
         return cy.wrap( testData ); // Wrap testData in cy.wrap to ensure chainability
+    }
+} );
+
+Cypress.Commands.add( 'validateBillboardResponseBody', ( response: any, expectedResults: TestObjects ) =>
+{
+
+    // Check if an expected store name is provided for validation
+    if ( expectedResults.expectedResponseBillboardName )
+    {
+        // Assert that the response's name matches the expected store name
+        expect( response.label ).to.equal( expectedResults.expectedResponseBillboardName );
+        // Log a step indicating successful validation of the store name
+        cy.step( `Validated response Store Name: ${expectedResults.expectedResponseBillboardName}` );
+    }
+
+    // Check if there are specific response keys expected in the response body
+    if ( expectedResults.expectedResponseKeys )
+    {
+        // Log a step indicating the keys that will be validated
+        cy.step( `Validated response keys: ${expectedResults.expectedResponseKeys}` );
+        // Loop through each expected key and assert that the response has the property
+        expectedResults.expectedResponseKeys.forEach( ( key ) =>
+        {
+            expect( response ).to.have.property( key );
+        } );
+    }
+
+    cy.step( `Validated response Store Id 2${expectedResults.expectedResponseStoreId} and storeid ${response.storeId }` );
+    // Check if the `expectedResponseStoreId` is explicitly set to false
+    if ( expectedResults.expectedResponseStoreId )
+    {
+        cy.step( `Checking that Store Id matches ${expectedResults.expectedResponseStoreId}` );
+        // Assert that the `storeId` matches the expected value
+        expect( response.storeId ).to.equal( expectedResults.expectedResponseStoreId );
+    }
+
+    // Check if an expected imageUrl is provided for validation
+    if ( expectedResults.expectedResponseImageUrl )
+    {
+        // Log a step indicating the expected imageUrl that will be validated
+        cy.step( `Validated response imageUrl: ${expectedResults.expectedResponseImageUrl}` );
+        // Assert that the response's `userId` matches the expected imageUrl
+        expect( response.imageUrl ).to.equal( expectedResults.expectedResponseImageUrl );
+    }
+
+    // Check if there are response Errors expected in the response body
+    if ( expectedResults.expectedError )
+    {
+        // Log a step indicating the keys that will be validated
+        cy.step( `Validated response keys: ${expectedResults.expectedError}` );
+        // Loop through each expected key and assert that the response has the property
+        expect( response ).to.equal( expectedResults.expectedError );
+
     }
 } );

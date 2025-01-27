@@ -51,6 +51,7 @@ describe( 'User Test billboards', () =>
                         'Content-Type': 'application/json',   // Set the content type
                         Authorization: `Bearer ${token}`,     // Include the authorization token
                     },
+                    failOnStatusCode: false // Do not fail on non-2xx status codes
                 } ).then( ( response ) =>
                 {
                     // Validate the response status matches the expected status
@@ -63,7 +64,7 @@ describe( 'User Test billboards', () =>
                     // If the response body contains data, validate it
                     if ( data )
                     {
-                        cy.validateStoreResponseBody( data, test );
+                        cy.validateBillboardResponseBody( data, test );
                     } else
                     {
                         // Log a step if there is no data to validate
