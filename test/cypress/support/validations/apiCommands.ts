@@ -14,6 +14,10 @@ declare global
                 testData: string,
                 userId?: string, orderBy?: string
             ): Chainable;
+            generateBillboardAPIEndpoint (
+                testData: string,
+                userId?: string, orderBy?: string
+            ): Chainable;
         }
     }
 }
@@ -98,5 +102,46 @@ Cypress.Commands.add( 'validateStoreResponseBody', ( response: any, expectedResu
         cy.step( `Validated response User Id: ${expectedResults.expectedResponseUseId}` );
         // Assert that the response's `userId` matches the expected user ID
         expect( response.userId ).to.equal( expectedResults.expectedResponseUseId );
+    }
+} );
+
+Cypress.Commands.add( 'generateBillboardAPIEndpoint', ( testData: string, storeid?: string, orderBy: string = '' ): Cypress.Chainable<string> =>
+{
+    // Initialize the query with an empty string
+    let billboardIDQuery = '';
+
+    // Check if a userId is provided, construct the SQL query to find the billboard ID
+    if ( userId )
+    {
+        cy.step( `Running SQL Query to find billboardID` );
+        billboardIDQuery = `SELECT id FROM public."Billboards" WHERE 'storeId' = '${storeid}' ORDER BY "createdAt" ${orderBy};`;
+    }
+
+    // Log the constructed query for debugging purposes
+    cy.step( `billboardIDQuery: ${billboardIDQuery}` );
+
+    // If the testData is dynamic, fetch the billboard ID from the database
+    if ( testData === 'dynamic' )
+    {
+        // Execute the query using a Cypress task and process the results
+        return cy.task( 'queryDatabase', billboardIDQuery ).then( ( rows ) =>
+        {
+            // Check if the query returned any rows
+            if ( rows.length > 0 )
+            {
+                cy.step( `Returning endpoint with billboardId: ${rows[ 0 ].id}` );
+                // Wrap the endpoint in cy.wrap to ensure it's chainable
+                return cy.wrap( `/billboards/${rows[ 0 ].id}` );
+            } else
+            {
+                // Throw an error if no rows are returned
+                throw new Error( 'No rows returned from query' );
+            }
+        } );
+    } else
+    {
+        // If the testData is not dynamic, return it as-is
+        cy.step( `Returning testData: ${testData}` );
+        return cy.wrap( testData ); // Wrap testData in cy.wrap to ensure chainability
     }
 } );
