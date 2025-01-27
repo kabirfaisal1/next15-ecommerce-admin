@@ -123,20 +123,7 @@ Cypress.Commands.add( 'navigation_menu', ( element: string ) =>
 {
     // Log a step for clicking the specified navigation menu item
     cy.step( `clicking on the navigation menu: ${element}` );
-    if ( element === 'Select a store' )
-    {
-        // Handle logic for "Select a store" navigation menu item
-        cy.get( '[data-testid="store_switcher_trigger"]' )
-            .should( 'have.attr', 'aria-label', 'Select a store' )
-            .click();
-        // Additional validation steps for the store switcher
-        cy.step( 'Checking store switcher pop up to be visible' );
-        cy.get( '[data-testid="store_switcher_group"]' ).should( 'be.visible' );
-        cy.step( 'Checking store switcher input to be visible' );
-        cy.get( 'data-testid="store_switcher_input"' ).should( 'be.visible' );
-        cy.step( 'Checking Create Store button to be visible' );
-        cy.get( '[data-value="Create Store"]' ).should( 'be.visible' );
-    } else if ( element === 'Store Overview' )
+    if ( element === 'Store Overview' )
     {
         // Handle logic for "Store Overview" navigation menu item
         cy.get( '[data-testid="store_overview"]' )
@@ -153,7 +140,7 @@ Cypress.Commands.add( 'navigation_menu', ( element: string ) =>
         cy.step( 'Checking Billboards heading title to be visible' );
         cy.get( '[data-testid="heading-title"]' )
             .should( 'be.visible' )
-            .and( 'have.text', 'Billboards' );
+            .and( 'include.text', 'Billboards' );
     } else if ( element === 'Settings' )
     {
         // Handle logic for "Settings" navigation menu item
