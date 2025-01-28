@@ -22,46 +22,39 @@ declare global
         }
     }
 }
-Cypress.Commands.add( 'generateStoreAPIEndpoint', ( testData: string, userId?: string, orderBy: string = '' ): Cypress.Chainable<string> =>
-{
-    // Initialize the query with an empty string
-    let storeIDQuery = '';
-
-    // Check if a userId is provided, construct the SQL query to find the store ID
-    if ( userId )
+Cypress.Commands.add(
+    'generateStoreAPIEndpoint',
+    ( testData: string, userId?: string, orderBy: 'ASC' | 'DESC' = 'DESC' ): Cypress.Chainable<string> =>
     {
-        cy.step( `Running SQL Query to find storeID` );
-        storeIDQuery = `SELECT id FROM public."Stores" WHERE "userId" = '${userId}' ORDER BY "createdAt" ${orderBy};`;
-    }
+        // Construct the SQL query only if userId is provided
+        const storeIDQuery = userId
+            ? `SELECT id FROM public."Stores" WHERE "userId" = '${userId}' ORDER BY "createdAt" ${orderBy};`
+            : '';
 
-    // Log the constructed query for debugging purposes
-    cy.step( `storeIDQuery: ${storeIDQuery}` );
+        cy.step( `Generated SQL Query: ${storeIDQuery}` );
 
-    // If the testData is dynamic, fetch the store ID from the database
-    if ( testData === 'dynamic' )
-    {
-        // Execute the query using a Cypress task and process the results
-        return cy.task( 'queryDatabase', storeIDQuery ).then( ( rows ) =>
+        // Handle dynamic testData by fetching store ID from the database
+        if ( testData === 'dynamic' && storeIDQuery )
         {
-            // Check if the query returned any rows
-            if ( rows.length > 0 )
+            return cy.task( 'queryDatabase', storeIDQuery ).then( ( rows ) =>
             {
-                cy.step( `Returning endpoint with storeId: ${rows[ 0 ].id}` );
-                // Wrap the endpoint in cy.wrap to ensure it's chainable
-                return cy.wrap( `/api/stores/${rows[ 0 ].id}` );
-            } else
-            {
-                // Throw an error if no rows are returned
-                throw new Error( 'No rows returned from query' );
-            }
-        } );
-    } else
-    {
-        // If the testData is not dynamic, return it as-is
-        cy.step( `Returning testData: ${testData}` );
-        return cy.wrap( testData ); // Wrap testData in cy.wrap to ensure chainability
+                if ( rows?.length > 0 )
+                {
+                    const storeId = rows[ 0 ].id;
+                    cy.step( `Resolved storeId: ${storeId}` );
+                    return cy.wrap( `/api/stores/${storeId}` ); // Ensure Cypress chains it
+                } else
+                {
+                    throw new Error( 'No store ID found for the provided userId.' );
+                }
+            } );
+        }
+
+        // Return the testData directly if not dynamic
+        cy.step( `Returning static testData: ${testData}` );
+        return cy.wrap( testData ); // Ensure Cypress chains it
     }
-} );
+);
 
 Cypress.Commands.add( 'validateStoreResponseBody', ( response: any, expectedResults: any ) =>
 {
@@ -101,7 +94,7 @@ Cypress.Commands.add( 'validateStoreResponseBody', ( response: any, expectedResu
     {
         cy.step( 'Validating that Store ID is not null' );
         expect( response.id ).to.not.be.empty;
-    } 
+    }
 
     // User ID Validation
     if ( expectedResults.expectedResponseUseId !== undefined )
@@ -113,6 +106,7 @@ Cypress.Commands.add( 'validateStoreResponseBody', ( response: any, expectedResu
 
 Cypress.Commands.add( 'generateBillboardAPIEndpoint', ( testData: string, storeid?: string, orderBy: string = '' ): Cypress.Chainable<string> =>
 {
+    //TODO: Improve the logic to handle be more dynamic and not rely on the testData value.
     // Initialize the query with an empty string
     let billboardIDQuery = '';
 

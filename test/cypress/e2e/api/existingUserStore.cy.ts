@@ -47,16 +47,20 @@ describe( 'Existing Admin User adding store', () =>
                     },
                 } ).then( ( response ) =>
                 {
+                    // Validate the response status matches the expected status
                     cy.step( `Validate response status: ${test.expectedStatus}` );
                     expect( response.status ).to.equal( test.expectedStatus );
 
+                    // Extract the response body data
                     const data = response.body;
 
+                    // If the response body contains data, validate it
                     if ( data )
                     {
                         cy.validateStoreResponseBody( data, test );
                     } else
                     {
+                        // Log a step if there is no data to validate
                         cy.step( 'No data returned in the response body to validate' );
                     }
                 } );

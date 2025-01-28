@@ -22,33 +22,31 @@ describe( 'New Admin User with no store', () =>
         } );
     } );
 
+    // Loop through each test in the TestList
     TestList.forEach( ( test ) =>
     {
         it( test.testDescription, () =>
         {
-            // Declare a variable to hold the request body (if applicable)
-            let requestBody: Record<string, unknown> | null = null;
+            cy.step( `Running test case: ${test.testDescription}` );
 
-            // Dynamically resolve the endpoint using the custom Cypress command
-            cy.generateStoreAPIEndpoint( test.endpoint, test.queryUser, "DESC" ).then( ( resolvedEndpoint ) =>
+            // Resolve the API endpoint dynamically
+            cy.generateStoreAPIEndpoint( test.endpoint, test.queryUser, 'DESC' ).then( ( resolvedEndpoint ) =>
             {
-                // Log the resolved endpoint for debugging
-                cy.step( `Performing API request to: ${resolvedEndpoint}` );
+                cy.step( `Resolved API endpoint: ${resolvedEndpoint}` );
 
-                // If both keys and values for the request body are provided, generate the request body
-                if ( test.requestKeys?.length && test.requestValues?.length )
-                {
-                    requestBody = createRequestBody( test.requestKeys, test.requestValues );
-                }
+                // Create the request body if keys and values are provided
+                const requestBody = test.requestKeys?.length && test.requestValues?.length
+                    ? createRequestBody( test.requestKeys, test.requestValues )
+                    : null;
 
-                // Perform the API request with the dynamically resolved endpoint
+                // Perform the API request
                 cy.request( {
-                    method: test.method as Cypress.HttpMethod, // Specify the HTTP method dynamically
-                    url: resolvedEndpoint,                    // Use the resolved endpoint
-                    body: requestBody,                        // Include the request body (if applicable)
+                    method: test.method as Cypress.HttpMethod,
+                    url: resolvedEndpoint,
+                    body: requestBody,
                     headers: {
-                        'Content-Type': 'application/json',   // Set the content type
-                        Authorization: `Bearer ${token}`,     // Include the authorization token
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
                     },
                 } ).then( ( response ) =>
                 {
