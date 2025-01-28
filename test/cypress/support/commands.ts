@@ -25,7 +25,7 @@ declare global
             ): Chainable<JQuery<HTMLElement>>;
 
             // Custom command to interact with the navigation menu
-            navigation_menu (
+            navigateTabItem (
                 element: string // Name of the navigation element to click
             ): Chainable<JQuery<HTMLElement>>;
 
@@ -119,54 +119,66 @@ Cypress.Commands.add( 'getTokens', () =>
 } );
 
 // Add a custom command to interact with the navigation menu
-Cypress.Commands.add( 'navigation_menu', ( element: string ) =>
+// Add a custom command to interact with the navigation menu
+Cypress.Commands.add( 'navigateTabItem', ( element: string ) =>
 {
-    // Log a step for clicking the specified navigation menu item
     cy.step( `clicking on the navigation menu: ${element}` );
-    if ( element === 'Store Overview' )
+
+    switch ( element )
     {
-        // Handle logic for "Store Overview" navigation menu item
-        cy.get( '[data-testid="store_overview"]' )
-            .should( 'have.text', 'Store Overview' )
-            .click();
-    } else if ( element === 'Billboards' )
-    {
-        // Handle logic for "Billboards" navigation menu item
-        cy.get( '[data-testid="billboards"]' )
-            .should( 'have.text', 'Billboards' )
-            .click();
-        cy.step( 'Checking URL to include Billboards' );
-        cy.url().should( 'include', element.toLowerCase() );
-        cy.step( 'Checking Billboards heading title to be visible' );
-        cy.get( '[data-testid="heading-title"]' )
-            .should( 'be.visible' )
-            .and( 'include.text', 'Billboards' );
-    } else if ( element === 'Settings' )
-    {
-        // Handle logic for "Settings" navigation menu item
-        cy.get( '[data-testid="store_settings"]' )
-            .should( 'have.text', 'Settings' )
-            .click();
-        cy.step( 'Checking URL to include Settings' );
-        cy.url().should( 'include', element.toLowerCase() );
-        cy.step( 'Checking Settings heading title to be visible' );
-        cy.get( '[data-testid="heading-title"]' )
-            .should( 'be.visible' )
-            .and( 'have.text', 'Settings' );
-        cy.get( '[data-testid="heading-description"]' )
-            .should( 'be.visible' )
-            .and( 'have.text', 'Manage Store Preferences' );
-    } else if ( element === 'User Button' )
-    {
-        // Handle logic for "User Button" navigation menu item
-        cy.get( '[data-clerk-component="UserButton"]' ).should( 'be.visible' ).click();
-        cy.step( 'Checking User Button Popover Card to be visible' );
-        cy.get( '[class="cl-userButtonPopoverCard cl-popoverBox cl-userButton-popover 🔒️ cl-internal-1grbo8b"]' )
-            .should( 'be.visible' );
-    } else
-    {
-        // Log a step if the navigation menu item is not found
-        cy.step( `${element} is not found` );
+        case 'Store Overview':
+            // Handle logic for "Store Overview" navigation menu item
+            cy.get( '[data-testid="store_overview"]' )
+                .should( 'have.text', 'Store Overview' )
+                .click();
+            break;
+
+        case 'Billboards':
+            // Handle logic for "Billboards" navigation menu item
+            cy.get( '[data-testid="billboards"]' )
+                .should( 'have.text', 'Billboards' )
+                .click();
+            cy.step( 'Checking URL to include Billboards' );
+            cy.url().should( 'include', element.toLowerCase() );
+            cy.step( 'Checking Billboards heading title to be visible' );
+            cy.get( '[data-testid="heading-title"]' )
+                .should( 'be.visible' )
+                .and( 'include.text', 'Billboards' );
+            break;
+
+        case 'Settings':
+            // Handle logic for "Settings" navigation menu item
+            cy.get( '[data-testid="store_settings"]' )
+                .should( 'have.text', 'Settings' )
+                .click();
+            cy.step( 'Checking URL to include Settings' );
+            cy.url().should( 'include', element.toLowerCase() );
+            cy.step( 'Checking Settings heading title to be visible' );
+            cy.get( '[data-testid="heading-title"]' )
+                .should( 'be.visible' )
+                .and( 'have.text', 'Settings' );
+            cy.get( '[data-testid="heading-description"]' )
+                .should( 'be.visible' )
+                .and( 'have.text', 'Manage Store Preferences' );
+            break;
+
+        case 'User Button':
+            // Handle logic for "User Button" navigation menu item
+            cy.get( '[data-clerk-component="UserButton"]' )
+                .should( 'be.visible' )
+                .click();
+            cy.step( 'Checking User Button Popover Card to be visible' );
+            cy.get( '[class="cl-userButtonPopoverCard cl-popoverBox cl-userButton-popover 🔒️ cl-internal-1grbo8b"]' )
+                .should( 'be.visible' );
+            break;
+
+        default:
+            // Default to "Store Overview" navigation menu item
+            cy.step( `${element} is not found, defaulting to Store Overview` );
+            cy.get( '[data-testid="store_overview"]' )
+                .should( 'have.text', 'Store Overview' )
+                .click();
+            break;
     }
 } );
 

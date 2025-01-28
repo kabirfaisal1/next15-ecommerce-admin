@@ -16,7 +16,7 @@ describe( 'No Store Admin User', () =>
         cy.loginToAuth0( "Regular" );
 
         cy.step( 'Going to billboards' );
-        cy.navigation_menu( "Billboards" );
+        cy.navigateTabItem( "Billboards" );
     } );
     it( 'User with store', () =>
     {

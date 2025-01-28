@@ -34,13 +34,13 @@ describe( 'Store Switcher', () =>
     {
         storeSwitcher.clickOnStoreDropDown();
         storeSwitcher.selectStore( 'Cypress UI' );
-        cy.navigation_menu( "Billboards" );
+        cy.navigateTabItem( "Billboards" );
     } );
     it( 'Navigate to Setting after switch', () =>
     {
         storeSwitcher.clickOnStoreDropDown();
         storeSwitcher.selectStore( 'Cypress UI' );
-        cy.navigation_menu( "Settings" );
+        cy.navigateTabItem( "Settings" );
     } );
 
 

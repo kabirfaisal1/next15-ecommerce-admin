@@ -63,46 +63,51 @@ Cypress.Commands.add( 'generateStoreAPIEndpoint', ( testData: string, userId?: s
     }
 } );
 
-Cypress.Commands.add( 'validateStoreResponseBody', ( response: any, expectedResults: TestObjects ) =>
+Cypress.Commands.add( 'validateStoreResponseBody', ( response: any, expectedResults: any ) =>
 {
+    cy.step( 'Starting store response validation' );
 
-    // Check if an expected store name is provided for validation
+    // Helper function to validate specific keys in the response
+    const validateKeys = ( keys: string[], responseBody: any ) =>
+    {
+        cy.step( `Validating response keys: ${keys}` );
+        keys.forEach( ( key ) =>
+        {
+            expect( responseBody ).to.have.property( key, responseBody[ key ] );
+        } );
+    };
+
+    // Helper function to log validation success
+    const logValidation = ( field: string, expected: any, actual: any ) =>
+    {
+        cy.step( `Validated ${field}: Expected [${expected}], Found [${actual}]` );
+    };
+
+    // Store Name Validation
     if ( expectedResults.expectedResponseStoreName )
     {
-        // Assert that the response's name matches the expected store name
         expect( response.name ).to.equal( expectedResults.expectedResponseStoreName );
-        // Log a step indicating successful validation of the store name
-        cy.step( `Validated response Store Name: ${expectedResults.expectedResponseStoreName}` );
+        logValidation( 'Store Name', expectedResults.expectedResponseStoreName, response.name );
     }
 
-    // Check if there are specific response keys expected in the response body
+    // Response Keys Validation
     if ( expectedResults.expectedResponseKeys )
     {
-        // Log a step indicating the keys that will be validated
-        cy.step( `Validated response keys: ${expectedResults.expectedResponseKeys}` );
-        // Loop through each expected key and assert that the response has the property
-        expectedResults.expectedResponseKeys.forEach( ( key ) =>
-        {
-            expect( response ).to.have.property( key );
-        } );
+        validateKeys( expectedResults.expectedResponseKeys, response );
     }
 
-    // Check if the `expectedResponseStoreId` is explicitly set to false
+    // Store ID Validation
     if ( expectedResults.expectedResponseStoreId === false )
     {
-        // Log a step indicating that the store ID should not be null or empty
-        cy.step( `Validated response Store Id is not null` );
-        // Assert that the response's `id` is not empty
+        cy.step( 'Validating that Store ID is not null' );
         expect( response.id ).to.not.be.empty;
-    }
+    } 
 
-    // Check if an expected user ID is provided for validation
+    // User ID Validation
     if ( expectedResults.expectedResponseUseId !== undefined )
     {
-        // Log a step indicating the expected user ID that will be validated
-        cy.step( `Validated response User Id: ${expectedResults.expectedResponseUseId}` );
-        // Assert that the response's `userId` matches the expected user ID
         expect( response.userId ).to.equal( expectedResults.expectedResponseUseId );
+        logValidation( 'User ID', expectedResults.expectedResponseUseId, response.userId );
     }
 } );
 
@@ -149,55 +154,56 @@ Cypress.Commands.add( 'generateBillboardAPIEndpoint', ( testData: string, storei
     }
 } );
 
-Cypress.Commands.add( 'validateBillboardResponseBody', ( response: any, expectedResults: TestObjects ) =>
+Cypress.Commands.add( 'validateBillboardResponseBody', ( response: any, expectedResults: any ) =>
 {
+    cy.step( 'Validating billboard response' );
 
-    // Check if an expected store name is provided for validation
-    if ( expectedResults.expectedResponseBillboardName )
+    // Use a switch statement to handle different validation cases
+    Object.keys( expectedResults ).forEach( ( key ) =>
     {
-        // Assert that the response's name matches the expected store name
-        expect( response.label ).to.equal( expectedResults.expectedResponseBillboardName );
-        // Log a step indicating successful validation of the store name
-        cy.step( `Validated response Store Name: ${expectedResults.expectedResponseBillboardName}` );
-    }
-
-    // Check if there are specific response keys expected in the response body
-    if ( expectedResults.expectedResponseKeys )
-    {
-        // Log a step indicating the keys that will be validated
-        cy.step( `Validated response keys: ${expectedResults.expectedResponseKeys}` );
-        // Loop through each expected key and assert that the response has the property
-        expectedResults.expectedResponseKeys.forEach( ( key ) =>
+        switch ( key )
         {
-            expect( response ).to.have.property( key );
-        } );
-    }
+            case 'expectedResponseBillboardName':
+                // Validate the expected billboard name
+                expect( response.label ).to.equal( expectedResults.expectedResponseBillboardName );
+                cy.step( `Validated response Store Name: ${expectedResults.expectedResponseBillboardName}` );
+                break;
 
-    cy.step( `Validated response Store Id 2${expectedResults.expectedResponseStoreId} and storeid ${response.storeId }` );
-    // Check if the `expectedResponseStoreId` is explicitly set to false
-    if ( expectedResults.expectedResponseStoreId )
-    {
-        cy.step( `Checking that Store Id matches ${expectedResults.expectedResponseStoreId}` );
-        // Assert that the `storeId` matches the expected value
-        expect( response.storeId ).to.equal( expectedResults.expectedResponseStoreId );
-    }
+            case 'expectedResponseKeys':
+                // Validate the presence of specific keys in the response
+                cy.step( `Validated response keys: ${expectedResults.expectedResponseKeys}` );
+                expectedResults.expectedResponseKeys.forEach( ( expectedKey: string ) =>
+                {
+                    expect( response ).to.have.property( expectedKey );
+                } );
+                break;
 
-    // Check if an expected imageUrl is provided for validation
-    if ( expectedResults.expectedResponseImageUrl )
-    {
-        // Log a step indicating the expected imageUrl that will be validated
-        cy.step( `Validated response imageUrl: ${expectedResults.expectedResponseImageUrl}` );
-        // Assert that the response's `userId` matches the expected imageUrl
-        expect( response.imageUrl ).to.equal( expectedResults.expectedResponseImageUrl );
-    }
+            case 'expectedResponseStoreId':
+                // Validate the expected store ID
+                cy.step( `Checking that Store ID matches ${expectedResults.expectedResponseStoreId}` );
+                expect( response.storeId ).to.equal( expectedResults.expectedResponseStoreId );
+                break;
 
-    // Check if there are response Errors expected in the response body
-    if ( expectedResults.expectedError )
-    {
-        // Log a step indicating the keys that will be validated
-        cy.step( `Validated response keys: ${expectedResults.expectedError}` );
-        // Loop through each expected key and assert that the response has the property
-        expect( response ).to.equal( expectedResults.expectedError );
+            case 'expectedResponseImageUrl':
+                // Validate the expected image URL
+                cy.step( `Validated response imageUrl: ${expectedResults.expectedResponseImageUrl}` );
+                expect( response.imageUrl ).to.equal( expectedResults.expectedResponseImageUrl );
+                break;
 
-    }
+            case 'expectedError':
+                // Validate the expected error in the response
+                cy.step( `Validated response error: ${expectedResults.expectedError}` );
+                expect( response ).to.equal( expectedResults.expectedError );
+                break;
+
+            default:
+                cy.step( `No validation logic for key: ${key}` );
+                break;
+        }
+    } );
+
+    // Additional logging for Store ID validation
+    cy.step(
+        `Validated response Store ID 2${expectedResults.expectedResponseStoreId} and store ID ${response.storeId}`
+    );
 } );

@@ -1,5 +1,5 @@
 
-class AdminSettingPage
+class AdminBillboardPage
 {
     elements: { [ key: string ]: () => Cypress.Chainable; } = {
 
@@ -58,5 +58,5 @@ class AdminSettingPage
 
 }
 
-export default AdminSettingPage;
+export default AdminBillboardPage;
 
