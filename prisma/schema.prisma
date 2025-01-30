@@ -29,12 +29,13 @@ datasource db {
 /// - `createdAt`: The timestamp when the store was created, with a default value of the current time.
 /// - `updatedAt`: The timestamp when the store was last updated, automatically set to the current time on update.
 model Stores {
-  id        String       @id @default(uuid())
-  name      String
-  userId    String
+  id         String       @id @default(uuid())
+  name       String
+  userId     String
   billboards Billboards[] @relation("StoreToBillboard") // Match relation name here
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  categories Categories[]   @relation("StoreToCategory") // Match relation name here
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 }
 
 /// The `Billboards` model represents a billboard entity in the database.
@@ -52,12 +53,27 @@ model Stores {
 /// - `storeId`: An index on the `storeId` field to optimize queries filtering by store.
 model Billboards {
   id          String @id @default(uuid())
-  storeId     String
-  store     Stores   @relation("StoreToBillboard", fields: [storeId], references: [id]) // Ensure this matches the name
   label       String
+  storeId     String
+  store       Stores   @relation("StoreToBillboard", fields: [storeId], references: [id]) // Ensure this matches the name
   imageUrl    String
+  categories  Categories[]  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([storeId])
+}
+
+model Categories {
+  id          String @id @default(uuid())
+  name        String
+  storeId     String
+  store       Stores   @relation("StoreToCategory", fields: [storeId], references: [id]) // Ensure this matches the name
+  billboardId String
+  billboard   Billboards @relation(fields: [billboardId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([storeId])
+  @@index([billboardId])
 }
