@@ -28,7 +28,7 @@ describe( 'No Store Admin User', () =>
         cy.visit( `/${storeId}/billboards` );
         adminBillboardPage.verifyBillboardHeaders( storeId );
         adminBillboardPage.clickOnAddBillboardButton( storeId );
-        adminBillboardPage.uploadImage( 'images/1.png' );
+        adminBillboardPage.uploadImage( 'https://res.cloudinary.com/dzsguot60/image/upload/v1738184323/patca8js3ur05cg0fttn.png' );
         adminBillboardPage.enterBillboardName( 'Cypress new Billboard' );
         adminBillboardPage.clickOnSubmitButton();
         adminBillboardPage.verifyBillboardAPIRoute( storeId, 'Cypress new Billboard' );

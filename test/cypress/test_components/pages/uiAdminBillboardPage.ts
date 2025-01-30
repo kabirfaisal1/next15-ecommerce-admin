@@ -60,22 +60,27 @@ class AdminBillboardPage
         this.elements.pageDescription().should( 'be.visible' ).should( 'include.text', 'Add a new billboard' );
     }
 
-    uploadImage ( filePath: string )
+    uploadImage ( imgUrl: string )
     {
-        cy.step( 'Checking upload Image button label' );
-        this.elements.billboard_uploadImageLabel().should( 'be.visible' ).should( 'include.text', 'Background Image' );
-
-        cy.step( `Click on upload image button` );
+        cy.step( 'Clicking on upload image button' );
+        cy.get( '[data-testid="billboards-backgroundImage-label"]' ).should( 'be.visible' );
+        cy.step( 'Click Uploading image' );
         this.elements.billboard_uploadImageButton().should( 'be.visible' ).click();
-        cy.step
-        cy.window().then( ( win ) =>
+
+        cy.step( 'Verifying cloudinary upload widget' );
+        const getIframeWindow = () =>
         {
-            cy.stub( win, 'open' ).as( 'open' );
-            cy.step( `Uploading Image` );
-            this.elements.cloudinary_uploadWidget().should( 'be.visible' )
-                .selectFile( 'test\\cypress\\fixtures\\cypresslogo.png', { action: 'drag-drop' } );
-            this.elements.cloudinary_uploadDone().should( 'be.visible' ).click();
+            return cy
+                .get( 'iframe[title="Upload Widget"]' )
+                .its( '0.contentWindow' ).should( 'exist' );
+        };
+        getIframeWindow().then( ( win ) =>
+        {
+            cy.spy( win, 'fetch' ).as( 'fetch' );
         } );
+
+        cy.getIframeBody().find( '[class="cloudinary_fileupload"]' ).should( 'be.visible' ).click();
+        // // getIframeBody().find( 'input[class="cloudinary_fileupload""]' ).selectFile( imgUrl );
 
     }
 

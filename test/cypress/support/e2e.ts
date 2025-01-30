@@ -18,3 +18,4 @@
 import './commands';
 import '../support/validations/apiCommands';
 import 'cypress-plugin-steps';
+import 'cypress-iframe';
