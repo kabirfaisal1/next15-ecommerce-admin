@@ -18,53 +18,56 @@ describe( 'Existing Admin User adding store', () =>
             token = clerkToken;
         } );
     } );
-
-    // Loop through each test in the TestList
-    TestList.forEach( ( test ) =>
+    context( 'Existing Admin User Create store API', () =>
     {
-        it( test.testDescription, () =>
+        // Loop through each test in the TestList
+        TestList.forEach( ( test ) =>
         {
-            cy.step( `Running test case: ${test.testDescription}` );
-
-            // Resolve the API endpoint dynamically
-            cy.generateStoreAPIEndpoint( test.endpoint, test.queryUser, 'DESC' ).then( ( resolvedEndpoint ) =>
+            it( test.testDescription, () =>
             {
-                cy.step( `Resolved API endpoint: ${resolvedEndpoint}` );
+                cy.step( `Running test case: ${test.testDescription}` );
 
-                // Create the request body if keys and values are provided
-                const requestBody = test.requestKeys?.length && test.requestValues?.length
-                    ? createRequestBody( test.requestKeys, test.requestValues )
-                    : null;
-
-                // Perform the API request
-                cy.request( {
-                    method: test.method as Cypress.HttpMethod,
-                    url: resolvedEndpoint,
-                    body: requestBody,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                } ).then( ( response ) =>
+                // Resolve the API endpoint dynamically
+                cy.generateStoreAPIEndpoint( test.endpoint, test.queryUser, 'DESC' ).then( ( resolvedEndpoint ) =>
                 {
-                    // Validate the response status matches the expected status
-                    cy.step( `Validate response status: ${test.expectedStatus}` );
-                    expect( response.status ).to.equal( test.expectedStatus );
+                    cy.step( `Resolved API endpoint: ${resolvedEndpoint}` );
 
-                    // Extract the response body data
-                    const data = response.body;
+                    // Create the request body if keys and values are provided
+                    const requestBody = test.requestKeys?.length && test.requestValues?.length
+                        ? createRequestBody( test.requestKeys, test.requestValues )
+                        : null;
 
-                    // If the response body contains data, validate it
-                    if ( data )
+                    // Perform the API request
+                    cy.request( {
+                        method: test.method as Cypress.HttpMethod,
+                        url: resolvedEndpoint,
+                        body: requestBody,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
+                        },
+                    } ).then( ( response ) =>
                     {
-                        cy.validateStoreResponseBody( data, test );
-                    } else
-                    {
-                        // Log a step if there is no data to validate
-                        cy.step( 'No data returned in the response body to validate' );
-                    }
+                        // Validate the response status matches the expected status
+                        cy.step( `Validate response status: ${test.expectedStatus}` );
+                        expect( response.status ).to.equal( test.expectedStatus );
+
+                        // Extract the response body data
+                        const data = response.body;
+
+                        // If the response body contains data, validate it
+                        if ( data )
+                        {
+                            cy.validateStoreResponseBody( data, test );
+                        } else
+                        {
+                            // Log a step if there is no data to validate
+                            cy.step( 'No data returned in the response body to validate' );
+                        }
+                    } );
                 } );
             } );
         } );
     } );
+
 } );

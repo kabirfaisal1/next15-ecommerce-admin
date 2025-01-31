@@ -13,34 +13,38 @@ describe( 'Store Switcher', () =>
         // Log in to the application using the Auth0 login method with the "Regular" user
         cy.loginToAuth0( "Regular" );
     } );
-    it( 'Switch Store', () =>
+    context( 'Switch Store UI Workflow', () =>
     {
-        storeSwitcher.clickOnStoreDropDown();
-        storeSwitcher.selectStore( 'Cypress UI' );
-    } );
-    it( 'Search and Switch Store', () =>
-    {
-        storeSwitcher.clickOnStoreDropDown();
-        storeSwitcher.searchForStore( 'Cypress UI' );
-        storeSwitcher.selectStore( 'Cypress UI' );
-    } );
-    it( 'Search for invalid store', () =>
-    {
-        storeSwitcher.clickOnStoreDropDown();
-        storeSwitcher.searchForStore( 'Cypress Test UI' );
-        storeSwitcher.verifySearchStoreError( 'No store found.' );
-    } );
-    it( 'Navigate to Billboard after switch', () =>
-    {
-        storeSwitcher.clickOnStoreDropDown();
-        storeSwitcher.selectStore( 'Cypress UI' );
-        cy.navigateTabItem( "Billboards" );
-    } );
-    it( 'Navigate to Setting after switch', () =>
-    {
-        storeSwitcher.clickOnStoreDropDown();
-        storeSwitcher.selectStore( 'Cypress UI' );
-        cy.navigateTabItem( "Settings" );
+        it( 'Switch Store', () =>
+        {
+            storeSwitcher.clickOnStoreDropDown();
+            storeSwitcher.selectStore( 'Cypress UI' );
+        } );
+        it( 'Search and Switch Store', () =>
+        {
+            storeSwitcher.clickOnStoreDropDown();
+            storeSwitcher.searchForStore( 'Cypress UI' );
+            storeSwitcher.selectStore( 'Cypress UI' );
+        } );
+        it( 'Search for invalid store', () =>
+        {
+            storeSwitcher.clickOnStoreDropDown();
+            storeSwitcher.searchForStore( 'Cypress Test UI' );
+            storeSwitcher.verifySearchStoreError( 'No store found.' );
+        } );
+        it( 'Navigate to Billboard after switch', () =>
+        {
+            storeSwitcher.clickOnStoreDropDown();
+            storeSwitcher.selectStore( 'Cypress UI' );
+            cy.navigateTabItem( "Billboards" );
+        } );
+        it( 'Navigate to Setting after switch', () =>
+        {
+            storeSwitcher.clickOnStoreDropDown();
+            storeSwitcher.selectStore( 'Cypress UI' );
+            cy.navigateTabItem( "Settings" );
+        } );
+
     } );
 
 
