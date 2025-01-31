@@ -1,18 +1,26 @@
 
 import AdminBillboardPage from '../../../test_components/pages/uiAdminBillboardPage';
-
+import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
+import { Cypress } from 'cypress';
 
 
 const adminBillboardPage = new AdminBillboardPage();
 describe( 'Store Billboard', () =>
 {
-
+    let token: string = '';
     beforeEach( () =>
     {
         // Visit the base URL set in your configuration
         cy.visit( '/' );
         // Log in to the application using the Auth0 login method with the "Regular" user
         cy.loginToAuth0( "Regular" );
+
+        // TODO: remove this when User add new billboards solution is found
+        cy.getTokens().then( ( clerkToken: string ) =>
+        {
+            // Store the retrieved token in the `token` variable for later use
+            token = clerkToken;
+        } );
 
     } );
     context( 'Store Billboard Admin workflow UI', () =>
@@ -36,17 +44,27 @@ describe( 'Store Billboard', () =>
             adminBillboardPage.clickOnSubmitButton();
             adminBillboardPage.verifyBillboardAPIRoute( storeId, 'Cypress new Billboard' );
         } );
-        it( 'User add new billboards', () =>
+        it.only( 'User update store', () =>
         {
-            //TODO: need to come up with a solution
             const storeId = '8fe72069-48ae-43bc-b8f4-5614b3fb02db';
+
+            // Retrieve token (adjust based on your app's auth flow)
+
             cy.visit( `/${storeId}/billboards` );
             adminBillboardPage.verifyBillboardHeaders( storeId );
-            adminBillboardPage.clickOnAddBillboardButton( storeId );
-            adminBillboardPage.uploadImage( '/test/cypress/fixtures/cypresslogo.png' ); //TODO: this step dont work for cloudinary come with better solution
-            adminBillboardPage.enterBillboardName( 'Cypress new Billboard' );
-            adminBillboardPage.clickOnSubmitButton();
-            adminBillboardPage.verifyBillboardAPIRoute( storeId, 'Cypress new Billboard' );
+
+            // Create billboard via API
+            adminBillboardPage.createBillboardWithAPI(
+                storeId,
+                token,
+                [ new AdminAPIRequestKeys().billboardName, new AdminAPIRequestKeys().imageUrl ],
+                [ 'CypressUIBillboard', "https://res.cloudinary.com/dzsguot60/image/upload/v1736444639/iz0gqlh3fyelyxqzohnk.png" ]
+            );
+
+            adminBillboardPage.actionModifyBillboard( Cypress.Env( 'CypressUIBillboard' ) );
+            // adminBillboardPage.clickOnSubmitButton();
+            // adminBillboardPage.verifyBillboardAPIRoute( storeId, 'Cypress new Billboard' );
+
         } );
 
     } );

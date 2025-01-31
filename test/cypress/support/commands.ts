@@ -40,6 +40,12 @@ declare global
 
             uploadToCloudinary ( imageUrl: string ): Chainable;
 
+            handlingTable (
+                tableRow: Chainable<JQuery<HTMLElement>>,
+                tableData: Chainable<JQuery<HTMLElement>>,
+                searchText: string
+            ): Chainable<JQuery<HTMLElement>>;
+
         }
     }
 }
@@ -265,5 +271,27 @@ Cypress.Commands.add( 'deleteObjects', ( object: boolean ) =>
     }
 } );
 
+
+
+Cypress.Commands.add( 'handlingTable', ( tableRow, tableData, searchText ) =>
+{
+    cy.log( `Searching for row containing: ${searchText}` );
+
+    return tableRow.each( ( $row, index ) =>
+    {
+        cy.wrap( $row )
+            .invoke( 'text' )
+            .then( ( text ) =>
+            {
+                if ( text.includes( searchText ) )
+                {
+                    cy.log( `Found row for ${searchText} at index ${index}` );
+
+                    // Click the corresponding action button using .eq(index)
+                    tableData.eq( index ).click();
+                }
+            } );
+    } );
+} );
 
 
