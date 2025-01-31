@@ -21,11 +21,28 @@ class AdminBillboardPage
         settingAPI_AlertURI: () => cy.get( '[data-testid="api-alert_uri"]' ),
         settingAPI_AlertClipboard: () => cy.get( '[data-testid="api-alert_copyButton"]' ),
         form_ErrorMessage: () => cy.get( '[data-testid="FormMessage"]' ),
+        getIframeDocument: () =>
+        {
+            cy.log( 'Getting getIframeDocument' );
+            return cy.get( 'iframe[data-test="uw-iframe"]', { timeout: 20000 } )
+                .should( 'be.visible' )
+                .then( ( $iframe ) =>
+                {
+                    return cy.wrap( $iframe[ 0 ].contentDocument ).should( 'exist' );
+                } );
+        },
+        getIframeBody: () =>
+        {
+            cy.log( 'Getting getIframeDocument' );
+            return cy
+                .get( 'iframe[data-test="uw-iframe"]' )
+                .its( '0.contentDocument' ).should( 'exist' );
+        },
     };
 
     verifyBillboardHeaders ( storeId: string )
     {
-        cy.step( 'Verifying Billboard Headers' );
+        cy.log( 'Verifying Billboard Headers' );
         // let billboardsQuery: string;
         const billboardsQuery = `SELECT "label" FROM public."Billboards" where "storeId" = '${storeId}' ORDER by "createdAt" DESC;`;
         cy.task( 'queryDatabase', billboardsQuery ).then( ( rows ) =>
@@ -33,10 +50,10 @@ class AdminBillboardPage
             if ( rows.length > 0 )
             {
                 const numberOfBillboards = rows.length; // Extract the store ID from the query result
-                cy.step( `Checking billboard page headers for storeId:: ${storeId}` ); // Log the resolved storeID
+                cy.log( `Checking billboard page headers for storeId:: ${storeId}` ); // Log the resolved storeID
                 this.elements.pageHeaders().should( 'be.visible' ).should( 'include.text', `Billboards (${numberOfBillboards})` )
                     .and( 'include.text', 'API Routes' );
-                cy.step( `Checking billboard page description for storeId: ${storeId}` ); // Log the resolved storeID
+                cy.log( `Checking billboard page description for storeId: ${storeId}` ); // Log the resolved storeID
                 this.elements.pageDescription().should( 'be.visible' ).should( 'include.text', 'Manage billboards for your store' ).and( 'include.text', 'API routes for managing billboards' );
 
 
@@ -50,53 +67,62 @@ class AdminBillboardPage
 
     clickOnAddBillboardButton ( storeId: string )
     {
-        cy.step( 'Clicking on Add Billboard button' );
+        cy.log( 'Clicking on Add Billboard button' );
         this.elements.addNewButton().should( 'be.visible' ).and( 'include.text', 'Add New' ).click();
-        cy.step( 'Verify navigation was successful' );
+        cy.log( 'Verify navigation was successful' );
         cy.url().should( 'include', `${storeId}/billboards/new` );
-        cy.step( 'Verify Form Header' );
+        cy.log( 'Verify Form Header' );
         this.elements.pageHeaders().should( 'be.visible' ).should( 'include.text', 'Create Billboard' );
-        cy.step( 'Verify Form Header Description' );
+        cy.log( 'Verify Form Header Description' );
         this.elements.pageDescription().should( 'be.visible' ).should( 'include.text', 'Add a new billboard' );
     }
 
-    uploadImage ( imgUrl: string )
+    uploadImage ( imgPath: string )
     {
         cy.step( 'Clicking on upload image button' );
-        cy.get( '[data-testid="billboards-backgroundImage-label"]' ).should( 'be.visible' );
-        cy.step( 'Click Uploading image' );
         this.elements.billboard_uploadImageButton().should( 'be.visible' ).click();
 
-        cy.step( 'Verifying cloudinary upload widget' );
-        const getIframeWindow = () =>
+        // Ensure the iframe is loaded before switching origins
+        cy.get( 'iframe[data-test="uw-iframe"]', { timeout: 30000 } )
+            .should( 'be.visible' )
+            .then( ( $iframe ) =>
+            {
+                const iframeSrc = $iframe.attr( 'src' );
+                cy.log( `Found iframe with src: ${iframeSrc}` );
+            } );
+
+        // Switch to Cloudinary Upload Widget's correct origin
+        cy.origin( 'https://upload-widget.cloudinary.com', { args: [ imgPath ] }, ( imgPath ) =>
         {
-            return cy
-                .get( 'iframe[title="Upload Widget"]' )
-                .its( '0.contentWindow' ).should( 'exist' );
-        };
-        getIframeWindow().then( ( win ) =>
-        {
-            cy.spy( win, 'fetch' ).as( 'fetch' );
+            cy.log( 'Switched to Cloudinary Upload Widget' );
+
+            // Wait for the upload button inside the iframe
+            cy.get( '.upload_button_holder', { timeout: 15000 } )
+                .should( 'be.visible' )
+                .click();
+
+            // Upload file
+            cy.get( 'input[type="file"]' ).selectFile( imgPath, { force: true } );
+
+            cy.log( 'File uploaded' );
         } );
 
-        cy.getIframeBody().find( '[class="cloudinary_fileupload"]' ).should( 'be.visible' ).click();
-        // // getIframeBody().find( 'input[class="cloudinary_fileupload""]' ).selectFile( imgUrl );
-
+        cy.step( 'Image upload completed' );
     }
 
 
     enterBillboardName ( label: string )
     {
-        cy.step( 'Checking Billboard name input label' );
+        cy.log( 'Checking Billboard name input label' );
         this.elements.billboard_formInputLabel().should( 'be.visible' ).should( 'include.text', 'Label' );
 
-        cy.step( `Entering Billboard name : ${label}` );
+        cy.log( `Entering Billboard name : ${label}` );
         this.elements.billboard_formLabelInputField().should( 'be.visible' ).type( label ).should( 'have.value', label );
     }
 
     clickOnSubmitButton ()
     {
-        cy.step( 'Clicking on submit button' );
+        cy.log( 'Clicking on submit button' );
 
         cy.url().then( ( currentUrl ) =>
         {
@@ -110,11 +136,11 @@ class AdminBillboardPage
                 //     // Dynamically check the button text based on the URL
                 //     if ( currentUrl.indexOf( 'new' ) !== -1 )
                 //     {
-                //         cy.step( 'Checking button title with current URL contain /new' );
+                //         cy.log( 'Checking button title with current URL contain /new' );
                 //         expect( text ).to.contain( 'Create billboard' ); // Use `.contain` for Chai assertions
                 //     } else
                 //     {
-                //         cy.step( 'Checking button title with current URL does not contain new' );
+                //         cy.log( 'Checking button title with current URL does not contain new' );
                 //         expect( text ).to.contain( 'Save changes' ); // Use `.contain` for Chai assertions
                 //     }
                 // } )
@@ -126,7 +152,7 @@ class AdminBillboardPage
     {
         cy.url().then( ( currentUrl ) =>
         {
-            cy.step( 'Checking API call' );
+            cy.log( 'Checking API call' );
 
             // Determine the API action based on the URL or environment variables
             const action = currentUrl.includes( 'new' )

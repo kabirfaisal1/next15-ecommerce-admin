@@ -18,17 +18,30 @@ describe( 'No Store Admin User', () =>
     it( 'User navigate to Billboards', () =>
     {
         // navigate to admin billboards page
-        cy.step( 'Going to billboards from navigation tab' );
+        cy.log( 'Going to billboards from navigation tab' );
         cy.navigateTabItem( "Billboards" );
 
     } );
-    it.only( 'User add new billboards', () =>
+    it.skip( 'User add new billboards', () =>
     {
+        //TODO: need to come up with a solution
         const storeId = '8fe72069-48ae-43bc-b8f4-5614b3fb02db';
         cy.visit( `/${storeId}/billboards` );
         adminBillboardPage.verifyBillboardHeaders( storeId );
         adminBillboardPage.clickOnAddBillboardButton( storeId );
-        adminBillboardPage.uploadImage( 'https://res.cloudinary.com/dzsguot60/image/upload/v1738184323/patca8js3ur05cg0fttn.png' );
+        adminBillboardPage.uploadImage( '/test/cypress/fixtures/cypresslogo.png' ); //TODO: this step dont work for cloudinary come with better solution
+        adminBillboardPage.enterBillboardName( 'Cypress new Billboard' );
+        adminBillboardPage.clickOnSubmitButton();
+        adminBillboardPage.verifyBillboardAPIRoute( storeId, 'Cypress new Billboard' );
+    } );
+    it( 'User add new billboards', () =>
+    {
+        //TODO: need to come up with a solution
+        const storeId = '8fe72069-48ae-43bc-b8f4-5614b3fb02db';
+        cy.visit( `/${storeId}/billboards` );
+        adminBillboardPage.verifyBillboardHeaders( storeId );
+        adminBillboardPage.clickOnAddBillboardButton( storeId );
+        adminBillboardPage.uploadImage( '/test/cypress/fixtures/cypresslogo.png' ); //TODO: this step dont work for cloudinary come with better solution
         adminBillboardPage.enterBillboardName( 'Cypress new Billboard' );
         adminBillboardPage.clickOnSubmitButton();
         adminBillboardPage.verifyBillboardAPIRoute( storeId, 'Cypress new Billboard' );

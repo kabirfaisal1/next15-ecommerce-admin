@@ -39,7 +39,7 @@ declare global
             deleteObjects ( object: boolean ): Chainable;
 
             uploadToCloudinary ( imageUrl: string ): Chainable;
-            getIframeBody (): Chainable<JQuery<HTMLElement>>;
+
         }
     }
 }
@@ -51,7 +51,7 @@ Cypress.Commands.add( 'loginToAuth0', ( userType: string ) =>
     const version = Cypress.env( 'version' ) || 'local';
     // Normalize the userType string by converting to lowercase and removing spaces
     const normalizedUserType = userType.toLowerCase().replace( /\s+/g, '' );
-    cy.step( normalizedUserType ); // Log the normalized user type
+    cy.log( normalizedUserType ); // Log the normalized user type
     // Determine the email based on the environment (production or local) and user type
     const email =
         version === 'production'
@@ -73,24 +73,24 @@ Cypress.Commands.add( 'loginToAuth0', ( userType: string ) =>
                 : Cypress.env( 'LocalPassword' );
 
     // Log a step for entering the email
-    cy.step( `Entering Email` );
+    cy.log( `Entering Email` );
     // Enter the email in the identifier field
     cy.get( '#identifier-field' ).type( email );
 
     // Log a step for clicking the "Continue" button after entering the email
-    cy.step( `Clicking on Continue Button after entering email` );
+    cy.log( `Clicking on Continue Button after entering email` );
     // Click the "Continue" button
     cy.get( '[data-localization-key="formButtonPrimary"]' )
         .should( 'have.text', 'Continue' )
         .click();
 
     // Log a step for entering the password
-    cy.step( `Entering password` );
+    cy.log( `Entering password` );
     // Enter the password in the password field
     cy.get( '#password-field' ).type( password, { log: false } );
 
     // Log a step for clicking the "Continue" button after entering the password
-    cy.step( `Clicking on Continue Button after entering password` );
+    cy.log( `Clicking on Continue Button after entering password` );
     // Click the "Continue" button
     cy.get( '[data-localization-key="formButtonPrimary"]' )
         .should( 'have.text', 'Continue' )
@@ -101,7 +101,7 @@ Cypress.Commands.add( 'loginToAuth0', ( userType: string ) =>
 Cypress.Commands.add( 'getTokens', () =>
 {
     // Log a step for getting tokens
-    cy.step( `Getting tokens` );
+    cy.log( `Getting tokens` );
     return cy.window().wait( 10000 ).then( ( win ) =>
     {
         // Check if the Clerk session is available
@@ -125,7 +125,7 @@ Cypress.Commands.add( 'getTokens', () =>
 // Add a custom command to interact with the navigation menu
 Cypress.Commands.add( 'navigateTabItem', ( element: string ) =>
 {
-    cy.step( `clicking on the navigation menu: ${element}` );
+    cy.log( `clicking on the navigation menu: ${element}` );
 
     switch ( element )
     {
@@ -141,9 +141,9 @@ Cypress.Commands.add( 'navigateTabItem', ( element: string ) =>
             cy.get( '[data-testid="billboards"]' )
                 .should( 'have.text', 'Billboards' )
                 .click();
-            cy.step( 'Checking URL to include Billboards' );
+            cy.log( 'Checking URL to include Billboards' );
             cy.url().should( 'include', element.toLowerCase() );
-            cy.step( 'Checking Billboards heading title to be visible' );
+            cy.log( 'Checking Billboards heading title to be visible' );
             cy.get( '[data-testid="heading-title"]' )
                 .should( 'be.visible' )
                 .and( 'include.text', 'Billboards' );
@@ -154,9 +154,9 @@ Cypress.Commands.add( 'navigateTabItem', ( element: string ) =>
             cy.get( '[data-testid="store_settings"]' )
                 .should( 'have.text', 'Settings' )
                 .click();
-            cy.step( 'Checking URL to include Settings' );
+            cy.log( 'Checking URL to include Settings' );
             cy.url().should( 'include', element.toLowerCase() );
-            cy.step( 'Checking Settings heading title to be visible' );
+            cy.log( 'Checking Settings heading title to be visible' );
             cy.get( '[data-testid="heading-title"]' )
                 .should( 'be.visible' )
                 .and( 'have.text', 'Settings' );
@@ -170,14 +170,14 @@ Cypress.Commands.add( 'navigateTabItem', ( element: string ) =>
             cy.get( '[data-clerk-component="UserButton"]' )
                 .should( 'be.visible' )
                 .click();
-            cy.step( 'Checking User Button Popover Card to be visible' );
+            cy.log( 'Checking User Button Popover Card to be visible' );
             cy.get( '[class="cl-userButtonPopoverCard cl-popoverBox cl-userButton-popover 🔒️ cl-internal-1grbo8b"]' )
                 .should( 'be.visible' );
             break;
 
         default:
             // Default to "Store Overview" navigation menu item
-            cy.step( `${element} is not found, defaulting to Store Overview` );
+            cy.log( `${element} is not found, defaulting to Store Overview` );
             cy.get( '[data-testid="store_overview"]' )
                 .should( 'have.text', 'Store Overview' )
                 .click();
@@ -218,7 +218,7 @@ Cypress.Commands.add( 'assertValueCopiedToClipboard', ( value: string ) =>
         win.navigator.clipboard.readText().then( ( text ) =>
         {
             // Log a step to validate the copied value
-            cy.step( `Checking if the value copied to clipboard contains: ${value}` );
+            cy.log( `Checking if the value copied to clipboard contains: ${value}` );
             // Assert that the clipboard text contains the expected value
             expect( text ).to.include( value );
         } );
@@ -230,14 +230,14 @@ Cypress.Commands.add( 'assertValueCopiedToClipboard', ( value: string ) =>
 Cypress.Commands.add( 'deleteObjects', ( object: boolean ) =>
 {
     // Log a step to verify the delete dialog title
-    cy.step( `Checking delete Dialog Title` );
+    cy.log( `Checking delete Dialog Title` );
     // Assert that the delete dialog title is visible and contains the correct text
     cy.get( '[data-testid="modal_DialogTitle"]' )
         .should( 'be.visible' )
         .and( 'have.text', 'Are you sure?' );
 
     // Log a step to verify the delete dialog description
-    cy.step( `Checking delete Dialog Description` );
+    cy.log( `Checking delete Dialog Description` );
     // Assert that the delete dialog description is visible and contains the correct text
     cy.get( '[data-testid="modal_DialogDescription"]' )
         .should( 'be.visible' )
@@ -247,7 +247,7 @@ Cypress.Commands.add( 'deleteObjects', ( object: boolean ) =>
     if ( object === true )
     {
         // Log a step to indicate the confirm delete button will be clicked
-        cy.step( `Clicking on Confirm Delete Button` );
+        cy.log( `Clicking on Confirm Delete Button` );
         // Click the "Confirm" button if the object parameter is `true`
         cy.get( '[data-testid="modal_DialogChildren"] button' )
             .contains( 'Confirm' )
@@ -256,7 +256,7 @@ Cypress.Commands.add( 'deleteObjects', ( object: boolean ) =>
     } else
     {
         // Log a step to indicate the cancel delete button will be clicked
-        cy.step( `Clicking on Cancel Delete Button` );
+        cy.log( `Clicking on Cancel Delete Button` );
         // Click the "Cancel" button if the object parameter is `false`
         cy.get( '[data-testid="modal_DialogChildren"] button' )
             .contains( 'Cancel' )
@@ -267,17 +267,3 @@ Cypress.Commands.add( 'deleteObjects', ( object: boolean ) =>
 
 
 
-Cypress.Commands.add( 'getIframeBody', () =>
-{
-    // get the iframe > document > body
-    // and retry until the body element is not empty
-    cy.log( 'getIframeBody' );
-
-    return cy
-        .get( 'iframe[data-cy="the-frame"]', { log: false } )
-        .its( '0.contentDocument.body', { log: false } ).should( 'not.be.empty' )
-        // wraps "body" DOM element to allow
-        // chaining more Cypress commands, like ".find(...)"
-        // https://on.cypress.io/wrap
-        .then( ( body ) => cy.wrap( body, { log: false } ) );
-} );
