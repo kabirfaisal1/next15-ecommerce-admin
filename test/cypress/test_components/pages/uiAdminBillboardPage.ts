@@ -15,7 +15,7 @@ class AdminBillboardPage
         billboardDataTable: () => cy.get( '[data-testid="data-table"]' ),
         billboardDataTableRow: () => cy.get( '[data-testid="data-tableBodyRows"]' ),
         billBoardActionColumn: () => cy.get( '[data-testid="cellAction-dropdownMenuTrigger"]' ),
-
+        billBoardActionModifyItem: () => cy.get( '[data-testid= "cellAction-modifyItem"]' ),
         settingAPI_Alert: () => cy.get( '[data-testid="api-alert_NEXT_PUBLIC_API_URL"]' ),
         settingAPI_AlertURI: () => cy.get( '[data-testid="api-alert_uri"]' ),
         settingAPI_AlertClipboard: () => cy.get( '[data-testid="api-alert_copyButton"]' ),
@@ -71,9 +71,6 @@ class AdminBillboardPage
             {
                 expect( data.id ).to.exist;
                 cy.step( `Created Billboard ID: ${data.id} and saved in env file as CypressUIBillboard` );
-
-                // Store the ID in Cypress.env for later use
-                Cypress.env( 'CypressUIBillboard', data.id );
 
                 // Optionally store in Cypress alias for use in the same test
                 cy.wrap( data.id ).as( 'createdBillboardId' );
@@ -163,7 +160,7 @@ class AdminBillboardPage
         this.elements.billboard_formInputLabel().should( 'be.visible' ).should( 'include.text', 'Label' );
 
         cy.log( `Entering Billboard name : ${label}` );
-        this.elements.billboard_formLabelInputField().should( 'be.visible' ).type( label ).should( 'have.value', label );
+        this.elements.billboard_formLabelInputField().should( 'be.visible' ).clear().type( label ).should( 'have.value', label );
     }
 
     clickOnSubmitButton ()
@@ -194,14 +191,30 @@ class AdminBillboardPage
         } );
     }
 
-    actionModifyBillboard ( billboardName: string )
+    actionModifyBillboard ( billboardLabel: string )
     {
-        cy.step( `Going to Modify ${billboardName}` );
-        cy.handlingTable( this.elements.billboardDataTableRow(), this.elements.billBoardActionColumn(), billboardName );
+        cy.step( `Going to Modify ${billboardLabel}` );
+        cy.handlingTable(
+            this.elements.billboardDataTableRow(),
+            this.elements.billBoardActionColumn(), // Passing as Cypress Chainable
+            billboardLabel
+        );
+
+        cy.step( 'Click on modify from drop down list' );
+        // Ensure dropdown opens before clicking "Modify"
+        this.elements.billBoardActionModifyItem()
+            .should( 'be.visible' )
+            .and( 'have.text', 'Modify' )
+            .click();
+
+
+        cy.step( `Checking correct Billboard name : ${billboardLabel} was selected` );
+        this.elements.billboard_formLabelInputField().should( 'be.visible' ).and( 'have.value', billboardLabel );
     }
 
-    actionCopyBillboard ( billboardName: string ) { }
-    actionDeleteBillboard ( billboardName: string ) { }
+
+    actionCopyBillboard ( billboardLabel: string ) { }
+    actionDeleteBillboard ( billboardLabel: string ) { }
     verifyBillboardAPIRoute ( storeId: string, billboardLabel: string )
     {
         cy.url().then( ( currentUrl ) =>

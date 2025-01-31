@@ -1,7 +1,7 @@
 
 import AdminBillboardPage from '../../../test_components/pages/uiAdminBillboardPage';
 import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
-import { Cypress } from 'cypress';
+
 
 
 const adminBillboardPage = new AdminBillboardPage();
@@ -61,7 +61,7 @@ describe( 'Store Billboard', () =>
                 [ 'CypressUIBillboard', "https://res.cloudinary.com/dzsguot60/image/upload/v1736444639/iz0gqlh3fyelyxqzohnk.png" ]
             );
 
-            adminBillboardPage.actionModifyBillboard( Cypress.Env( 'CypressUIBillboard' ) );
+            adminBillboardPage.actionModifyBillboard( 'CypressUIBillboard' );
             // adminBillboardPage.clickOnSubmitButton();
             // adminBillboardPage.verifyBillboardAPIRoute( storeId, 'Cypress new Billboard' );
 
