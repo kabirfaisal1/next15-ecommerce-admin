@@ -117,13 +117,14 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 			);
 			router.push(`/${params.storeId}/billboards`);
 			toast.success('Billboard deleted successfully');
-		} catch (err) {
-			handleAPIError(err);
-			toast.error(
-				`Make sure you remove all categories using for billboard: ${
-					typeof params.label === 'string' ? params.label.toUpperCase() : ''
-				}`,
-			);
+		} catch (err: any) {
+			if (err.response?.status === 400) {
+				toast.error(
+					'Make sure you remove all categories linked to this billboard before deleting.',
+				);
+			} else {
+				toast.error('Something went wrong.');
+			}
 		} finally {
 			setLoading(false);
 			setDialogOpen(false);
