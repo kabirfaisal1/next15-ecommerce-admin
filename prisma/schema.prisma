@@ -29,14 +29,15 @@ datasource db {
 /// - `createdAt`: The timestamp when the store was created, with a default value of the current time.
 /// - `updatedAt`: The timestamp when the store was last updated, automatically set to the current time on update.
 model Stores {
-  id         String       @id @default(uuid())
-  name       String
-  userId     String
-  billboards Billboards[] @relation("StoreToBillboard") // Match relation name here
-  categories Categories[]   @relation("StoreToCategory") // Match relation name here
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  id              String    @id @default(uuid())
+  name            String
+  userId          String
+  billboards      Billboards[] @relation("StoreToBillboard")
+  categories      Categories[] @relation("StoreToCategory")
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 }
+
 
 /// The `Billboards` model represents a billboard entity in the database.
 /// 
@@ -53,11 +54,11 @@ model Stores {
 /// - `storeId`: An index on the `storeId` field to optimize queries filtering by store.
 model Billboards {
   id          String @id @default(uuid())
-  label       String
   storeId     String
-  store       Stores   @relation("StoreToBillboard", fields: [storeId], references: [id]) // Ensure this matches the name
+  store       Stores @relation("StoreToBillboard", fields: [storeId], references: [id])
+  label       String
   imageUrl    String
-  categories  Categories[]  
+  categories  Categories[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -81,14 +82,14 @@ model Billboards {
 /// - `@@index([storeId])`: Index on the `storeId` field.
 /// - `@@index([billboardId])`: Index on the `billboardId` field.
 model Categories {
-  id          String @id @default(uuid())
+  id          String      @id @default(uuid())
+  storeId     String      // Foreign Key to Store
+  store       Stores       @relation("StoreToCategory", fields: [storeId], references: [id])
+  billboardId String      // Foreign Key to Billboard
+  billboard   Billboards   @relation(fields: [billboardId], references: [id])
   name        String
-  storeId     String
-  store       Stores   @relation("StoreToCategory", fields: [storeId], references: [id]) // Ensure this matches the name
-  billboardId String
-  billboard   Billboards @relation(fields: [billboardId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@index([storeId])
   @@index([billboardId])
