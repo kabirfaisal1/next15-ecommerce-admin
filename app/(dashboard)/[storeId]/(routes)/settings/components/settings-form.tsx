@@ -115,17 +115,18 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 	const onDelete = async () => {
 		try {
 			setLoading(true);
-			// Make an API call to create a new store with the form values
 			await axios.delete(`/api/stores/${params.storeId}`);
-			// Refresh the router to reflect the changes
 			router.refresh();
 			router.push('/');
 			toast.success('Store deleted successfully');
-		} catch (error) {
-			toast.error(
-				'Make sure you remove all the products and categories first.',
-			);
-			console.error(error);
+		} catch (error: unknown) {
+			if (error.response?.status === 400) {
+				toast.error(
+					'Make sure you remove all categories linked to this billboard before deleting.',
+				);
+			} else {
+				toast.error('Something went wrong.');
+			}
 		} finally {
 			setLoading(false);
 			setOpen(false);

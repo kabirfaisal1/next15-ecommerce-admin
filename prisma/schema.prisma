@@ -29,13 +29,15 @@ datasource db {
 /// - `createdAt`: The timestamp when the store was created, with a default value of the current time.
 /// - `updatedAt`: The timestamp when the store was last updated, automatically set to the current time on update.
 model Stores {
-  id        String       @id @default(uuid())
-  name      String
-  userId    String
-  billboards Billboards[] @relation("StoreToBillboard") // Match relation name here
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id              String    @id @default(uuid())
+  name            String
+  userId          String
+  billboards      Billboards[] @relation("StoreToBillboard")
+  categories      Categories[] @relation("StoreToCategory")
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 }
+
 
 /// The `Billboards` model represents a billboard entity in the database.
 /// 
@@ -53,11 +55,42 @@ model Stores {
 model Billboards {
   id          String @id @default(uuid())
   storeId     String
-  store     Stores   @relation("StoreToBillboard", fields: [storeId], references: [id]) // Ensure this matches the name
+  store       Stores @relation("StoreToBillboard", fields: [storeId], references: [id])
   label       String
   imageUrl    String
+  categories  Categories[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([storeId])
+}
+
+/// The `Categories` model represents the categories in the e-commerce application.
+/// Each category is associated with a store and a billboard.
+/// 
+/// Fields:
+/// - `id`: The unique identifier for the category, generated as a UUID.
+/// - `name`: The name of the category.
+/// - `storeId`: The identifier of the store to which the category belongs.
+/// - `store`: The store associated with the category, defined by the `StoreToCategory` relation.
+/// - `billboardId`: The identifier of the billboard associated with the category.
+/// - `billboard`: The billboard associated with the category.
+/// - `createdAt`: The timestamp when the category was created, with a default value of the current time.
+/// - `updatedAt`: The timestamp when the category was last updated, automatically set to the current time on update.
+///
+/// Indexes:
+/// - `@@index([storeId])`: Index on the `storeId` field.
+/// - `@@index([billboardId])`: Index on the `billboardId` field.
+model Categories {
+  id          String      @id @default(uuid())
+  storeId     String      // Foreign Key to Store
+  store       Stores       @relation("StoreToCategory", fields: [storeId], references: [id])
+  billboardId String      // Foreign Key to Billboard
+  billboard   Billboards   @relation(fields: [billboardId], references: [id])
+  name        String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([storeId])
+  @@index([billboardId])
 }

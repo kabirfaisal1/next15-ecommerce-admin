@@ -31,7 +31,7 @@ export async function GET (
 
 export async function DELETE (
     req: Request,
-    { params }: { params: { billboardId: string, storeId: string; }; }
+    { params }: { params: { billboardId: string; storeId: string; }; }
 )
 {
     try
@@ -60,23 +60,40 @@ export async function DELETE (
             return new NextResponse( "Unauthorized", { status: 405 } );
         }
 
-        const billboard = await prismadb.billboards.delete({
+        // Check if there are any categories linked to this billboard
+        const categoryCount = await prismadb.categories.count( {
             where: {
-            id: params.billboardId,
+                billboardId: params.billboardId,
             }
-        });
+        } );
 
-        if (!billboard) {
-            return new NextResponse("Billboard not found", { status: 204 });
+        if ( categoryCount > 0 )
+        {
+            return new NextResponse(
+                `Make sure you remove all categories linked to this billboard before deleting.`,
+                { status: 400 }
+            );
+        }
+
+        // Delete the billboard
+        const billboard = await prismadb.billboards.delete( {
+            where: {
+                id: params.billboardId,
+            }
+        } );
+
+        if ( !billboard )
+        {
+            return new NextResponse( "Billboard not found", { status: 204 } );
         }
 
         return NextResponse.json( billboard );
     } catch ( error )
     {
-        console.log( '[BILLBOARD_DELETE]', error );
+        console.log( "[BILLBOARD_DELETE]", error );
         return new NextResponse( "Internal error", { status: 500 } );
     }
-};
+}
 
 
 export async function PATCH (

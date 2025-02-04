@@ -40,6 +40,12 @@ export function MainNav({
 			id: 'billboards',
 		},
 		{
+			href: `/${params.storeId}/categories`,
+			label: 'Categories',
+			active: pathname === `/${params.storeId}/categories`,
+			id: 'categories',
+		},
+		{
 			href: `/${params.storeId}/settings`,
 			label: 'Settings',
 			active: pathname === `/${params.storeId}/settings`,

@@ -80,7 +80,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 						data-testid='upload-image'
 					>
 						<ImagePlus />
-						upload image
+						Upload Image
 					</Button>
 				)}
 			</CldUploadWidget>
