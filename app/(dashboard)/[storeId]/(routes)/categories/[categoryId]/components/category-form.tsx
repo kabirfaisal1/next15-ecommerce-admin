@@ -2,7 +2,7 @@
 //global import
 import * as z from 'zod';
 import React from 'react';
-import { Billboards } from '@prisma/client';
+import { Categories } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,22 +37,20 @@ import {
 import toast from 'react-hot-toast';
 
 const formSchema = z.object({
-	label: z
+	name: z
 		.string()
 		.min(1, 'Name is required')
 		.max(21, 'Name must be less than 21 characters'),
-	imageUrl: z.string().min(1),
+	CategoryId: z.string().min(1),
 });
 
-type BillboardFormValues = z.infer<typeof formSchema>;
+type CategoryFormValues = z.infer<typeof formSchema>;
 
-interface BillboardFormProps {
-	initialData: Billboards | null;
+interface CategoryFormProps {
+	initialData: Categories | null;
 }
 
-export const BillboardForm: React.FC<BillboardFormProps> = ({
-	initialData,
-}) => {
+export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
@@ -60,11 +58,10 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 	const params = useParams();
 	const router = useRouter();
 
-	const form = useForm<BillboardFormValues>({
+	const form = useForm<CategoryFormValues>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			label: initialData?.label || '',
-			imageUrl: initialData?.imageUrl || '',
+			name: initialData?.name || '',
 		},
 	});
 
@@ -76,28 +73,28 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 		}
 	};
 
-	const title = initialData ? 'Edit billboard' : 'Create Billboard';
-	const description = initialData ? 'Edit billboard' : 'Add a new billboard';
-	const action = initialData ? 'Save changes' : 'Create billboard';
+	const title = initialData ? 'Edit Category' : 'Create Category';
+	const description = initialData ? 'Edit Category' : 'Add a new Category';
+	const action = initialData ? 'Save changes' : 'Create Category';
 	const toastMessage = initialData
-		? 'Billboard updated'
-		: 'Billboard created successfully';
+		? 'Category updated'
+		: 'Category created successfully';
 
-	const onSubmit = async (data: BillboardFormValues) => {
+	const onSubmit = async (data: CategoryFormValues) => {
 		setLoading(true);
 		setError(null);
 		try {
 			if (initialData) {
 				await axios.patch(
-					`/api/${params.storeId}/billboards/${params.billboardId}`,
+					`/api/${params.storeId}/categories/${params.CategoryId}`,
 					data,
 				);
 			} else {
-				await axios.post(`/api/${params.storeId}/billboards`, data);
+				await axios.post(`/api/${params.storeId}/categories`, data);
 			}
 			router.refresh();
 			toast.success(toastMessage);
-			router.push(`/${params.storeId}/billboards`);
+			router.push(`/${params.storeId}/categories`);
 		} catch (err) {
 			handleAPIError(err);
 			console.log(err);
@@ -113,14 +110,14 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 
 		try {
 			await axios.delete(
-				`/api/${params.storeId}/billboards/${params.billboardId}`,
+				`/api/${params.storeId}/categories/${params.CategoryId}`,
 			);
-			router.push(`/${params.storeId}/billboards`);
-			toast.success('Billboard deleted successfully');
+			router.push(`/${params.storeId}/categories`);
+			toast.success('Category deleted successfully');
 		} catch (err) {
 			handleAPIError(err);
 			toast.error(
-				`Make sure you remove all categories using for billboard: ${
+				`Make sure you remove all categories using for Category: ${
 					typeof params.label === 'string' ? params.label.toUpperCase() : ''
 				}`,
 			);
@@ -141,7 +138,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 						size='icon'
 						onClick={() => setDialogOpen(true)}
 						disabled={loading}
-						data-testid='billboards-delete-button'
+						data-testid='Categorys-delete-button'
 					>
 						<Trash className='h-4 w-4' />
 					</Button>
@@ -157,12 +154,12 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
 					<FormField
-						data-testid='billboards-formField'
+						data-testid='Categorys-formField'
 						control={form.control}
 						name='imageUrl'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel data-testid='billboards-backgroundImage-label'>
+								<FormLabel data-testid='Categorys-backgroundImage-label'>
 									Background Image
 								</FormLabel>
 
@@ -183,16 +180,16 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 							name='label'
 							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel data-testid='billboards-labelSubtitle'>
+									<FormLabel data-testid='Categorys-labelSubtitle'>
 										Label
 									</FormLabel>
 
 									<FormControl>
 										<div className='flex items-center'>
 											<Input
-												data-testid='billboards-labelInput'
+												data-testid='Categorys-labelInput'
 												disabled={loading}
-												placeholder='Billboard name'
+												placeholder='Category name'
 												maxLength={21}
 												{...field}
 											/>
@@ -208,7 +205,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 					</div>
 					<Button
 						type='submit'
-						data-testid='billboards-submitButton'
+						data-testid='Categorys-submitButton'
 						disabled={loading}
 					>
 						{loading ? 'Saving...' : action}
@@ -223,20 +220,20 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 						<DialogTitle>Confirm Deletion</DialogTitle>
 					</DialogHeader>
 					<p>
-						Are you sure you want to delete this billboard? This action cannot
-						be undone.
+						Are you sure you want to delete this Category? This action cannot be
+						undone.
 					</p>
 					<DialogFooter>
 						<Button
 							variant='outline'
 							onClick={() => setDialogOpen(false)}
 							disabled={loading}
-							data-testid='billboards-cancelButton'
+							data-testid='Categorys-cancelButton'
 						>
 							Cancel
 						</Button>
 						<Button
-							data-testid='billboards-deleteButton'
+							data-testid='Categorys-deleteButton'
 							variant='destructive'
 							onClick={onDelete}
 							disabled={loading}
