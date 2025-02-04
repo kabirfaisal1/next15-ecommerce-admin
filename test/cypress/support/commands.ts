@@ -289,7 +289,7 @@ Cypress.Commands.add( 'handlingTable', ( tableRowSelector, tableColumnSelector, 
                     cy.log( `Found row for ${searchText} at index ${index}` );
 
                     // Click the action button matching the correct index
-                    tableColumnSelector.eq( index ).should( 'be.visible' ).click();
+                    tableColumnSelector.eq(index).should( 'be.visible' ).click();
                 }
             } );
     } );

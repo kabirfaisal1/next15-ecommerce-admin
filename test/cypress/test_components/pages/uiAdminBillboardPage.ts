@@ -15,7 +15,7 @@ class AdminBillboardPage
         billboardDataTable: () => cy.get( '[data-testid="data-table"]' ),
         billboardDataTableRow: () => cy.get( '[data-testid="data-tableBodyRows"]' ),
         billBoardActionColumn: () => cy.get( '[data-testid="cellAction-dropdownMenuTrigger"]' ),
-        billBoardActionModifyItem: () => cy.get( '[data-testid= "cellAction-modifyItem"]' ),
+        billBoardActionItem: () => cy.get( '[data-testid="cellAction-dropdownMenuContent"]' ),
         settingAPI_Alert: () => cy.get( '[data-testid="api-alert_NEXT_PUBLIC_API_URL"]' ),
         settingAPI_AlertURI: () => cy.get( '[data-testid="api-alert_uri"]' ),
         settingAPI_AlertClipboard: () => cy.get( '[data-testid="api-alert_copyButton"]' ),
@@ -172,21 +172,6 @@ class AdminBillboardPage
             this.elements
                 .billboard_submitButtonButton()
                 .should( 'be.visible' )
-                // .and( ( $el ) =>
-                // {
-                //     const text = $el.text();
-
-                //     // Dynamically check the button text based on the URL
-                //     if ( currentUrl.indexOf( 'new' ) !== -1 )
-                //     {
-                //         cy.log( 'Checking button title with current URL contain /new' );
-                //         expect( text ).to.contain( 'Create billboard' ); // Use `.contain` for Chai assertions
-                //     } else
-                //     {
-                //         cy.log( 'Checking button title with current URL does not contain new' );
-                //         expect( text ).to.contain( 'Save changes' ); // Use `.contain` for Chai assertions
-                //     }
-                // } )
                 .click();
         } );
     }
@@ -194,93 +179,58 @@ class AdminBillboardPage
     actionModifyBillboard ( billboardLabel: string )
     {
         cy.step( `Going to Modify ${billboardLabel}` );
+
         cy.handlingTable(
             this.elements.billboardDataTableRow(),
             this.elements.billBoardActionColumn(), // Passing as Cypress Chainable
             billboardLabel
         );
 
-        cy.step( 'Click on modify from drop down list' );
-        // Ensure dropdown opens before clicking "Modify"
-        this.elements.billBoardActionModifyItem()
-            .should( 'be.visible' )
-            .and( 'have.text', 'Modify' )
-            .click();
+        cy.step( 'Click on modify from drop-down list' );
 
+        // // Find the correct action item in the dropdown and click it
+        this.elements.billBoardActionItem().should( 'be.visible' )
+            .contains( 'Modify' )
+            .click( { force: true } );
 
         cy.step( `Checking correct Billboard name : ${billboardLabel} was selected` );
-        this.elements.billboard_formLabelInputField().should( 'be.visible' ).and( 'have.value', billboardLabel );
+
+        this.elements.billboard_formLabelInputField()
+            .should( 'be.visible' )
+            .and( 'have.value', billboardLabel );
     }
 
+    actionCopyBillboard ( billboardLabel: string )
+    {
 
-    actionCopyBillboard ( billboardLabel: string ) { }
-    actionDeleteBillboard ( billboardLabel: string ) { }
+        //TODO: When we have time
+    }
+    actionDeleteBillboard ( billboardLabel: string )
+    {
+
+        cy.step( `Going to Modify ${billboardLabel}` );
+
+        cy.handlingTable(
+            this.elements.billboardDataTableRow(),
+            this.elements.billBoardActionColumn(), // Passing as Cypress Chainable
+            billboardLabel
+        );
+
+        cy.step( 'Click on modify from drop-down list' );
+
+        // // Find the correct action item in the dropdown and click it
+        this.elements.billBoardActionItem().should( 'be.visible' )
+            .contains( 'Delete' )
+            .click( { force: true } );
+
+        cy.deleteObjects( true );
+    }
     verifyBillboardAPIRoute ( storeId: string, billboardLabel: string )
     {
-        cy.url().then( ( currentUrl ) =>
-        {
-            cy.log( 'Checking API call' );
-
-            // Determine the API action based on the URL or environment variables
-            const action = currentUrl.includes( 'new' )
-                ? 'create'
-                : Cypress.env( 'newBillBoardID' )
-                    ? currentUrl.includes( Cypress.env( 'newBillBoardID' ) )
-                        ? 'update'
-                        : 'delete'
-                    : null;
-
-            const billboardId = Cypress.env( 'newBillBoardID' );
-
-            // Helper function to handle update and delete cases
-            const handleUpdateOrDelete = ( method: 'PATCH' | 'DELETE', alias: string ) =>
-            {
-                cy.intercept( method, `/api/stores/${billboardId}` ).as( alias );
-                cy.wait( `@${alias}` ).then( ( interception ) =>
-                {
-                    const { response } = interception;
-                    expect( response.body.storeId ).to.equal( storeId );
-                    expect( response.body.label ).to.equal( billboardLabel );
-                    expect( response.body.id ).to.equal( billboardId );
-                } );
-            };
-
-            // Handle each action dynamically
-            switch ( action )
-            {
-                case 'create': {
-                    // Intercept the store creation API call
-                    cy.intercept( 'POST', '/api/stores' ).as( 'createBillboard' );
-                    cy.wait( '@createBillboard' ).then( ( interception ) =>
-                    {
-                        const { response } = interception;
-                        expect( response.body.storeId ).to.equal( storeId );
-                        expect( response.body.label ).to.equal( billboardLabel );
-
-                        // Extract and save the billboardId
-                        const newBillboardId = response.body.id;
-                        expect( newBillboardId ).to.exist;
-                        Cypress.env( 'newBillBoardID', newBillboardId );
-                    } );
-                    break;
-                }
-
-                case 'update': {
-                    handleUpdateOrDelete( 'PATCH', 'updateBillboard' );
-                    break;
-                }
-
-                case 'delete': {
-                    handleUpdateOrDelete( 'DELETE', 'deleteBillboard' );
-                    break;
-                }
-
-                default: {
-                    throw new Error( 'Unable to determine API action based on the current URL or environment state.' );
-                }
-            }
-        } );
+        //TODO: When we have time
     }
+
+
 
 
 

@@ -44,7 +44,7 @@ describe( 'Store Billboard', () =>
             adminBillboardPage.clickOnSubmitButton();
             adminBillboardPage.verifyBillboardAPIRoute( storeId, 'Cypress new Billboard' );
         } );
-        it.only( 'User update store', () =>
+        it( 'User update store', () =>
         {
             const storeId = '8fe72069-48ae-43bc-b8f4-5614b3fb02db';
 
@@ -60,10 +60,21 @@ describe( 'Store Billboard', () =>
                 [ new AdminAPIRequestKeys().billboardName, new AdminAPIRequestKeys().imageUrl ],
                 [ 'CypressUIBillboard', "https://res.cloudinary.com/dzsguot60/image/upload/v1736444639/iz0gqlh3fyelyxqzohnk.png" ]
             );
-
             adminBillboardPage.actionModifyBillboard( 'CypressUIBillboard' );
-            // adminBillboardPage.clickOnSubmitButton();
-            // adminBillboardPage.verifyBillboardAPIRoute( storeId, 'Cypress new Billboard' );
+            adminBillboardPage.enterBillboardName( 'ToBeDeleted' );
+            adminBillboardPage.clickOnSubmitButton();
+
+        } );
+
+        it( 'User delete store', () =>
+        {
+            const storeId = '8fe72069-48ae-43bc-b8f4-5614b3fb02db';
+
+            // Retrieve token (adjust based on your app's auth flow)
+
+            cy.visit( `/${storeId}/billboards` );
+            adminBillboardPage.verifyBillboardHeaders( storeId );
+            adminBillboardPage.actionDeleteBillboard( 'ToBeDeleted' );
 
         } );
 
