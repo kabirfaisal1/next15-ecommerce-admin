@@ -8,7 +8,7 @@ import axios from 'axios';
 import React from 'react';
 
 // local imports
-import { BillboardColumn } from './columns';
+import { CategoryColumn } from './columns';
 import { Button } from '@/components/ui/button';
 
 import {
@@ -23,7 +23,7 @@ import { AlertModal } from '@/components/modals/alert-modal';
 import { Alert } from '@/components/ui/alert';
 
 interface CellActionProps {
-	data: BillboardColumn;
+	data: CategoryColumn;
 }
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 	const [loading, setLoading] = useState(false);
@@ -34,13 +34,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 	const params = useParams();
 
 	/**
-	 * Copies the given billboard ID to the clipboard and displays a success toast notification.
+	 * Copies the given category ID to the clipboard and displays a success toast notification.
 	 *
-	 * @param id - The billboardID of the billboard to be copied.
+	 * @param id - The categoryID of the category to be copied.
 	 */
 	const onCopy = (id: string) => {
 		navigator.clipboard.writeText(id);
-		toast.success('Billboard Id copied to clipboard.');
+		toast.success('Category Id copied to clipboard.');
 	};
 
 	const handleAPIError = (err: unknown) => {
@@ -56,13 +56,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 		setError(null);
 
 		try {
-			await axios.delete(`/api/${params.storeId}/billboards/${data.id}`);
-			router.push(`/${params.storeId}/billboards`); //TODO: Test this part
-			toast.success('Billboard deleted successfully');
+			await axios.delete(`/api/${params.storeId}/categories/${data.id}`);
+			router.push(`/${params.storeId}/categories`); //TODO: Test this part
+			toast.success('Category deleted successfully');
 		} catch (err) {
 			handleAPIError(err);
 			toast.error(
-				`Make sure you remove all categories using for billboard: ${
+				`Make sure you remove all categories using for category: ${
 					typeof params.label === 'string' ? params.label.toUpperCase() : ''
 				}`,
 			);
@@ -106,7 +106,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 					<DropdownMenuItem
 						data-testid='cellAction-modifyItem'
 						onClick={() =>
-							router.push(`/${params.storeId}/billboards/${data.id}`)
+							router.push(`/${params.storeId}/categories/${data.id}`)
 						}
 					>
 						<FilePenLine className='mr-2 h-4 w-4' />

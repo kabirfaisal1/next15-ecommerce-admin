@@ -24,11 +24,11 @@ export const CategoryClient: React.FC<CategoryClientProps> = ({ data }) => {
 			<div className='flex items-center justify-between'>
 				<Heading
 					title={`Categories (${data.length})`}
-					description='Manage billboards for your store'
+					description='Manage category for your store'
 				/>
 				<Button
-					data-testid='add-billboardClient-button'
-					onClick={() => router.push(`/${params.storeId}/billboards/new`)}
+					data-testid='add-categoryClient-button'
+					onClick={() => router.push(`/${params.storeId}/categories/new`)}
 				>
 					<Plus className='mr-2 h-4 w-4' /> Add New
 				</Button>
@@ -37,10 +37,10 @@ export const CategoryClient: React.FC<CategoryClientProps> = ({ data }) => {
 			<DataTable searchKey='label' columns={columns} data={data} />
 			<Heading
 				title='API Routes'
-				description='API routes for managing billboards'
+				description='API routes for managing category'
 			/>
 			<Separator />
-			<ApiList entityName='billboards' entityIdName='billboardId' />
+			<ApiList entityName='categories' entityIdName='categoryId' />
 		</React.Fragment>
 	);
 };
