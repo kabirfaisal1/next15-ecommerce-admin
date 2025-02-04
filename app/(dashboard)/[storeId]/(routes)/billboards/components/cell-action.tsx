@@ -92,7 +92,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 						<MoreHorizontal className=' h-4 w-4' />
 					</Button>
 				</DropdownMenuTrigger>
-				<DropdownMenuContent>
+				<DropdownMenuContent data-testid='cellAction-dropdownMenuContent'>
 					<DropdownMenuLabel data-testid='cellAction-dropdownMenuLabel'>
 						Action
 					</DropdownMenuLabel>

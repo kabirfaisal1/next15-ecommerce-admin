@@ -69,7 +69,6 @@ export async function DELETE ( req: Request,
         const store = await prismadb.stores.deleteMany( {
             where: { id: params.storeId, userId }
         } );
-        console.log( store );
         // Return the created store record as a JSON response with a 200 (DELETE) updated status
         return NextResponse.json( store, { status: 200 } );
 

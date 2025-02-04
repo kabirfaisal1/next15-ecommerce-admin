@@ -2,26 +2,41 @@
 
 module.exports = {
   root: true,
-  env: { browser: true, es2020: true, node: true, "cypress/globals": true },
+  env: { browser: true, es2020: true, es6: true, node: true, 'cypress/globals': true },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
     'plugin:prettier/recommended',
     'next/core-web-vitals',
-    'plugin:cypress/recommended'
+    'plugin:cypress/recommended',
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh', 'import', '@typescript-eslint', 'cypress'],
   rules: {
+    '@typescript-eslint/no-require-imports': 'off',
     'react-refresh/only-export-components': [
       'error',
       { allowConstantExport: true },
+
     ],
+    '@typescript-eslint/no-unused-expressions': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      'error',
+      { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }, // Ignore variables starting with "_"
+    ],
+    "@typescript-eslint/ban-ts-comment": "off",
     'react/prop-types': ['error', {
       'ignore': ['data-testid', 'testid']
     }],
+    ignores: [
+      '.next/', // Ignore the .next directory
+      'dist/', // Ignore the dist directory
+      'node_modules/', // Ignore node_modules
+    ],
     'cypress/no-assigning-return-values': 'error',
     'cypress/no-unnecessary-waiting': 'error',
     'cypress/assertion-before-screenshot': 'error',
