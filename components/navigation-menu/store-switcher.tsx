@@ -84,7 +84,10 @@ export default function StoreSwitcher({
 					<ChevronsUpDown className='ml-auto h-4 w-4 shrink-0 opacity-50' />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className='w-[200px] p-0'>
+			<PopoverContent
+				data-testid='store_switcher_PopoverContent'
+				className='w-[200px] p-0'
+			>
 				<Command>
 					<CommandList>
 						<CommandInput
@@ -100,7 +103,6 @@ export default function StoreSwitcher({
 									key={store.value}
 									onSelect={() => onStoreSelect(store)}
 									className='text-sm'
-									data-testid={`${store.label}_item`}
 								>
 									<Store
 										className='mr-2 h-4 w-4'

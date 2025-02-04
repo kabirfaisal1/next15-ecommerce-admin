@@ -97,7 +97,6 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 	 * @returns {Promise<void>} A promise that resolves when the submission is complete.
 	 */
 	const onSubmit = async (data: SettingFormValues) => {
-		console.log(data);
 		try {
 			setLoading(true);
 			// Make an API call to create a new store with the form values
