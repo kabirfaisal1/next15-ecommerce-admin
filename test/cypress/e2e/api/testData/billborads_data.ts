@@ -5,6 +5,7 @@ import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
  */
 export interface TestData
 {
+    testRunner?: string;
     testDescription: string;
     endpoint: string;
     method: string;
@@ -44,6 +45,7 @@ export const TestList: TestData[] = [
         expectedResponseBillboardId: true,
     },
     {
+
         testDescription: 'Get all billboards for store',
         endpoint: `/api/${STORE_ID}/billboards`,
         method: 'GET',
@@ -71,6 +73,7 @@ export const TestList: TestData[] = [
         expectedResponseImageUrl: TEST_IMAGE_URL,
     },
     {
+
         testDescription: 'Delete Billboard',
         endpoint: 'dynamic',
         queryStoreid: STORE_ID,
@@ -78,6 +81,7 @@ export const TestList: TestData[] = [
         expectedStatus: 200,
     },
     {
+
         testDescription: 'Create Billboard without Label',
         endpoint: `/api/${STORE_ID}/billboards`,
         method: 'POST',

@@ -6,6 +6,7 @@ import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
 export interface TestData
 {
     testDescription: string;
+    testRunner?: string;
     endpoint: string;
     method: string;
     requestKeys?: string[];
@@ -30,6 +31,7 @@ const BILLBOARD_ID = '84eaf450-6525-4681-8751-42f4a156820f';
  */
 export const TestList: TestData[] = [
     {
+
         testDescription: 'Create a new category',
         endpoint: `/api/${STORE_ID}/categories`,
         method: 'POST',

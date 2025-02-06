@@ -6,6 +6,7 @@ import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
 export interface TestData
 {
     testDescription: string;
+    testRunner?: string;
     endpoint: string;
     method: string;
     requestKeys?: string[];
@@ -41,6 +42,7 @@ export const TestList: TestData[] = [
         expectedResponseUseId: USER_ID,
     },
     {
+
         testDescription: 'Update store name for a user with no existing stores',
         endpoint: 'dynamic',
         method: 'PATCH',

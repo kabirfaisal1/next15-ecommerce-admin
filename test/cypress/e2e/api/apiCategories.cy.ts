@@ -78,14 +78,22 @@ describe( 'User Test Category', () =>
     /**
      * API Test context: Runs all billboard-related API tests.
      */
-    context( 'Categories API Test', () =>
+    context( 'Billboards API Test', () =>
     {
-        // Loop through each test case in the TestList and execute it
+        // Check if any test is marked as `only`
+        const hasOnlyTests = TestList.some( ( test ) => test.testRunner === 'only' );
+
         TestList.forEach( ( test ) =>
         {
-            it( test.testDescription, () =>
+            // Determine which Cypress test function to use
+            let testRunner = it;
+            if ( test.testRunner === 'skip' ) testRunner = it.skip;
+            if ( hasOnlyTests && test.testRunner !== 'only' ) testRunner = it.skip;
+            if ( test.testRunner === 'only' ) testRunner = it.only;
+
+            testRunner( test.testDescription, () =>
             {
-                performAPIRequest( test, token ); // Execute the API request for the given test case
+                performAPIRequest( test, token );
             } );
         } );
     } );

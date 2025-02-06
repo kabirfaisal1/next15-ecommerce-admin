@@ -6,6 +6,7 @@ import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
 export interface TestData
 {
     testDescription: string;
+    testRunner?: string;
     endpoint: string;
     method: string;
     requestKeys?: string[];
