@@ -2,79 +2,91 @@ import { TestList } from './testData/categories_data';
 import { createRequestBody } from '../../support/utilities/globalHelpers';
 
 
-describe( 'User Test billboards', () =>
+/**
+ * Performs an API request for a given test case.
+ * 
+ * @param test - The test case data containing endpoint, method, expected response, etc.
+ * @param token - The authentication token retrieved from login.
+ */
+const performAPIRequest = ( test: TestData, token: string ) =>
 {
-    let token: string = '';
+    // Initialize requestBody as null, will be populated if needed
+    let requestBody: Record<string, unknown> | null = null;
 
+    // Generate the API endpoint dynamically based on the test case data
+    cy.generateAPIEndpoint( 'categories', test.endpoint, test.queryStoreid, 'DESC' ).then( ( resolvedEndpoint ) =>
+    {
+        cy.step( `Performing API request to: ${resolvedEndpoint}` );
+
+        // If request body keys and values are provided, generate the request body dynamically
+        if ( test.requestKeys?.length && test.requestValues?.length )
+        {
+            requestBody = createRequestBody( test.requestKeys, test.requestValues );
+        }
+
+        // Execute the API request
+        cy.request( {
+            method: test.method as Cypress.HttpMethod, // Dynamically assign the HTTP method (GET, POST, PATCH, DELETE, etc.)
+            url: resolvedEndpoint, // Use the dynamically resolved endpoint
+            body: requestBody, // Include request body only if applicable
+            headers: {
+                'Content-Type': 'application/json', // Ensure the request is sent as JSON
+                Authorization: `Bearer ${token}`, // Attach authorization token for authentication
+            },
+            failOnStatusCode: false, // Prevent Cypress from failing on non-2xx status codes
+        } ).then( ( response ) =>
+        {
+            // Validate the response status code against the expected status
+            cy.step( `Validate response status: ${test.expectedStatus}` );
+            expect( response.status ).to.equal( test.expectedStatus );
+
+            // If the response contains a body, validate it against expected test results
+            if ( response.body )
+            {
+                cy.validateResponseBody( response.body, test );
+            } else
+            {
+                cy.step( 'No data returned in the response body to validate' );
+            }
+        } );
+    } );
+};
+
+// Main test suite for Billboard API tests
+describe( 'User Test Billboards', () =>
+{
+    let token: string = ''; // Variable to store authentication token
+
+    /**
+     * Before each test, perform the following setup:
+     * 1. Visit the application homepage.
+     * 2. Log in using Auth0 authentication.
+     * 3. Retrieve an authentication token.
+     */
     beforeEach( () =>
     {
-        // Navigate to the base URL of the application
-        cy.visit( '/' );
+        cy.visit( '/' ); // Navigate to the application homepage
+        cy.loginToAuth0( 'Regular' ); // Log in as a "Regular" user
 
-        // Log in to the application using the Auth0 login method with the "Regular" user
-        cy.loginToAuth0( "Regular" );
-
-        // Retrieve the authentication tokens after logging in
         cy.step( 'Retrieving authentication tokens' );
         cy.getTokens().then( ( clerkToken: string ) =>
         {
-            // Store the retrieved token in the `token` variable for later use
-            token = clerkToken;
+            token = clerkToken; // Store retrieved token for use in API requests
         } );
     } );
-    context( "Billboards API Test", () =>
+
+    /**
+     * API Test context: Runs all billboard-related API tests.
+     */
+    context( 'Billboards API Test', () =>
     {
+        // Loop through each test case in the TestList and execute it
         TestList.forEach( ( test ) =>
         {
             it( test.testDescription, () =>
             {
-                // Declare a variable to hold the request body (if applicable)
-                let requestBody: Record<string, unknown> | null = null;
-
-                // Dynamically resolve the endpoint using the custom Cypress command
-                cy.generateBillboardAPIEndpoint( test.endpoint, test.queryStoreid, "DESC" ).then( ( resolvedEndpoint ) =>
-                {
-                    // Log the resolved endpoint for debugging
-                    cy.step( `Performing API request to: ${resolvedEndpoint}` );
-
-                    // If both keys and values for the request body are provided, generate the request body
-                    if ( test.requestKeys?.length && test.requestValues?.length )
-                    {
-                        requestBody = createRequestBody( test.requestKeys, test.requestValues );
-                    }
-
-                    // Perform the API request with the dynamically resolved endpoint
-                    cy.request( {
-                        method: test.method as Cypress.HttpMethod, // Specify the HTTP method dynamically
-                        url: resolvedEndpoint,                    // Use the resolved endpoint
-                        body: requestBody,                        // Include the request body (if applicable)
-                        headers: {
-                            'Content-Type': 'application/json',   // Set the content type
-                            Authorization: `Bearer ${token}`,     // Include the authorization token
-                        },
-                        failOnStatusCode: false // Do not fail on non-2xx status codes
-                    } ).then( ( response ) =>
-                    {
-                        // Validate the response status matches the expected status
-                        cy.step( `Validate response status: ${test.expectedStatus}` );
-                        expect( response.status ).to.equal( test.expectedStatus );
-
-                        // Extract the response body data
-                        const data = response.body;
-
-                        // If the response body contains data, validate it
-                        if ( data )
-                        {
-                            cy.validateBillboardResponseBody( data, test );
-                        } else
-                        {
-                            // Log a step if there is no data to validate
-                            cy.step( 'No data returned in the response body to validate' );
-                        }
-                    } );
-                } );
+                performAPIRequest( test, token ); // Execute the API request for the given test case
             } );
         } );
     } );
-
 } );
