@@ -98,6 +98,10 @@ Cypress.Commands.add( 'validateResponseBody', ( response: any, expectedResults: 
                 cy.step( `Validated Image URL: ${expectedResults.expectedResponseImageUrl}` );
                 break;
 
+            case 'expectedResponseMessage':
+                expect( response.message ).to.equal( expectedResults.expectedResponseMessage );
+                cy.step( `Validated Message: ${expectedResults.expectedResponseMessage}` );
+                break;
             case 'expectedError':
                 expect( response ).to.equal( expectedResults.expectedError );
                 cy.step( `Validated expected error: ${expectedResults.expectedError}` );
