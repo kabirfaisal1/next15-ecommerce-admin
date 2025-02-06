@@ -176,7 +176,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
 									<FormControl>
 										<div className='flex items-center'>
 											<Input
-												data-testid='Category-NameInput'
+												data-testid='category-NameInput'
 												disabled={loading}
 												placeholder='Category name'
 												maxLength={21}
@@ -196,7 +196,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
 							name='billboardId'
 							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel data-testid='Category-BillboardSubtitle'>
+									<FormLabel data-testid='category-BillboardSubtitle'>
 										Billboard
 									</FormLabel>
 
