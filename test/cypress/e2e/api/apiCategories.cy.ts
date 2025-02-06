@@ -53,7 +53,7 @@ const performAPIRequest = ( test: TestData, token: string ) =>
 };
 
 // Main test suite for Billboard API tests
-describe( 'User Test Billboards', () =>
+describe( 'User Test Category', () =>
 {
     let token: string = ''; // Variable to store authentication token
 
@@ -78,7 +78,7 @@ describe( 'User Test Billboards', () =>
     /**
      * API Test context: Runs all billboard-related API tests.
      */
-    context( 'Billboards API Test', () =>
+    context( 'Categories API Test', () =>
     {
         // Loop through each test case in the TestList and execute it
         TestList.forEach( ( test ) =>

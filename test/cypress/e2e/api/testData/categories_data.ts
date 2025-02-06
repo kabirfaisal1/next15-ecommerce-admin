@@ -5,21 +5,25 @@ import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
  */
 export interface TestData
 {
-    testDescription: string; // Description of the test case
-    endpoint: string; // API endpoint to test
-    method: string; // HTTP method (GET, POST, PATCH, DELETE, etc.)
-    requestKeys?: string[]; // List of request body keys (optional)
-    requestValues?: string[]; // Corresponding values for request body keys (optional)
-    queryStoreid?: string; // Store ID for API requests requiring it (optional)
-    expectedStatus: number; // Expected HTTP status code in response
-    expectedResponseKeys?: string[]; // Expected keys in the API response (optional)
-    expectedResponseCategoryName?: string; // Expected category name in response (optional)
-    expectedResponseStoreId?: string; // Expected store ID in response (optional)
-    expectedResponseBillboardId?: string; // Expected billboard ID in response (optional)
-    expectedResponseCreatedAt?: string; // Expected creation timestamp (optional)
-    expectedResponseUpdatedAt?: string; // Expected update timestamp (optional)
-    expectedError?: string; // Expected error message in response (optional)
+    testDescription: string;
+    endpoint: string;
+    method: string;
+    requestKeys?: string[];
+    requestValues?: string[];
+    queryStoreid?: string;
+    expectedStatus: number;
+    expectedResponseKeys?: string[];
+    expectedResponseCategoryName?: string;
+    expectedResponseStoreId?: string;
+    expectedResponseBillboardId?: string;
+    expectedResponseCreatedAt?: string;
+    expectedResponseUpdatedAt?: string;
+    expectedError?: string;
 }
+
+// ✅ Extracting reusable constants for store and billboard IDs
+const STORE_ID = '01e483bc-744d-477a-95bf-bc1e5db0cb55';
+const BILLBOARD_ID = '84eaf450-6525-4681-8751-42f4a156820f';
 
 /**
  * List of test cases for testing the Categories API.
@@ -27,65 +31,65 @@ export interface TestData
 export const TestList: TestData[] = [
     {
         testDescription: 'Create a new category',
-        endpoint: '/api/01e483bc-744d-477a-95bf-bc1e5db0cb55/categories', // API endpoint for creating a category
-        method: 'POST', // HTTP method: POST
-        requestKeys: [ new AdminAPIRequestKeys().categoryName, new AdminAPIRequestKeys().billboardId ], // Required request keys
-        requestValues: [ 'CypressAPIcategory', '84eaf450-6525-4681-8751-42f4a156820f' ], // Values for request keys
-        expectedStatus: 200, // Expected HTTP status code for successful category creation
-        expectedResponseKeys: [ 'billboardId', 'createdAt', 'id', 'name', 'storeId', 'updatedAt' ], // Expected response keys
-        expectedResponseStoreId: '01e483bc-744d-477a-95bf-bc1e5db0cb55', // Expected store ID in response
-        expectedResponseCategoryName: 'CypressAPIcategory', // Expected category name in response
-        expectedResponseBillboardId: '84eaf450-6525-4681-8751-42f4a156820f', // Expected billboard ID in response
+        endpoint: `/api/${STORE_ID}/categories`,
+        method: 'POST',
+        requestKeys: [ new AdminAPIRequestKeys().categoryName, new AdminAPIRequestKeys().billboardId ],
+        requestValues: [ 'CypressAPIcategory', BILLBOARD_ID ],
+        expectedStatus: 200,
+        expectedResponseKeys: [ 'billboardId', 'createdAt', 'id', 'name', 'storeId', 'updatedAt' ],
+        expectedResponseStoreId: STORE_ID,
+        expectedResponseCategoryName: 'CypressAPIcategory',
+        expectedResponseBillboardId: BILLBOARD_ID,
     },
     {
         testDescription: 'Get all categories for a store',
-        endpoint: '/api/01e483bc-744d-477a-95bf-bc1e5db0cb55/categories', // API endpoint for retrieving all categories in a store
-        method: 'GET', // HTTP method: GET
-        expectedStatus: 200, // Expected HTTP status code for successful retrieval
+        endpoint: `/api/${STORE_ID}/categories`,
+        method: 'GET',
+        expectedStatus: 200,
     },
     {
         testDescription: 'Get a specific category for a store',
-        endpoint: 'dynamic', // API endpoint will be dynamically generated
-        method: 'GET', // HTTP method: GET
-        queryStoreid: '01e483bc-744d-477a-95bf-bc1e5db0cb55', // Store ID needed to find category
-        expectedStatus: 200, // Expected HTTP status code for successful retrieval
-        expectedResponseKeys: [ 'billboardId', 'createdAt', 'id', 'name', 'storeId', 'updatedAt' ], // Expected response keys
+        endpoint: 'dynamic',
+        method: 'GET',
+        queryStoreid: STORE_ID,
+        expectedStatus: 200,
+        expectedResponseKeys: [ 'billboardId', 'createdAt', 'id', 'name', 'storeId', 'updatedAt' ],
     },
     {
         testDescription: 'Update a category',
-        endpoint: 'dynamic', // API endpoint will be dynamically generated
-        method: 'PATCH', // HTTP method: PATCH (for updating a category)
-        queryStoreid: '01e483bc-744d-477a-95bf-bc1e5db0cb55', // Store ID required for updating category
-        requestKeys: [ new AdminAPIRequestKeys().categoryName, new AdminAPIRequestKeys().billboardId ], // Request keys for updating
-        requestValues: [ 'UpdateCypressAPICategory', '84eaf450-6525-4681-8751-42f4a156820f' ], // Updated values
-        expectedStatus: 200, // Expected HTTP status code for successful update
-        expectedResponseKeys: [ 'billboardId', 'createdAt', 'id', 'name', 'storeId', 'updatedAt' ], // Expected response keys
-        expectedResponseStoreId: '01e483bc-744d-477a-95bf-bc1e5db0cb55', // Expected store ID in response
-        expectedResponseCategoryName: 'UpdateCypressAPICategory', // Expected updated category name in response
+        endpoint: 'dynamic',
+        method: 'PATCH',
+        queryStoreid: STORE_ID,
+        requestKeys: [ new AdminAPIRequestKeys().categoryName, new AdminAPIRequestKeys().billboardId ],
+        requestValues: [ 'UpdateCypressAPICategory', BILLBOARD_ID ],
+        expectedStatus: 200,
+        expectedResponseKeys: [ 'billboardId', 'createdAt', 'id', 'name', 'storeId', 'updatedAt' ],
+        expectedResponseStoreId: STORE_ID,
+        expectedResponseCategoryName: 'UpdateCypressAPICategory',
     },
     {
         testDescription: 'Delete a category',
-        endpoint: 'dynamic', // API endpoint will be dynamically generated
-        queryStoreid: '01e483bc-744d-477a-95bf-bc1e5db0cb55', // Store ID required to delete category
-        method: 'DELETE', // HTTP method: DELETE (for removing category)
-        expectedStatus: 200, // Expected HTTP status code for successful deletion
+        endpoint: 'dynamic',
+        queryStoreid: STORE_ID,
+        method: 'DELETE',
+        expectedStatus: 200,
     },
     {
-        testDescription: 'Create a new category without a name',
-        endpoint: '/api/01e483bc-744d-477a-95bf-bc1e5db0cb55/categories', // API endpoint for category creation
-        method: 'POST', // HTTP method: POST
-        requestKeys: [ new AdminAPIRequestKeys().billboardId ], // Only billboardId is provided
-        requestValues: [ '84eaf450-6525-4681-8751-42f4a156820f' ], // No category name provided
-        expectedStatus: 400, // Expected HTTP status code for validation failure
-        expectedError: 'Category name is required', // Expected error message in response
+        testDescription: 'Create a category without a name',
+        endpoint: `/api/${STORE_ID}/categories`,
+        method: 'POST',
+        requestKeys: [ new AdminAPIRequestKeys().billboardId ],
+        requestValues: [ BILLBOARD_ID ],
+        expectedStatus: 400,
+        expectedError: 'Category name is required',
     },
     {
-        testDescription: 'Create a new category without a billboard ID',
-        endpoint: '/api/01e483bc-744d-477a-95bf-bc1e5db0cb55/categories', // API endpoint for category creation
-        method: 'POST', // HTTP method: POST
-        requestKeys: [ new AdminAPIRequestKeys().categoryName ], // Only category name is provided
-        requestValues: [ 'billboardIdRequired' ], // No billboardId provided
-        expectedStatus: 400, // Expected HTTP status code for validation failure
-        expectedError: 'BillboardId URL is required', // Expected error message in response (possible typo: should be "billboardId is required")
+        testDescription: 'Create a category without a billboard ID',
+        endpoint: `/api/${STORE_ID}/categories`,
+        method: 'POST',
+        requestKeys: [ new AdminAPIRequestKeys().categoryName ],
+        requestValues: [ 'billboardIdRequired' ],
+        expectedStatus: 400,
+        expectedError: 'BillboardId is required',
     },
 ];
