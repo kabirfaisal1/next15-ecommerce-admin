@@ -1,5 +1,5 @@
 
-import AdminBillboardPage from '../../../test_components/pages/uiAdminBillboardPage';
+import AdminBillboardPage from '../../../support/test_components/pages/uiAdminBillboardPage';
 import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
 
 
@@ -10,15 +10,12 @@ describe( 'Store Billboard', () =>
     let token: string = '';
     beforeEach( () =>
     {
-        // Visit the base URL set in your configuration
         cy.visit( '/' );
-        // Log in to the application using the Auth0 login method with the "Regular" user
         cy.loginToAuth0( "Regular" );
 
         // TODO: remove this when User add new billboards solution is found
         cy.getTokens().then( ( clerkToken: string ) =>
         {
-            // Store the retrieved token in the `token` variable for later use
             token = clerkToken;
         } );
 
@@ -27,7 +24,6 @@ describe( 'Store Billboard', () =>
     {
         it( 'User navigate to Billboards', () =>
         {
-            // navigate to admin billboards page
             cy.log( 'Going to billboards from navigation tab' );
             cy.navigateTabItem( "Billboards" );
 
@@ -47,8 +43,6 @@ describe( 'Store Billboard', () =>
         it( 'User update store', () =>
         {
             const storeId = '8fe72069-48ae-43bc-b8f4-5614b3fb02db';
-
-            // Retrieve token (adjust based on your app's auth flow)
 
             cy.visit( `/${storeId}/billboards` );
             adminBillboardPage.verifyBillboardHeaders( storeId );
@@ -70,7 +64,6 @@ describe( 'Store Billboard', () =>
         {
             const storeId = '8fe72069-48ae-43bc-b8f4-5614b3fb02db';
 
-            // Retrieve token (adjust based on your app's auth flow)
 
             cy.visit( `/${storeId}/billboards` );
             adminBillboardPage.verifyBillboardHeaders( storeId );
