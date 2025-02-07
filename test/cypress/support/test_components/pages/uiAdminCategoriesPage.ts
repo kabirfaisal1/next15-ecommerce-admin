@@ -14,13 +14,14 @@ class AdminCategoriesPage
         category_billboardSelectOption: () => cy.get( 'select' ),
         category_submitButtonButton: () => cy.get( '[data-testid="category-submitButton"]' ),
         categoryDataTable: () => cy.get( '[data-testid="data-table"]' ),
-        categoryDataTableRow: () => cy.get( '[data-testid="data-tableBodyRows"]' ),
+
         categoryActionColumn: () => cy.get( '[data-testid="cellAction-dropdownMenuTrigger"]' ),
-        billBoardActionItem: () => cy.get( '[data-testid="cellAction-dropdownMenuContent"]' ),
+        categoryActionItem: () => cy.get( 'div[data-side="bottom"][role="menu"]' ),
         settingAPI_Alert: () => cy.get( '[data-testid="api-alert_NEXT_PUBLIC_API_URL"]' ),
         settingAPI_AlertURI: () => cy.get( '[data-testid="api-alert_uri"]' ),
         settingAPI_AlertClipboard: () => cy.get( '[data-testid="api-alert_copyButton"]' ),
-        form_ErrorMessage: () => cy.get( '[data-testid="FormMessage"]' ),
+        form_errorMessage: () => cy.get( 'p' ),
+
 
     };
 
@@ -73,29 +74,84 @@ class AdminCategoriesPage
     selectBillboard ( billboard: string )
     {
         cy.step( 'Checking Categories billboard Select Label' );
-        this.elements.category_billboardSelectLabel().should( 'be.visible' ).and( 'have.text', 'Billboard' );
+        this.elements.category_billboardSelectLabel()
+            .should( 'be.visible' )
+            .and( 'have.text', 'Billboard' );
+
+        cy.step( 'Fix pointer-events issue' ); //TODO: try with out this code
+        cy.get( 'body' ).invoke( 'attr', 'style', 'pointer-events: auto' );
 
         cy.step( 'Trigger Categories billboard dropdown' );
-        this.elements.category_billboardSelectTrigger().should( 'be.visible' ).click( { force: true } );
+        this.elements.category_billboardSelectTrigger()
+            .should( 'be.visible' )
+            .click( { force: true } );
 
+        cy.step( 'Wait for dropdown options to be visible' );
+        cy.get( '[role="option"]', { timeout: 5000 } ) // Adjust this selector if necessary
+            .should( 'be.visible' );
 
+        cy.step( 'Select Billboard from dropdown' );
+        cy.contains( '[role="option"]', billboard ) // Ensure correct selector for dropdown items
+            .should( 'be.visible' )
+            .click( { force: true } );
 
-        cy.step( 'Manually set the hidden select value and trigger change event' );
-        this.elements.category_billboardSelectOption().select( billboard, { force: true } ).invoke( 'val' )
-            .should( 'eq', 'a3e3e2ea-5707-45bb-a689-86dfb9d917d6' );
-
+        cy.step( 'Verify selection' );
+        this.elements.category_billboardSelectTrigger()
+            .find( '[data-testid="SelectValue"]' )
+            .should( 'have.text', billboard );
     }
 
-    clickOnSubmitButton ()
+    clickOnSubmitButton ( storeId: string, billboardId: string, categoryId?: string )
     {
-        cy.step( 'Clicking on submit button' );
+        cy.step( 'Determining whether to create or update a category' );
 
-        cy.url().then( ( currentUrl ) =>
+        cy.wrap( null ).then( () =>
         {
-            this.elements
-                .category_submitButtonButton()
+            return this.elements.category_submitButtonButton()
                 .should( 'be.visible' )
-                .click();
+                .invoke( 'text' );
+        } ).then( ( buttonText ) =>
+        {
+            const isCreatingCategory = buttonText.includes( 'Create Category' );
+            const method = isCreatingCategory ? 'POST' : 'PATCH';
+            const endpoint = isCreatingCategory
+                ? `/api/${storeId}/categories`
+                : `/api/${storeId}/categories/${categoryId}`;
+            const alias = isCreatingCategory ? 'createCategory' : 'updateCategory';
+
+            cy.step( `Intercepting API call for ${isCreatingCategory ? 'creating' : 'updating'} category` );
+            cy.intercept( method, endpoint ).as( alias );
+
+            return cy.wrap( alias ); // Ensure alias is wrapped so Cypress properly chains it
+        } ).then( ( alias ) =>
+        {
+            cy.step( 'Clicking on the submit button' );
+            this.elements.category_submitButtonButton().click();
+
+            cy.step( 'Waiting for the intercepted API response' );
+            cy.wait( `@${alias}`, { timeout: 10000 } ).then( ( interception ) =>
+            {
+                expect( interception.response.statusCode ).to.eq( 200 );
+
+                const { storeId: xhrStoreId, id: xhrCategoryId, billboardId: xhrBillboardId } = interception.response.body;
+
+                cy.step( 'Validating API response data' );
+                expect( xhrStoreId ).to.eq( storeId );
+                expect( xhrBillboardId ).to.eq( billboardId );
+                expect( xhrCategoryId ).to.exist;
+
+                if ( categoryId )
+                {
+                    expect( xhrCategoryId ).to.eq( categoryId );
+                }
+
+                cy.log( 'Saving categoryId to Cypress environment' );
+                Cypress.env( 'categoryId', xhrCategoryId );
+
+                cy.step( 'Verifying the new category page URL' );
+                cy.visit( `/${storeId}/categories/${xhrCategoryId}` );
+                cy.url().should( 'include', xhrCategoryId );
+            } );
         } );
     }
 
@@ -104,21 +160,21 @@ class AdminCategoriesPage
         cy.step( `Going to Modify ${categoryName}` );
 
         cy.handlingTable(
-            this.elements.billboardDataTableRow(),
-            this.elements.billBoardActionColumn(), // Passing as Cypress Chainable
+            this.elements.categoryDataTable(),
+            this.elements.categoryActionColumn(), // Passing as Cypress Chainable
             categoryName
         );
 
         cy.step( 'Click on modify from drop-down list' );
 
         // // Find the correct action item in the dropdown and click it
-        this.elements.billBoardActionItem().should( 'be.visible' )
+        this.elements.categoryActionItem().should( 'be.visible' )
             .contains( 'Modify' )
             .click( { force: true } );
 
         cy.step( `Checking correct Categories name : ${categoryName} was selected` );
 
-        this.elements.billboard_formLabelInputField()
+        this.elements.category_formLabelInputField()
             .should( 'be.visible' )
             .and( 'have.value', categoryName );
     }
@@ -131,10 +187,10 @@ class AdminCategoriesPage
     actionDeleteCategory ( categoryName: string )
     {
 
-        cy.step( `Going to Modify ${categoryName}` );
+        cy.step( `Going to Delete ${categoryName}` );
 
         cy.handlingTable(
-            this.elements.categoryDataTableRow(),
+            this.elements.categoryDataTable(),
             this.elements.categoryActionColumn(), // Passing as Cypress Chainable
             categoryName
         );
@@ -142,17 +198,24 @@ class AdminCategoriesPage
         cy.step( 'Click on modify from drop-down list' );
 
         // // Find the correct action item in the dropdown and click it
-        this.elements.billBoardActionItem().should( 'be.visible' )
+        this.elements.categoryActionItem().should( 'be.visible' )
             .contains( 'Delete' )
             .click( { force: true } );
 
         cy.deleteObjects( true );
     }
 
+    formErrorValidation ( errorType: string )
+    {
+        cy.step( 'Clicking on the submit button' );
+        this.elements.category_submitButtonButton().click();
+        cy.step( `Checking '${errorType}'  error message` );
+
+        this.elements.form_errorMessage().should( 'be.visible' ).contains( errorType );
 
 
 
-
+    }
 }
 
 export default AdminCategoriesPage;

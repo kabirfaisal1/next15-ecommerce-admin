@@ -3,10 +3,11 @@ import AdminBillboardPage from '../../../support/test_components/pages/uiAdminBi
 import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
 
 
-
 const adminBillboardPage = new AdminBillboardPage();
 describe( 'Store Billboard', () =>
 {
+    const storeId = 'c936295f-6653-48f3-b0f4-be89bcc331b8';
+
     let token: string = '';
     beforeEach( () =>
     {
@@ -31,7 +32,7 @@ describe( 'Store Billboard', () =>
         it.skip( 'User add new billboards', () =>
         {
             //TODO: need to come up with a solution
-            const storeId = '8fe72069-48ae-43bc-b8f4-5614b3fb02db';
+
             cy.visit( `/${storeId}/billboards` );
             adminBillboardPage.verifyBillboardHeaders( storeId );
             adminBillboardPage.clickOnAddBillboardButton( storeId );
@@ -42,7 +43,7 @@ describe( 'Store Billboard', () =>
         } );
         it( 'User update store', () =>
         {
-            const storeId = '8fe72069-48ae-43bc-b8f4-5614b3fb02db';
+
 
             cy.visit( `/${storeId}/billboards` );
             adminBillboardPage.verifyBillboardHeaders( storeId );
@@ -62,8 +63,6 @@ describe( 'Store Billboard', () =>
 
         it( 'User delete store', () =>
         {
-            const storeId = '8fe72069-48ae-43bc-b8f4-5614b3fb02db';
-
 
             cy.visit( `/${storeId}/billboards` );
             adminBillboardPage.verifyBillboardHeaders( storeId );
