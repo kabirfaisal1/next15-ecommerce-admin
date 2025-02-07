@@ -44,7 +44,7 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
-    "@clerk/testing": "^1.4.7",
+    "@clerk/testing": "^1.4.20",
     "@cypress/code-coverage": "^3.13.10",
     "@eslint/eslintrc": "^3",
     "@types/cypress": "^0.1.6",
@@ -54,7 +54,7 @@
     "@types/pg": "^8.11.10",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "cypress": "^14.0.1",
+    "cypress": "^14.0.2",
     "cypress-iframe": "^1.0.1",
     "cypress-plugin-steps": "^1.1.1",
     "eslint": "^9.18.0",
