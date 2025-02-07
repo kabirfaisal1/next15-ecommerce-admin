@@ -9,8 +9,8 @@ declare global
     {
         interface Chainable
         {
-            validateResponseBody ( response: any, expectedResults: TestObjects ): void;
-            generateAPIEndpoint ( type: 'stores' | 'billboards' | 'categories', testData: string, parentId?: string, orderBy?: 'ASC' | 'DESC' ): Chainable;
+            validateResponseBody ( response: any, expectedResults: any ): void;
+            generateAPIEndpoint ( type: 'stores' | 'billboards' | 'categories' | 'sizes', testData: string, parentId?: string, orderBy?: 'ASC' | 'DESC' ): Chainable;
         }
     }
 }
@@ -32,6 +32,7 @@ Cypress.Commands.add(
             stores: { tableName: 'Stores', parentColumn: 'userId', endpoint: '/api/stores/' },
             billboards: { tableName: 'Billboards', parentColumn: 'storeId', endpoint: `/api/${parentId}/billboards/` },
             categories: { tableName: 'Categories', parentColumn: 'storeId', endpoint: `/api/${parentId}/categories/` },
+            sizes: { tableName: 'Sizes', parentColumn: 'storeId', endpoint: `/api/${parentId}/sizes/` },
         };
 
         const { tableName, parentColumn, endpoint } = tableMap[ type ];

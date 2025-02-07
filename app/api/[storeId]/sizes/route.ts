@@ -31,7 +31,7 @@ export async function POST (
         console.log( "name is: ", name );
 
         // If value is not present in the request body, return a 400 Bad Request response
-        if ( !value ) return new NextResponse( "Value is required", { status: 400 } );
+        if ( !value ) return new NextResponse( "Size Value is required", { status: 400 } );
 
         // If storeId is not present in the request body, return a 400 Bad Request response
         if ( !params.storeId ) return new NextResponse( "Store id is required", { status: 400 } );
