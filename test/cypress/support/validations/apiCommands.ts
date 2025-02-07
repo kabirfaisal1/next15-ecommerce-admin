@@ -9,185 +9,102 @@ declare global
     {
         interface Chainable
         {
-            validateStoreResponseBody ( response: any, expectedResults: TestObjects ): void;
-            generateStoreAPIEndpoint (
-                testData: string,
-                userId?: string, orderBy?: string
-            ): Chainable;
-            generateBillboardAPIEndpoint (
-                testData: string,
-                userId?: string, orderBy?: string
-            ): Chainable;
-            validateBillboardResponseBody ( response: any, expectedResults: TestObjects ): void;
+            validateResponseBody ( response: any, expectedResults: TestObjects ): void;
+            generateAPIEndpoint ( type: 'stores' | 'billboards' | 'categories', testData: string, parentId?: string, orderBy?: 'ASC' | 'DESC' ): Chainable;
         }
     }
 }
+
+// 🛠️ **Reusable SQL Query Generator**
+const generateSQLQuery = ( tableName: string, parentColumn: string, parentId?: string, orderBy: string = 'DESC' ) =>
+{
+    return parentId
+        ? `SELECT id FROM public."${tableName}" WHERE "${parentColumn}" = '${parentId}' ORDER BY "createdAt" ${orderBy};`
+        : '';
+};
+
+// 🛠️ **Reusable API Endpoint Generator**
 Cypress.Commands.add(
-    'generateStoreAPIEndpoint',
-    ( testData: string, userId?: string, orderBy: 'ASC' | 'DESC' = 'DESC' ): Cypress.Chainable<string> =>
+    'generateAPIEndpoint',
+    ( type: 'stores' | 'billboards' | 'categories', testData: string, parentId?: string, orderBy: 'ASC' | 'DESC' = 'DESC' ): Cypress.Chainable<string> =>
     {
-        // Construct the SQL query only if userId is provided
-        const storeIDQuery = userId
-            ? `SELECT id FROM public."Stores" WHERE "userId" = '${userId}' ORDER BY "createdAt" ${orderBy};`
-            : '';
+        const tableMap = {
+            stores: { tableName: 'Stores', parentColumn: 'userId', endpoint: '/api/stores/' },
+            billboards: { tableName: 'Billboards', parentColumn: 'storeId', endpoint: `/api/${parentId}/billboards/` },
+            categories: { tableName: 'Categories', parentColumn: 'storeId', endpoint: `/api/${parentId}/categories/` },
+        };
 
-        cy.step( `Generated SQL Query: ${storeIDQuery}` );
+        const { tableName, parentColumn, endpoint } = tableMap[ type ];
 
-        // Handle dynamic testData by fetching store ID from the database
-        if ( testData === 'dynamic' && storeIDQuery )
+        const sqlQuery = generateSQLQuery( tableName, parentColumn, parentId, orderBy );
+
+        cy.step( `Generated SQL Query for ${type}: ${sqlQuery}` );
+
+        if ( testData === 'dynamic' && sqlQuery )
         {
-            return cy.task( 'queryDatabase', storeIDQuery ).then( ( rows ) =>
+            return cy.task( 'queryDatabase', sqlQuery ).then( ( rows ) =>
             {
                 if ( rows?.length > 0 )
                 {
-                    const storeId = rows[ 0 ].id;
-                    cy.step( `Resolved storeId: ${storeId}` );
-                    return cy.wrap( `/api/stores/${storeId}` ); // Ensure Cypress chains it
+                    const id = rows[ 0 ].id;
+                    cy.step( `Resolved ${type} ID: ${id}` );
+                    return cy.wrap( `${endpoint}${id}` );
                 } else
                 {
-                    throw new Error( 'No store ID found for the provided userId.' );
+                    throw new Error( `No ${type} ID found for the provided ${parentColumn}.` );
                 }
             } );
         }
 
-        // Return the testData directly if not dynamic
-        cy.step( `Returning static testData: ${testData}` );
-        return cy.wrap( testData ); // Ensure Cypress chains it
+        cy.step( `Returning static testData for ${type}: ${testData}` );
+        return cy.wrap( testData );
     }
 );
 
-Cypress.Commands.add( 'validateStoreResponseBody', ( response: any, expectedResults: any ) =>
+// 🛠️ **Reusable Response Body Validator**
+Cypress.Commands.add( 'validateResponseBody', ( response: any, expectedResults: any ) =>
 {
-    cy.step( 'Starting store response validation' );
+    cy.step( 'Validating response body' );
 
-    // Helper function to validate specific keys in the response
-    const validateKeys = ( keys: string[], responseBody: any ) =>
-    {
-        cy.step( `Validating response keys: ${keys}` );
-        keys.forEach( ( key ) =>
-        {
-            expect( responseBody ).to.have.property( key, responseBody[ key ] );
-        } );
-    };
-
-    // Helper function to log validation success
-    const logValidation = ( field: string, expected: any, actual: any ) =>
-    {
-        cy.step( `Validated ${field}: Expected [${expected}], Found [${actual}]` );
-    };
-
-    // Store Name Validation
-    if ( expectedResults.expectedResponseStoreName )
-    {
-        expect( response.name ).to.equal( expectedResults.expectedResponseStoreName );
-        logValidation( 'Store Name', expectedResults.expectedResponseStoreName, response.name );
-    }
-
-    // Response Keys Validation
-    if ( expectedResults.expectedResponseKeys )
-    {
-        validateKeys( expectedResults.expectedResponseKeys, response );
-    }
-
-    // Store ID Validation
-    if ( expectedResults.expectedResponseStoreId === false )
-    {
-        cy.step( 'Validating that Store ID is not null' );
-        expect( response.id ).to.not.be.empty;
-    }
-
-    // User ID Validation
-    if ( expectedResults.expectedResponseUseId !== undefined )
-    {
-        expect( response.userId ).to.equal( expectedResults.expectedResponseUseId );
-        logValidation( 'User ID', expectedResults.expectedResponseUseId, response.userId );
-    }
-} );
-
-Cypress.Commands.add( 'generateBillboardAPIEndpoint', ( testData: string, storeid?: string, orderBy: string = '' ): Cypress.Chainable<string> =>
-{
-    //TODO: Improve the logic to handle be more dynamic and not rely on the testData value.
-    // Initialize the query with an empty string
-    let billboardIDQuery = '';
-
-    // Check if a userId is provided, construct the SQL query to find the billboard ID
-    if ( storeid )
-    {
-        cy.step( `Running SQL Query to find billboardID` );
-
-        billboardIDQuery = ` SELECT id FROM public."Billboards" where "storeId" = '${storeid}' ORDER by "createdAt" DESC;`;
-        cy.step( `billboardIDQuery: ${billboardIDQuery}` );
-    }
-
-    // Log the constructed query for debugging purposes
-    cy.step( `billboardIDQuery: ${billboardIDQuery}` );
-
-    // If the testData is dynamic, fetch the billboard ID from the database
-    if ( testData === 'dynamic' )
-    {
-        // Execute the query using a Cypress task and process the results
-        return cy.task( 'queryDatabase', billboardIDQuery ).then( ( rows ) =>
-        {
-            // Check if the query returned any rows
-            if ( rows.length > 0 )
-            {
-                cy.step( `Returning endpoint with billboardId: ${rows[ 0 ].id}` );
-                // Wrap the endpoint in cy.wrap to ensure it's chainable
-                return cy.wrap( `api/${storeid}/billboards/${rows[ 0 ].id}` );
-            } else
-            {
-                // Throw an error if no rows are returned
-                throw new Error( 'No rows returned from query' );
-            }
-        } );
-    } else
-    {
-        // If the testData is not dynamic, return it as-is
-        cy.step( `Returning testData: ${testData}` );
-        return cy.wrap( testData ); // Wrap testData in cy.wrap to ensure chainability
-    }
-} );
-
-Cypress.Commands.add( 'validateBillboardResponseBody', ( response: any, expectedResults: any ) =>
-{
-    cy.step( 'Validating billboard response' );
-
-    // Use a switch statement to handle different validation cases
     Object.keys( expectedResults ).forEach( ( key ) =>
     {
         switch ( key )
         {
-            case 'expectedResponseBillboardName':
-                // Validate the expected billboard name
-                expect( response.label ).to.equal( expectedResults.expectedResponseBillboardName );
-                cy.step( `Validated response Store Name: ${expectedResults.expectedResponseBillboardName}` );
+            case 'expectedResponseName':
+                expect( response.name ).to.equal( expectedResults.expectedResponseName );
+                cy.step( `Validated Name: ${expectedResults.expectedResponseName}` );
                 break;
 
             case 'expectedResponseKeys':
-                // Validate the presence of specific keys in the response
-                cy.step( `Validated response keys: ${expectedResults.expectedResponseKeys}` );
                 expectedResults.expectedResponseKeys.forEach( ( expectedKey: string ) =>
                 {
                     expect( response ).to.have.property( expectedKey );
                 } );
+                cy.step( `Validated response keys: ${expectedResults.expectedResponseKeys}` );
                 break;
 
-            case 'expectedResponseStoreId':
-                // Validate the expected store ID
-                cy.step( `Checking that Store ID matches ${expectedResults.expectedResponseStoreId}` );
-                expect( response.storeId ).to.equal( expectedResults.expectedResponseStoreId );
+            case 'expectedResponseId':
+                expect( response.id ).to.not.be.empty;
+                cy.step( `Validated ID exists: ${response.id}` );
+                break;
+
+            case 'expectedResponseParentId':
+                expect( response.storeId ).to.equal( expectedResults.expectedResponseParentId );
+                cy.step( `Validated Parent ID: ${expectedResults.expectedResponseParentId}` );
                 break;
 
             case 'expectedResponseImageUrl':
-                // Validate the expected image URL
-                cy.step( `Validated response imageUrl: ${expectedResults.expectedResponseImageUrl}` );
                 expect( response.imageUrl ).to.equal( expectedResults.expectedResponseImageUrl );
+                cy.step( `Validated Image URL: ${expectedResults.expectedResponseImageUrl}` );
                 break;
 
+            case 'expectedResponseMessage':
+                expect( response.message ).to.equal( expectedResults.expectedResponseMessage );
+                cy.step( `Validated Message: ${expectedResults.expectedResponseMessage}` );
+                break;
             case 'expectedError':
-                // Validate the expected error in the response
-                cy.step( `Validated response error: ${expectedResults.expectedError}` );
                 expect( response ).to.equal( expectedResults.expectedError );
+                cy.step( `Validated expected error: ${expectedResults.expectedError}` );
                 break;
 
             default:
@@ -195,9 +112,4 @@ Cypress.Commands.add( 'validateBillboardResponseBody', ( response: any, expected
                 break;
         }
     } );
-
-    // Additional logging for Store ID validation
-    cy.step(
-        `Validated response Store ID 2${expectedResults.expectedResponseStoreId} and store ID ${response.storeId}`
-    );
 } );

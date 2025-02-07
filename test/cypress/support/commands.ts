@@ -153,6 +153,9 @@ Cypress.Commands.add( 'navigateTabItem', ( element: string ) =>
             cy.get( '[data-testid="heading-title"]' )
                 .should( 'be.visible' )
                 .and( 'include.text', 'Billboards' );
+            cy.get( '[data-testid="heading-description"]' )
+                .should( 'be.visible' ).first()
+                .and( 'have.text', 'Manage billboards for your store' );
             break;
 
         case 'Categories':
@@ -165,10 +168,10 @@ Cypress.Commands.add( 'navigateTabItem', ( element: string ) =>
             cy.step( 'Checking categories heading title to be visible' );
             cy.get( '[data-testid="heading-title"]' )
                 .should( 'be.visible' )
-                .and( 'have.text', 'Categories' );
+                .and( 'include.text', 'Categories' );
             cy.get( '[data-testid="heading-description"]' )
-                .should( 'be.visible' )
-                .and( 'have.text', 'Manage Store Preferences' ); //toDO Categories
+                .should( 'be.visible' ).first()
+                .and( 'have.text', 'Manage category for your store' ); //toDO Categories
             break;
 
         case 'Settings':

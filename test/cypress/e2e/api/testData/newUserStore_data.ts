@@ -1,11 +1,14 @@
 import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
 
-// Explicitly define the shape of your test data
+/**
+ * Defines the structure of API test cases for new store users.
+ */
 export interface TestData
 {
     testDescription: string;
+    testRunner?: string;
     endpoint: string;
-    method: string; // Use HttpMethod to ensure valid methods
+    method: string;
     requestKeys?: string[];
     requestValues?: string[];
     queryUser?: string;
@@ -16,12 +19,18 @@ export interface TestData
     expectedResponseUseId?: string;
     expectedResponseCreatedAt?: string;
     expectedResponseUpdatedAt?: string;
+    expectedResponseMessage?: string;
 }
 
-// Define the test list with the correct type
+// ✅ Extracting reusable constants for User ID
+const USER_ID = 'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W';
+
+/**
+ * List of test cases for testing the Store API (No Store User).
+ */
 export const TestList: TestData[] = [
     {
-        testDescription: 'Create new store',
+        testDescription: 'Create a new store for a user with no existing stores',
         endpoint: '/api/stores',
         method: 'POST',
         requestKeys: [ new AdminAPIRequestKeys().storeName ],
@@ -30,24 +39,26 @@ export const TestList: TestData[] = [
         expectedResponseKeys: [ 'id', 'name', 'userId', 'createdAt', 'updatedAt' ],
         expectedResponseStoreId: true,
         expectedResponseStoreName: 'NO_STORE_USER',
-        expectedResponseUseId: 'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W',
+        expectedResponseUseId: USER_ID,
     },
     {
-        testDescription: 'Update store name',
+
+        testDescription: 'Update store name for a user with no existing stores',
         endpoint: 'dynamic',
         method: 'PATCH',
-        queryUser: 'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W',
+        queryUser: USER_ID,
         requestKeys: [ new AdminAPIRequestKeys().storeName ],
         requestValues: [ 'UPDATED_STORE_NAME' ],
         expectedStatus: 202,
         expectedResponseKeys: [ 'count' ],
     },
     {
-        testDescription: 'Delete store for user',
+        testDescription: 'Delete store for a user with no existing stores',
         endpoint: 'dynamic',
-        queryUser: 'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W',
+        queryUser: USER_ID,
         method: 'DELETE',
         expectedStatus: 200,
-        expectedResponseKeys: [ 'count' ],
+        expectedResponseKeys: [ 'message' ],
+        expectedResponseMessage: 'Deleted successfully',
     },
 ];

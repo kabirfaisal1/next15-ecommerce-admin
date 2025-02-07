@@ -52,78 +52,67 @@ export async function PATCH ( req: Request,
     }
 }
 
+
 export async function DELETE (
     req: Request,
-    { params }: { params: { storeId: string; }; }
+    context: { params: { storeId?: string; }; } // Ensure storeId is optional to prevent undefined errors
 )
 {
     try
     {
+        const { storeId } = context.params; // Extract storeId from params
+
+        if ( !storeId )
+        {
+            return new NextResponse( JSON.stringify( { message: "Store ID is required" } ), { status: 400 } );
+        }
+
         // Authenticate user
         const { userId } = await auth();
-        if ( !userId ) return new NextResponse( "Unauthenticated", { status: 403 } );
+        if ( !userId )
+        {
+            return new NextResponse( JSON.stringify( { message: "Unauthenticated" } ), { status: 403 } );
+        }
 
-        // Validate storeId
-        if ( !params.storeId ) return new NextResponse( "Store ID is required", { status: 400 } );
-
-        // Find the store associated with the user
+        // Check if the store exists and belongs to the user
         const store = await prismadb.stores.findFirst( {
-            where: { id: params.storeId, userId },
+            where: { id: storeId, userId },
         } );
 
-        if ( !store ) return new NextResponse( "Store not found or unauthorized", { status: 404 } );
+        if ( !store )
+        {
+            return new NextResponse( JSON.stringify( { message: "Store not found or unauthorized" } ), { status: 404 } );
+        }
 
         // Check if the store has any billboards
         const billboardCount = await prismadb.billboards.count( {
-            where: { storeId: params.storeId },
+            where: { storeId },
         } );
 
         if ( billboardCount > 0 )
         {
             return new NextResponse(
-                "Make sure you remove all billboards before deleting the store.",
+                JSON.stringify( { message: "Make sure you remove all billboards before deleting the store." } ),
                 { status: 400 }
             );
         }
-
-        // Check if the store has any categories
-        const categoryCount = await prismadb.categories.count( {
-            where: { storeId: params.storeId },
-        } );
-
-        if ( categoryCount > 0 )
-        {
-            return new NextResponse(
-                "Make sure you remove all categories before deleting the store.",
-                { status: 400 }
-            );
-        }
-
-        // // Check if the store has any products (if your schema includes a `Products` model)
-        // const productCount = await prismadb.products?.count( {
-        //     where: { storeId: params.storeId },
-        // } );
-
-        // if ( productCount > 0 )
-        // {
-        //     return new NextResponse(
-        //         "Make sure you remove all products before deleting the store.",
-        //         { status: 400 }
-        //     );
-        // }
 
         // Delete the store since it has no dependencies
-        const deletedStore = await prismadb.stores.delete( {
-            where: { id: params.storeId },
+        await prismadb.stores.delete( {
+            where: { id: storeId },
         } );
 
-        return NextResponse.json( deletedStore, { status: 200 } );
+        // ✅ Return a success message
+        return new NextResponse(
+            JSON.stringify( { message: "Deleted successfully" } ),
+            { status: 200 }
+        );
 
     } catch ( error )
     {
-        console.log( `[Store_DELETE] <==: ${error} ==>` );
+        console.error( `[Store_DELETE] <==: ${error} ==>` );
         return new NextResponse(
-            `Internal error: ${error instanceof Error ? error.message : "Unknown error"}`,
+            JSON.stringify( { message: `Internal error: ${error instanceof Error ? error.message : "Unknown error"}` } ),
             { status: 500 }
         );
     }

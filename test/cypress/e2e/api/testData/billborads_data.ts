@@ -1,11 +1,14 @@
 import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
 
-// Explicitly define the shape of your test data
+/**
+ * Defines the structure of API test cases for Billboards.
+ */
 export interface TestData
 {
+    testRunner?: string;
     testDescription: string;
     endpoint: string;
-    method: string; // Use HttpMethod to ensure valid methods
+    method: string;
     requestKeys?: string[];
     requestValues?: string[];
     queryStoreid?: string;
@@ -20,33 +23,39 @@ export interface TestData
     expectedError?: string;
 }
 
-// Define the test list with the correct type
+// ✅ Extracting reusable constants for store ID and test image URL
+const STORE_ID = '01e483bc-744d-477a-95bf-bc1e5db0cb55';
+const TEST_IMAGE_URL = 'https://res.cloudinary.com/dzsguot60/image/upload/v1736444639/iz0gqlh3fyelyxqzohnk.png';
+
+/**
+ * List of test cases for testing the Billboards API.
+ */
 export const TestList: TestData[] = [
     {
         testDescription: 'Create new Billboard',
-        endpoint: '/api/01e483bc-744d-477a-95bf-bc1e5db0cb55/billboards',
+        endpoint: `/api/${STORE_ID}/billboards`,
         method: 'POST',
         requestKeys: [ new AdminAPIRequestKeys().billboardName, new AdminAPIRequestKeys().imageUrl ],
-        requestValues: [ 'CypressAPIBillboards', "https://res.cloudinary.com/dzsguot60/image/upload/v1736444639/iz0gqlh3fyelyxqzohnk.png" ],
+        requestValues: [ 'CypressAPIBillboards', TEST_IMAGE_URL ],
         expectedStatus: 200,
         expectedResponseKeys: [ 'id', 'storeId', 'label', 'imageUrl', 'createdAt', 'updatedAt' ],
-        expectedResponseStoreId: '01e483bc-744d-477a-95bf-bc1e5db0cb55',
+        expectedResponseStoreId: STORE_ID,
         expectedResponseBillboardName: 'CypressAPIBillboards',
-        expectedResponseImageUrl: 'https://res.cloudinary.com/dzsguot60/image/upload/v1736444639/iz0gqlh3fyelyxqzohnk.png',
+        expectedResponseImageUrl: TEST_IMAGE_URL,
         expectedResponseBillboardId: true,
-
     },
     {
-        testDescription: 'Get All Billboard for store',
-        endpoint: '/api/01e483bc-744d-477a-95bf-bc1e5db0cb55/billboards',
+
+        testDescription: 'Get all billboards for store',
+        endpoint: `/api/${STORE_ID}/billboards`,
         method: 'GET',
         expectedStatus: 200,
     },
     {
-        testDescription: 'Get Specific Billboard for store',
+        testDescription: 'Get a specific billboard for store',
         endpoint: 'dynamic',
         method: 'GET',
-        queryStoreid: '01e483bc-744d-477a-95bf-bc1e5db0cb55',
+        queryStoreid: STORE_ID,
         expectedStatus: 200,
         expectedResponseKeys: [ 'id', 'storeId', 'label', 'imageUrl', 'createdAt', 'updatedAt' ],
     },
@@ -54,43 +63,40 @@ export const TestList: TestData[] = [
         testDescription: 'Update Billboard',
         endpoint: 'dynamic',
         method: 'PATCH',
-        queryStoreid: '01e483bc-744d-477a-95bf-bc1e5db0cb55',
+        queryStoreid: STORE_ID,
         requestKeys: [ new AdminAPIRequestKeys().billboardName, new AdminAPIRequestKeys().imageUrl ],
-        requestValues: [ 'UpdateCypressAPIBillboards', "https://res.cloudinary.com/dzsguot60/image/upload/v1736444639/iz0gqlh3fyelyxqzohnk.png" ],
+        requestValues: [ 'UpdateCypressAPIBillboards', TEST_IMAGE_URL ],
         expectedStatus: 200,
         expectedResponseKeys: [ 'id', 'storeId', 'label', 'imageUrl', 'createdAt', 'updatedAt' ],
-        expectedResponseStoreId: '01e483bc-744d-477a-95bf-bc1e5db0cb55',
+        expectedResponseStoreId: STORE_ID,
         expectedResponseBillboardName: 'UpdateCypressAPIBillboards',
-        expectedResponseImageUrl: 'https://res.cloudinary.com/dzsguot60/image/upload/v1736444639/iz0gqlh3fyelyxqzohnk.png',
-
+        expectedResponseImageUrl: TEST_IMAGE_URL,
     },
     {
+
         testDescription: 'Delete Billboard',
         endpoint: 'dynamic',
-        queryStoreid: '01e483bc-744d-477a-95bf-bc1e5db0cb55',
+        queryStoreid: STORE_ID,
         method: 'DELETE',
         expectedStatus: 200,
-
     },
     {
-        testDescription: 'Create new Billboard with out label',
-        endpoint: '/api/01e483bc-744d-477a-95bf-bc1e5db0cb55/billboards',
+
+        testDescription: 'Create Billboard without Label',
+        endpoint: `/api/${STORE_ID}/billboards`,
         method: 'POST',
         requestKeys: [ new AdminAPIRequestKeys().imageUrl ],
-        requestValues: [ "https://res.cloudinary.com/dzsguot60/image/upload/v1736444639/iz0gqlh3fyelyxqzohnk.png" ],
+        requestValues: [ TEST_IMAGE_URL ],
         expectedStatus: 400,
         expectedError: 'Label name is required',
-
     },
     {
-        testDescription: 'Create new Billboard with out imgUrl',
-        endpoint: '/api/01e483bc-744d-477a-95bf-bc1e5db0cb55/billboards',
+        testDescription: 'Create Billboard without Image URL',
+        endpoint: `/api/${STORE_ID}/billboards`,
         method: 'POST',
         requestKeys: [ new AdminAPIRequestKeys().billboardName ],
-        requestValues: [ "imgUrl is required" ],
+        requestValues: [ 'imgUrl is required' ],
         expectedStatus: 400,
         expectedError: 'imageUrl name is required',
-
     },
-
 ];

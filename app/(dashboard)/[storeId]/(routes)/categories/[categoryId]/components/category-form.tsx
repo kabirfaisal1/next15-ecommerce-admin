@@ -44,9 +44,12 @@ import toast from 'react-hot-toast';
 const formSchema = z.object({
 	name: z
 		.string()
-		.min(1, 'Name is required')
-		.max(21, 'Name must be less than 21 characters'),
-	billboardId: z.string().min(1),
+		.trim()
+		.min(3, { message: 'Name must be at least 3 characters long' })
+		.max(21, { message: 'Name must not exceed 21 characters' }),
+	billboardId: z
+		.string()
+		.min(1, { message: 'Billboard selection is required' }),
 });
 
 type CategoryFormValues = z.infer<typeof formSchema>;
@@ -176,7 +179,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
 									<FormControl>
 										<div className='flex items-center'>
 											<Input
-												data-testid='Category-NameInput'
+												data-testid='category-NameInput'
 												disabled={loading}
 												placeholder='Category name'
 												maxLength={21}
@@ -196,7 +199,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
 							name='billboardId'
 							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel data-testid='Category-BillboardSubtitle'>
+									<FormLabel data-testid='category-BillboardSubtitle'>
 										Billboard
 									</FormLabel>
 
