@@ -16,18 +16,18 @@ interface SizeClientProps {
 	data: SizeColumn[];
 }
 
-export const SizeClient: React.FC<SizeClientProps> = ({ data }) => {
+export const SizesClient: React.FC<SizeClientProps> = ({ data }) => {
 	const router = useRouter();
 	const params = useParams();
 	return (
 		<React.Fragment>
 			<div className='flex items-center justify-between'>
 				<Heading
-					title={`Categories (${data.length})`}
-					description='Manage category for your store'
+					title={`Sizes (${data.length})`}
+					description='Manage Sizes for your store'
 				/>
 				<Button
-					data-testid='add-categoryClient-button'
+					data-testid='add-sizesClient-button'
 					onClick={() => router.push(`/${params.storeId}/sizes/new`)}
 				>
 					<Plus className='mr-2 h-4 w-4' /> Add New
@@ -35,12 +35,9 @@ export const SizeClient: React.FC<SizeClientProps> = ({ data }) => {
 			</div>
 			<Separator />
 			<DataTable searchKey='name' columns={columns} data={data} />
-			<Heading
-				title='API Routes'
-				description='API routes for managing category'
-			/>
+			<Heading title='API Routes' description='API routes for managing sizes' />
 			<Separator />
-			<ApiList entityName='sizes' entityIdName='categoryId' />
+			<ApiList entityName='sizes' entityIdName='sizeId' />
 		</React.Fragment>
 	);
 };

@@ -34,9 +34,9 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 	const params = useParams();
 
 	/**
-	 * Copies the given category ID to the clipboard and displays a success toast notification.
+	 * Copies the given size ID to the clipboard and displays a success toast notification.
 	 *
-	 * @param id - The categoryID of the category to be copied.
+	 * @param id - The sizeID of the size to be copied.
 	 */
 	const onCopy = (id: string) => {
 		navigator.clipboard.writeText(id);
@@ -62,7 +62,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 		} catch (err) {
 			handleAPIError(err);
 			toast.error(
-				`Make sure you remove all sizes using for category: ${
+				`Make sure you remove all sizes using for size: ${
 					typeof params.label === 'string' ? params.label.toUpperCase() : ''
 				}`,
 			);

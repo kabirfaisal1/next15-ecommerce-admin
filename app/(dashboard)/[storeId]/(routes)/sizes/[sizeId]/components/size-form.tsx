@@ -6,18 +6,12 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trash, CircleCheckBig } from 'lucide-react';
-import {
-	Select,
-	SelectTrigger,
-	SelectValue,
-	SelectContent,
-	SelectItem,
-} from '@/components/ui/select';
+
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
 
 //local import
-import { Categories, Billboards } from '@prisma/client';
+import { Categories } from '@prisma/client';
 import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -47,22 +41,16 @@ const formSchema = z.object({
 		.trim()
 		.min(3, { message: 'Name must be at least 3 characters long' })
 		.max(21, { message: 'Name must not exceed 21 characters' }),
-	billboardId: z
-		.string()
-		.min(1, { message: 'Billboard selection is required' }),
+	sizeId: z.string().min(1, { message: 'Billboard selection is required' }),
 });
 
 type SizeFormValues = z.infer<typeof formSchema>;
 
 interface SizeFormProps {
 	initialData: Categories | null;
-	billboards: Billboards[];
 }
 
-export const SizeForm: React.FC<SizeFormProps> = ({
-	initialData,
-	billboards,
-}) => {
+export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
@@ -74,7 +62,7 @@ export const SizeForm: React.FC<SizeFormProps> = ({
 		resolver: zodResolver(formSchema),
 		defaultValues: initialData || {
 			name: '',
-			billboardId: '',
+			sizeId: '',
 		},
 	});
 
@@ -170,7 +158,7 @@ export const SizeForm: React.FC<SizeFormProps> = ({
 							name='name'
 							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel data-testid='Size-NameSubtitle'>Name</FormLabel>
+									<FormLabel data-testid='size-NameSubtitle'>Name</FormLabel>
 
 									<FormControl>
 										<div className='flex items-center'>
@@ -186,47 +174,6 @@ export const SizeForm: React.FC<SizeFormProps> = ({
 											)}
 										</div>
 									</FormControl>
-									<FormMessage>{fieldState.error?.message}</FormMessage>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name='billboardId'
-							render={({ field, fieldState }) => (
-								<FormItem>
-									<FormLabel data-testid='size-BillboardSubtitle'>
-										Billboard
-									</FormLabel>
-
-									<Select
-										disabled={loading}
-										onValueChange={field.onChange}
-										value={field.value}
-										defaultValue={field.value}
-									>
-										<FormControl>
-											<SelectTrigger data-testid='selectTrigger'>
-												<SelectValue
-													data-testid='SelectValue'
-													placeholder='Select Billboard'
-													defaultValue={field.value}
-												></SelectValue>
-											</SelectTrigger>
-										</FormControl>
-										<SelectContent data-testid='SelectContent'>
-											{billboards.map(billboard => (
-												<SelectItem
-													data-testid={billboard.label}
-													key={billboard.id}
-													value={billboard.id}
-												>
-													{billboard.label}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-
 									<FormMessage>{fieldState.error?.message}</FormMessage>
 								</FormItem>
 							)}
