@@ -117,8 +117,8 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 			);
 			router.push(`/${params.storeId}/billboards`);
 			toast.success('Billboard deleted successfully');
-		} catch (err: any) {
-			if (err.response?.status === 400) {
+		} catch (err: unknown) {
+			if (axios.isAxiosError(err) && err.response?.status === 400) {
 				toast.error(
 					'Make sure you remove all categories linked to this billboard before deleting.',
 				);
