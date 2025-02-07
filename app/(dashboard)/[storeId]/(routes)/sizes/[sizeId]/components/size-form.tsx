@@ -11,7 +11,7 @@ import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
 
 //local import
-import { Categories } from '@prisma/client';
+import { Size } from '@prisma/client';
 import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -41,13 +41,17 @@ const formSchema = z.object({
 		.trim()
 		.min(3, { message: 'Name must be at least 3 characters long' })
 		.max(21, { message: 'Name must not exceed 21 characters' }),
-	sizeId: z.string().min(1, { message: 'Billboard selection is required' }),
+	value: z
+		.string()
+		.trim()
+		.min(1, { message: 'Name must be at least 3 characters long' })
+		.max(15, { message: 'Name must not exceed 15 characters' }),
 });
 
 type SizeFormValues = z.infer<typeof formSchema>;
 
 interface SizeFormProps {
-	initialData: Categories | null;
+	initialData: Size | null;
 }
 
 export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
@@ -62,7 +66,7 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 		resolver: zodResolver(formSchema),
 		defaultValues: initialData || {
 			name: '',
-			sizeId: '',
+			value: '',
 		},
 	});
 
@@ -87,7 +91,7 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 		try {
 			if (initialData) {
 				await axios.patch(
-					`/api/${params.storeId}/sizes/${params.categoryId}`,
+					`/api/${params.storeId}/sizes/${params.sizeId}`,
 					data,
 				);
 			} else {
@@ -110,7 +114,7 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 		setError(null);
 
 		try {
-			await axios.delete(`/api/${params.storeId}/sizes/${params.categoryId}`);
+			await axios.delete(`/api/${params.storeId}/sizes/${params.sizeId}`);
 			router.push(`/${params.storeId}/sizes`);
 			toast.success('Size deleted successfully');
 		} catch (err) {
@@ -166,6 +170,31 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 												data-testid='size-NameInput'
 												disabled={loading}
 												placeholder='Size name'
+												maxLength={21}
+												{...field}
+											/>
+											{!fieldState.error && field.value && (
+												<CircleCheckBig className='ml-2 h-4 w-4 text-green-500' />
+											)}
+										</div>
+									</FormControl>
+									<FormMessage>{fieldState.error?.message}</FormMessage>
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name='value'
+							render={({ field, fieldState }) => (
+								<FormItem>
+									<FormLabel data-testid='size-valueSubtitle'>Name</FormLabel>
+
+									<FormControl>
+										<div className='flex items-center'>
+											<Input
+												data-testid='size-valueInput'
+												disabled={loading}
+												placeholder='Size value'
 												maxLength={21}
 												{...field}
 											/>
