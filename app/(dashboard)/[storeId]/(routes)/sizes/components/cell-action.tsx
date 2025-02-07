@@ -8,7 +8,7 @@ import axios from 'axios';
 import React from 'react';
 
 // local imports
-import { CategoryColumn } from './columns';
+import { SizeColumn } from './columns';
 import { Button } from '@/components/ui/button';
 
 import {
@@ -23,7 +23,7 @@ import { AlertModal } from '@/components/modals/alert-modal';
 import { Alert } from '@/components/ui/alert';
 
 interface CellActionProps {
-	data: CategoryColumn;
+	data: SizeColumn;
 }
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 	const [loading, setLoading] = useState(false);
@@ -34,13 +34,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 	const params = useParams();
 
 	/**
-	 * Copies the given category ID to the clipboard and displays a success toast notification.
+	 * Copies the given size ID to the clipboard and displays a success toast notification.
 	 *
-	 * @param id - The categoryID of the category to be copied.
+	 * @param id - The sizeID of the size to be copied.
 	 */
 	const onCopy = (id: string) => {
 		navigator.clipboard.writeText(id);
-		toast.success('Category Id copied to clipboard.');
+		toast.success('Size Id copied to clipboard.');
 	};
 
 	const handleAPIError = (err: unknown) => {
@@ -56,13 +56,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 		setError(null);
 
 		try {
-			await axios.delete(`/api/${params.storeId}/categories/${data.id}`);
-			router.push(`/${params.storeId}/categories`); //TODO: Test this part
-			toast.success('Category deleted successfully');
+			await axios.delete(`/api/${params.storeId}/sizes/${data.id}`);
+			router.push(`/${params.storeId}/sizes`); //TODO: Test this part
+			toast.success('Size deleted successfully');
 		} catch (err) {
 			handleAPIError(err);
 			toast.error(
-				`Make sure you remove all categories using for category: ${
+				`Make sure you remove all product using this size: ${
 					typeof params.label === 'string' ? params.label.toUpperCase() : ''
 				}`,
 			);
@@ -85,6 +85,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 					<span>{error}</span>
 				</Alert>
 			)}
+
 			<DropdownMenu data-testid='cellAction-dropdownMenu'>
 				<DropdownMenuTrigger asChild>
 					<Button variant='ghost' data-testid='cellAction-dropdownMenuTrigger'>
@@ -105,9 +106,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 					</DropdownMenuItem>
 					<DropdownMenuItem
 						data-testid='cellAction-modifyItem'
-						onClick={() =>
-							router.push(`/${params.storeId}/categories/${data.id}`)
-						}
+						onClick={() => router.push(`/${params.storeId}/sizes/${data.id}`)}
 					>
 						<FilePenLine className='mr-2 h-4 w-4' />
 						Modify

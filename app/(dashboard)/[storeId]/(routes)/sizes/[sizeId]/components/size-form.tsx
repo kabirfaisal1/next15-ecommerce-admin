@@ -2,16 +2,16 @@
 //global import
 import * as z from 'zod';
 import React from 'react';
-import { Billboards } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trash, CircleCheckBig } from 'lucide-react';
-// import toast from 'react-hot-toast';
+
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
 
 //local import
+import { Sizes } from '@prisma/client';
 import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -24,9 +24,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-// import { AlertModal } from '@/components/modals/alert-modal';
-import ImageUpload from '@/components/ui/image-upload';
-import { Alert } from '@/components/ui/alert';
+
 import {
 	Dialog,
 	DialogContent,
@@ -34,25 +32,29 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
+import { Alert } from '@/components/ui/alert';
 import toast from 'react-hot-toast';
 
 const formSchema = z.object({
-	label: z
+	name: z
 		.string()
-		.min(1, 'Name is required')
-		.max(21, 'Name must be less than 21 characters'),
-	imageUrl: z.string().min(1),
+		.trim()
+		.min(3, { message: 'Name must be at least 3 characters long' })
+		.max(21, { message: 'Name must not exceed 21 characters' }),
+	value: z
+		.string()
+		.trim()
+		.min(1, { message: 'Name must be at least 3 characters long' })
+		.max(15, { message: 'Name must not exceed 15 characters' }),
 });
 
-type BillboardFormValues = z.infer<typeof formSchema>;
+type SizeFormValues = z.infer<typeof formSchema>;
 
-interface BillboardFormProps {
-	initialData: Billboards | null;
+interface SizeFormProps {
+	initialData: Sizes | null;
 }
 
-export const BillboardForm: React.FC<BillboardFormProps> = ({
-	initialData,
-}) => {
+export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
@@ -60,11 +62,11 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 	const params = useParams();
 	const router = useRouter();
 
-	const form = useForm<BillboardFormValues>({
+	const form = useForm<SizeFormValues>({
 		resolver: zodResolver(formSchema),
 		defaultValues: initialData || {
-			label: '',
-			imageUrl: '',
+			name: '',
+			value: '',
 		},
 	});
 
@@ -76,28 +78,28 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 		}
 	};
 
-	const title = initialData ? 'Edit billboard' : 'Create Billboard';
-	const description = initialData ? 'Edit billboard' : 'Add a new billboard';
-	const action = initialData ? 'Save changes' : 'Create billboard';
+	const title = initialData ? 'Edit Size' : 'Create Size';
+	const description = initialData ? 'Edit Size' : 'Add a new Size';
+	const action = initialData ? 'Save changes' : 'Create Size';
 	const toastMessage = initialData
-		? 'Billboard updated'
-		: 'Billboard created successfully';
-
-	const onSubmit = async (data: BillboardFormValues) => {
+		? 'Size updated'
+		: 'Size created successfully';
+	console.log('initialData', initialData);
+	const onSubmit = async (data: SizeFormValues) => {
 		setLoading(true);
 		setError(null);
 		try {
 			if (initialData) {
 				await axios.patch(
-					`/api/${params.storeId}/billboards/${params.billboardId}`,
+					`/api/${params.storeId}/sizes/${params.sizeId}`,
 					data,
 				);
 			} else {
-				await axios.post(`/api/${params.storeId}/billboards`, data);
+				await axios.post(`/api/${params.storeId}/sizes`, data);
 			}
 			router.refresh();
 			toast.success(toastMessage);
-			router.push(`/${params.storeId}/billboards`);
+			router.push(`/${params.storeId}/sizes`);
 		} catch (err) {
 			handleAPIError(err);
 			console.log(err);
@@ -112,19 +114,16 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 		setError(null);
 
 		try {
-			await axios.delete(
-				`/api/${params.storeId}/billboards/${params.billboardId}`,
+			await axios.delete(`/api/${params.storeId}/sizes/${params.sizeId}`);
+			router.push(`/${params.storeId}/sizes`);
+			toast.success('Size deleted successfully');
+		} catch (err) {
+			handleAPIError(err);
+			toast.error(
+				`Make sure you remove all product using for Size first: ${
+					typeof params.label === 'string' ? params.label.toUpperCase() : ''
+				}`,
 			);
-			router.push(`/${params.storeId}/billboards`);
-			toast.success('Billboard deleted successfully');
-		} catch (err: unknown) {
-			if (axios.isAxiosError(err) && err.response?.status === 400) {
-				toast.error(
-					'Make sure you remove all categories linked to this billboard before deleting.',
-				);
-			} else {
-				toast.error('Something went wrong.');
-			}
 		} finally {
 			setLoading(false);
 			setDialogOpen(false);
@@ -142,7 +141,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 						size='icon'
 						onClick={() => setDialogOpen(true)}
 						disabled={loading}
-						data-testid='billboards-delete-button'
+						data-testid='Sizes-delete-button'
 					>
 						<Trash className='h-4 w-4' />
 					</Button>
@@ -157,43 +156,49 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-					<FormField
-						data-testid='billboards-formField'
-						control={form.control}
-						name='imageUrl'
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel data-testid='billboards-backgroundImage-label'>
-									Background Image
-								</FormLabel>
-
-								<FormControl>
-									<ImageUpload
-										value={field.value ? [field.value] : []}
-										disabled={loading}
-										onChange={url => field.onChange(url)}
-										onRemove={() => field.onChange('')}
-									/>
-								</FormControl>
-							</FormItem>
-						)}
-					/>
 					<div className='grid grid-cols-3 gap-8'>
 						<FormField
 							control={form.control}
-							name='label'
+							name='name'
 							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel data-testid='billboards-labelSubtitle'>
-										Label
+									<FormLabel data-testid='size-NameSubtitle'>Name</FormLabel>
+
+									<FormControl>
+										<div className='flex items-center'>
+											<Input
+												data-testid='size-NameInput'
+												disabled={loading}
+												placeholder='Size name'
+												maxLength={21}
+												{...field}
+											/>
+											{!fieldState.error && field.value && (
+												<CircleCheckBig className='ml-2 h-4 w-4 text-green-500' />
+											)}
+										</div>
+									</FormControl>
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name='value'
+							render={({ field, fieldState }) => (
+								<FormItem>
+									<FormLabel data-testid='size-valueSubtitle'>
+										Size Value
 									</FormLabel>
 
 									<FormControl>
 										<div className='flex items-center'>
 											<Input
-												data-testid='billboards-labelInput'
+												data-testid='size-valueInput'
 												disabled={loading}
-												placeholder='Billboard name'
+												placeholder='Size value'
 												maxLength={21}
 												{...field}
 											/>
@@ -211,7 +216,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 					</div>
 					<Button
 						type='submit'
-						data-testid='billboards-submitButton'
+						data-testid='size-submitButton'
 						disabled={loading}
 					>
 						{loading ? 'Saving...' : action}
@@ -226,20 +231,20 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 						<DialogTitle>Confirm Deletion</DialogTitle>
 					</DialogHeader>
 					<p>
-						Are you sure you want to delete this billboard? This action cannot
-						be undone.
+						Are you sure you want to delete this Size? This action cannot be
+						undone.
 					</p>
 					<DialogFooter>
 						<Button
 							variant='outline'
 							onClick={() => setDialogOpen(false)}
 							disabled={loading}
-							data-testid='billboards-cancelButton'
+							data-testid='size-cancelButton'
 						>
 							Cancel
 						</Button>
 						<Button
-							data-testid='billboards-deleteButton'
+							data-testid='size-deleteButton'
 							variant='destructive'
 							onClick={onDelete}
 							disabled={loading}
