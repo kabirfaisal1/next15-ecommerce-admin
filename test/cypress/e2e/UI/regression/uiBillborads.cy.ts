@@ -53,7 +53,7 @@ describe( 'Store Billboard', () =>
                 storeId,
                 token,
                 [ new AdminAPIRequestKeys().billboardName, new AdminAPIRequestKeys().imageUrl ],
-                [ 'CypressUIBillboard', "https://res.cloudinary.com/dzsguot60/image/upload/v1736444639/iz0gqlh3fyelyxqzohnk.png" ]
+                [ 'CypressUIBillboard', "https://res.cloudinary.com/dzsguot60/image/upload/v1738955812/nawg5xwt83sdkhdqjwus.png" ]
             );
             adminBillboardPage.actionModifyBillboard( 'CypressUIBillboard' );
             adminBillboardPage.enterBillboardName( 'ToBeDeleted' );

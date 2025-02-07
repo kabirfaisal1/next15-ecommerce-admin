@@ -23,7 +23,7 @@ export interface TestData
 }
 
 // ✅ Extracting reusable constants for store and billboard IDs
-const STORE_ID = '01e483bc-744d-477a-95bf-bc1e5db0cb55';
+const STORE_ID = 'f8c96f0e-daa1-4e61-9fe4-3d1caf5db964';
 const BILLBOARD_ID = '84eaf450-6525-4681-8751-42f4a156820f';
 
 /**
