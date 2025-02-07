@@ -11,7 +11,7 @@ import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
 
 //local import
-import { Size } from '@prisma/client';
+import { Sizes } from '@prisma/client';
 import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -51,7 +51,7 @@ const formSchema = z.object({
 type SizeFormValues = z.infer<typeof formSchema>;
 
 interface SizeFormProps {
-	initialData: Size | null;
+	initialData: Sizes | null;
 }
 
 export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
@@ -66,7 +66,6 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 		resolver: zodResolver(formSchema),
 		defaultValues: initialData || {
 			name: '',
-			value: '',
 		},
 	});
 
@@ -84,7 +83,7 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 	const toastMessage = initialData
 		? 'Size updated'
 		: 'Size created successfully';
-
+	console.log('initialData', initialData);
 	const onSubmit = async (data: SizeFormValues) => {
 		setLoading(true);
 		setError(null);
@@ -187,7 +186,9 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 							name='value'
 							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel data-testid='size-valueSubtitle'>Name</FormLabel>
+									<FormLabel data-testid='size-valueSubtitle'>
+										Size Value
+									</FormLabel>
 
 									<FormControl>
 										<div className='flex items-center'>
