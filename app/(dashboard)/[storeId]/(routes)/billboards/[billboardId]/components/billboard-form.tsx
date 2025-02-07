@@ -202,7 +202,9 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 											)}
 										</div>
 									</FormControl>
-									<FormMessage>{fieldState.error?.message}</FormMessage>
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>

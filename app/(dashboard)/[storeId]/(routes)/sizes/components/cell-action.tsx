@@ -62,7 +62,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 		} catch (err) {
 			handleAPIError(err);
 			toast.error(
-				`Make sure you remove all sizes using for size: ${
+				`Make sure you remove all product using this size: ${
 					typeof params.label === 'string' ? params.label.toUpperCase() : ''
 				}`,
 			);
@@ -85,6 +85,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 					<span>{error}</span>
 				</Alert>
 			)}
+
 			<DropdownMenu data-testid='cellAction-dropdownMenu'>
 				<DropdownMenuTrigger asChild>
 					<Button variant='ghost' data-testid='cellAction-dropdownMenuTrigger'>
@@ -92,7 +93,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 						<MoreHorizontal className=' h-4 w-4' />
 					</Button>
 				</DropdownMenuTrigger>
-				<DropdownMenuContent>
+				<DropdownMenuContent data-testid='cellAction-dropdownMenuContent'>
 					<DropdownMenuLabel data-testid='cellAction-dropdownMenuLabel'>
 						Action
 					</DropdownMenuLabel>

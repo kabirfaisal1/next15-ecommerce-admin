@@ -60,7 +60,7 @@ export async function POST (
     } catch ( error )
     {
         // Log the Categories to the console
-        console.log( `[Sizes_POST] <==: ${error} ==>` );
+        console.log( `[SIZES_POST] <==: ${error} ==>` );
 
         // Return a 500 Internal Server Error response with the error message in the response body
         if ( error instanceof Error )
@@ -83,18 +83,18 @@ export async function GET (
         if ( !params.storeId ) return new NextResponse( "Store id is required", { status: 400 } );
 
         // Fetch all Categories associated with the given storeId from the database
-        const size = await prismadb.sizes.findMany( {
+        const sizes = await prismadb.sizes.findMany( {
             where: {
                 storeId: params.storeId
             }
         } );
 
         // Return the fetched Categories as a JSON response
-        return NextResponse.json( size );
+        return NextResponse.json( sizes );
     } catch ( error )
     {
         // Log the Categories to the console
-        console.log( `[Sizes_GET] <==: ${error} ==>` );
+        console.log( `[SIZES_GET] <==: ${error} ==>` );
 
         // Return a 500 Internal Server Error response with the error message in the response body
         if ( error instanceof Error )

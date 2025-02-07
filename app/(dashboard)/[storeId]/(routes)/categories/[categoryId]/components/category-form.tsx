@@ -190,7 +190,9 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
 											)}
 										</div>
 									</FormControl>
-									<FormMessage>{fieldState.error?.message}</FormMessage>
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>
@@ -231,7 +233,9 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
 										</SelectContent>
 									</Select>
 
-									<FormMessage>{fieldState.error?.message}</FormMessage>
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>

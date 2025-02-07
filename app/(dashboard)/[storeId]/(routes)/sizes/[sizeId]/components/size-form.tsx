@@ -66,6 +66,7 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 		resolver: zodResolver(formSchema),
 		defaultValues: initialData || {
 			name: '',
+			value: '',
 		},
 	});
 
@@ -177,7 +178,9 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 											)}
 										</div>
 									</FormControl>
-									<FormMessage>{fieldState.error?.message}</FormMessage>
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>
@@ -204,7 +207,9 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
 											)}
 										</div>
 									</FormControl>
-									<FormMessage>{fieldState.error?.message}</FormMessage>
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>

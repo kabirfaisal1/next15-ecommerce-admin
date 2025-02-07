@@ -3,7 +3,7 @@ import prismadb from '@/lib/prismadb';
 import { SizeForm } from './components/size-form';
 
 const SizePage = async ({ params }: { params: { sizeId: string } }) => {
-	const size = await prismadb.categories.findUnique({
+	const size = await prismadb.sizes.findUnique({
 		where: {
 			id: params.sizeId,
 		},
