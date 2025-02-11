@@ -78,7 +78,7 @@ describe( 'User Test Category', () =>
     /**
      * API Test context: Runs all billboard-related API tests.
      */
-    context( 'Billboards API Test', () =>
+    context( 'Categories API Test', () =>
     {
         // Check if any test is marked as `only`
         const hasOnlyTests = TestList.some( ( test ) => test.testRunner === 'only' );
