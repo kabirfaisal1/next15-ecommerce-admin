@@ -1,6 +1,6 @@
 
-import AdminBillboardPage from '../../../support/test_components/pages/uiAdminBillboardPage';
-import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
+import AdminBillboardPage from '@support//test_components/pages/uiAdminBillboardPage';
+import { AdminAPIRequestKeys } from '@support//utilities/apiRequestKeys';
 
 
 const adminBillboardPage = new AdminBillboardPage();

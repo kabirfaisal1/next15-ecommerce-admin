@@ -1,5 +1,5 @@
 
-import AdminCategoriesPage from '../../../support/test_components/pages/uiAdminCategoriesPage';
+import AdminCategoriesPage from '@support/test_components/pages/uiAdminCategoriesPage';
 
 
 
