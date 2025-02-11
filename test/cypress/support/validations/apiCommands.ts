@@ -104,11 +104,11 @@ Cypress.Commands.add( 'validateResponseBody', ( response: any, expectedResults: 
                 cy.step( `Validated Message: ${expectedResults.expectedResponseMessage}` );
                 break;
             case 'expectedResponseSizeName':
-                expect( response ).to.equal( expectedResults.expectedResponseSizeName );
+                expect( response.name ).to.equal( expectedResults.expectedResponseSizeName );
                 cy.step( `Validated expected Size Name: ${expectedResults.expectedResponseSizeName}` );
                 break;
             case 'expectedResponseSizeValue':
-                expect( response ).to.equal( expectedResults.expectedResponseSizeValue );
+                expect( response.value ).to.equal( expectedResults.expectedResponseSizeValue );
                 cy.step( `Validated expected Size value: ${expectedResults.expectedResponseSizeValue}` );
                 break;
             case 'expectedError':
