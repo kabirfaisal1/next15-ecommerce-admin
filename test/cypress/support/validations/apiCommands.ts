@@ -103,6 +103,14 @@ Cypress.Commands.add( 'validateResponseBody', ( response: any, expectedResults: 
                 expect( response.message ).to.equal( expectedResults.expectedResponseMessage );
                 cy.step( `Validated Message: ${expectedResults.expectedResponseMessage}` );
                 break;
+            case 'expectedResponseSizeName':
+                expect( response ).to.equal( expectedResults.expectedResponseSizeName );
+                cy.step( `Validated expected Size Name: ${expectedResults.expectedResponseSizeName}` );
+                break;
+            case 'expectedResponseSizeValue':
+                expect( response ).to.equal( expectedResults.expectedResponseSizeValue );
+                cy.step( `Validated expected Size value: ${expectedResults.expectedResponseSizeValue}` );
+                break;
             case 'expectedError':
                 expect( response ).to.equal( expectedResults.expectedError );
                 cy.step( `Validated expected error: ${expectedResults.expectedError}` );
@@ -114,3 +122,4 @@ Cypress.Commands.add( 'validateResponseBody', ( response: any, expectedResults: 
         }
     } );
 } );
+

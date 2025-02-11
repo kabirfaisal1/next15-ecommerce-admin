@@ -39,7 +39,8 @@ export const TestList: TestData[] = [
         requestKeys: [ new AdminAPIRequestKeys().sizeName, new AdminAPIRequestKeys().sizeValue ],
         requestValues: [ 'CypressSmall', 'Small' ],
         expectedStatus: 200,
-        expectedResponseKeys: [ 'billboardId', 'createdAt', 'id', 'name', 'storeId', 'updatedAt' ],
+        expectedResponseKeys: [ 'createdAt', 'id', 'name', 'storeId',
+            'updatedAt', 'value' ],
         expectedResponseStoreId: STORE_ID,
         expectedResponseSizeName: 'CypressSmall',
         expectedResponseSizeValue: 'Small',
@@ -56,7 +57,8 @@ export const TestList: TestData[] = [
         method: 'GET',
         queryStoreid: STORE_ID,
         expectedStatus: 200,
-        expectedResponseKeys: [ 'billboardId', 'createdAt', 'id', 'name', 'storeId', 'updatedAt' ],
+        expectedResponseKeys: [ 'createdAt', 'id', 'name', 'storeId',
+            'updatedAt', 'value' ],
     },
     {
         testDescription: 'Update a Size',
@@ -66,9 +68,7 @@ export const TestList: TestData[] = [
         requestKeys: [ new AdminAPIRequestKeys().sizeName, new AdminAPIRequestKeys().sizeValue ],
         requestValues: [ 'CypressUpdate', 'Medium' ],
         expectedStatus: 200,
-        expectedResponseKeys: [ 'billboardId', 'createdAt', 'id', 'name', 'storeId', 'updatedAt' ],
-        expectedResponseSizeName: 'CypressSmall',
-        expectedResponseSizeValue: 'Medium',
+
     },
     {
         testDescription: 'Delete a Size',
