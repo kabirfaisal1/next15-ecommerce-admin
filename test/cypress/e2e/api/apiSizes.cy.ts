@@ -1,6 +1,6 @@
 // Import the list of test cases and their type definitions
 import { TestList, TestData } from '../api/testData/sizes_data';
-import { createRequestBody } from '../../support/utilities/globalHelpers';
+import { createRequestBody } from '@support/utilities/globalHelpers';
 
 /**
  * Performs an API request for a given test case.

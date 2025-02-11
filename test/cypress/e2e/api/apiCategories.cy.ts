@@ -1,5 +1,5 @@
 import { TestList } from './testData/categories_data';
-import { createRequestBody } from '../../support/utilities/globalHelpers';
+import { createRequestBody } from '@support/utilities/globalHelpers';
 
 
 /**

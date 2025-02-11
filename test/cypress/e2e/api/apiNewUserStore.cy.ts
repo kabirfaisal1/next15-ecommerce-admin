@@ -1,5 +1,5 @@
 import { TestList } from './testData/newUserStore_data';
-import { createRequestBody } from '../../support/utilities/globalHelpers';
+import { createRequestBody } from '@support/utilities/globalHelpers';
 
 /**
  * Perform an API request for a given test case.
