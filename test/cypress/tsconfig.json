@@ -3,10 +3,11 @@
     "target": "es5",
     "lib": ["es5", "dom"],
     "types": ["cypress", "@types/cypress", "@types/jest", "@types/mocha"],
+    "baseUrl": "../cypress",
      "paths": {
-             "@support/*": ["./support/*"],
-             "@fixtures/*": ["./fixtures/*"],
-             },
+      "@support/*": ["support/*"],
+      "@fixtures/*": ["fixtures/*"]
+    }
   },
   "include": ["cypress/tsconfig.json", "**/*.ts","./tsconfig.json"],
   "exclude": ["node_modules", "cypress", "cypress.config.ts"]
