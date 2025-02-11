@@ -1,4 +1,4 @@
-import { TestList } from './testData/newUserStore_data';
+import { TestList } from '@fixtures/aipTestData/newUserStore_data';
 import { createRequestBody } from '@support/utilities/globalHelpers';
 
 /**

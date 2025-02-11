@@ -1,4 +1,4 @@
-import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
+import { AdminAPIRequestKeys } from '@support/utilities/apiRequestKeys';
 
 /**
  * Defines the structure of API test cases for Categories.

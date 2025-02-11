@@ -1,5 +1,5 @@
 // Import the list of test cases and their type definitions
-import { TestList, TestData } from '../api/testData/sizes_data';
+import { TestList, TestData } from '@fixtures/aipTestData/sizes_data';
 import { createRequestBody } from '@support/utilities/globalHelpers';
 
 /**
