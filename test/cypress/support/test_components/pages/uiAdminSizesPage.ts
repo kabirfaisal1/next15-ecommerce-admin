@@ -199,11 +199,7 @@ class AdminSizesPage
         cy.step( 'Clicking on the submit button' );
         this.elements.size_submitButtonButton().click();
         cy.step( `Checking '${errorType}'  error message` );
-
         this.elements.form_errorMessage().should( 'be.visible' ).contains( errorType );
-
-
-
     }
 }
 

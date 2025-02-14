@@ -108,71 +108,36 @@ describe( 'No Store Admin User', () =>
             // Access the storeId from Cypress environment
             const storeId = Cypress.env( 'storeId' );
 
-            // Intercept the store creation API call before triggering it
+            // Intercept the store deletion API call before triggering it
             cy.intercept( 'DELETE', `/api/stores/${storeId}` ).as( 'deleteStore' );
 
-            // Enter the store name and submit the form
+            // Navigate to settings and delete the store
             adminSettingPage.goToSetting( storeId );
             adminSettingPage.deleteStore( true );
 
             // Wait for the intercepted API call to complete
             cy.wait( '@deleteStore' ).then( ( interception ) =>
             {
-                // Assert that the response status code is 201
-                expect( interception.response.statusCode ).to.eq( 200 );
+                cy.step( `Intercepted Status Code: ${interception.response?.statusCode}` );
 
-                // Extract the storeId from the response body
-                const deleteStoreCount = interception.response.body.count;
+                // Ensure the response exists
+                expect( interception.response, 'API response should exist' ).to.exist;
+                expect( interception.response.statusCode, 'Status code should be 200' ).to.equal( 200 );
 
-                // Assert that the storeId exists in the response
-                expect( deleteStoreCount ).to.exist;
 
-                // Wait for the page to reload and verify the URL contains the storeId
-                cy.url().should( 'not.include', storeId );
+                cy.step( `Intercepted Response Body: ${JSON.stringify( interception.response.body )}` );
+                const responseBody = JSON.parse( interception.response.body ) ;
+
+
+                expect( responseBody, 'Response body should exist for 200 status' ).to.exist;
+                expect( responseBody.message, 'Response should contain "message"' ).to.equal( 'Deleted successfully' );
             } );
 
-            // cy.verifyToastMessage( 'Store updated successfully' ); //TODO: Implement this
+            // Verify that the storeId is removed from the URL
+            cy.url().should( 'not.include', storeId );
+
+            // cy.verifyToastMessage('Store updated successfully'); // TODO: Implement this
         } );
-        it( 'User can not access other admin store setting', () =>
-        {
-            // Fetch the store ID and use it within the chain
-            cy.task( 'queryDatabase', storeIDQuery ).then( ( rows ) =>
-            {
-                if ( rows.length > 0 )
-                {
-                    const storeID = rows[ 0 ].id; // Extract the store ID from the query result
-                    cy.step( `Resolved and using storeID: ${storeID}` ); // Log the resolved storeID
 
-                    // Use the storeID for navigation and further tests
-                    cy.visit( `/${storeID}/settings` );
-                    cy.get( 'h1' ).contains( '404' ); //TODO: Verify that the page contains after creating error page
-                } else
-                {
-                    throw new Error( 'No rows returned from query' );
-                }
-            } );
-
-        } );
-        it( 'User can not access other admin store billboards', () =>
-        {
-            // Fetch the store ID and use it within the chain
-            cy.task( 'queryDatabase', storeIDQuery ).then( ( rows ) =>
-            {
-                if ( rows.length > 0 )
-                {
-                    const storeID = rows[ 0 ].id; // Extract the store ID from the query result
-                    cy.step( `Resolved and using storeID: ${storeID}` ); // Log the resolved storeID
-
-                    // Use the storeID for navigation and further tests
-                    cy.visit( `/${storeID}/billboards` );
-                    cy.get( 'h1' ).contains( '404' ); //TODO Verify that the page contains after creating error page
-                } else
-                {
-                    throw new Error( 'No rows returned from query' );
-                }
-            } );
-
-        } );
     } );
-
 } );

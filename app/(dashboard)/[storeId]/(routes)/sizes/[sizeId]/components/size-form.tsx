@@ -40,7 +40,7 @@ const formSchema = z.object({
 		.string()
 		.trim()
 		.min(3, { message: 'Name must be at least 3 characters long' })
-		.max(21, { message: 'Name must not exceed 21 characters' }),
+		.max(21),
 	value: z
 		.string()
 		.trim()

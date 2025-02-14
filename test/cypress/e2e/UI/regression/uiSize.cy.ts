@@ -56,7 +56,7 @@ describe( 'Store Billboard', () =>
             cy.visit( `/${storeId}/sizes` );
             adminSizesPage.actionDeleteSize( 'cyUpdatedSizes' );
         } );
-        it.only( 'User create Sizes without sizes name', () =>
+        it( 'User create Sizes without sizes value', () =>
         {
             cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes/new` );
@@ -65,16 +65,15 @@ describe( 'Store Billboard', () =>
             adminSizesPage.formErrorValidation( 'Value must be at least 3 characters long' );
 
         } );
-        it.only( 'User create Sizes without vale', () =>
+        it( 'User create Sizes without name', () =>
         {
             cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes/new` );
-
             adminSizesPage.enterSizeValue( 'noNme' );
             adminSizesPage.formErrorValidation( 'Name must be at least 3 characters long' );
 
         } );
-        it.only( 'User create Sizes with 2 characters Name', () =>
+        it( 'User create Sizes with 2 characters Name', () =>
         {
             cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes/new` );
@@ -83,6 +82,17 @@ describe( 'Store Billboard', () =>
             adminSizesPage.formErrorValidation( 'Name must be at least 3 characters long' );
 
         } );
+        it( 'User create Sizes sizes value > 15', () =>
+        {
+            cy.step( 'Going to sizes from navigation tab' );
+            cy.visit( `/${storeId}/sizes/new` );
+
+            adminSizesPage.enterSizeName( 'cyBoundary' );
+            adminSizesPage.enterSizeValue( 'thisIsCypressTest' );
+            adminSizesPage.formErrorValidation( 'Value must not exceed 15 characters' );
+
+        } );
+
 
     } );
 
