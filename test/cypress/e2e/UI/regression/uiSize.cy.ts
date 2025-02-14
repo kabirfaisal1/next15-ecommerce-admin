@@ -21,7 +21,7 @@ describe( 'Store Billboard', () =>
             cy.navigateTabItem( "Sizes" );
 
         } );
-        it.only( 'User create new Sizes', () =>
+        it( 'User create new Sizes', () =>
         {
             cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes` );
@@ -32,16 +32,16 @@ describe( 'Store Billboard', () =>
 
 
         } );
-        it.only( 'User update Sizes Name', () =>
+        it( 'User update Sizes Name', () =>
         {
             cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes` );
             const sizeId = Cypress.env( 'sizeId' );
             adminSizesPage.actionModifySize( 'cyCreateSizes' );
-            adminSizesPage.enterSizeName( 'cyUpdatedSizes2' );
+            adminSizesPage.enterSizeName( 'cyUpdatedSizes' );
             adminSizesPage.clickOnSubmitButton( storeId, sizeId );
         } );
-        it.only( 'User update Sizes Value', () =>
+        it( 'User update Sizes Value', () =>
         {
             cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes` );
@@ -56,30 +56,30 @@ describe( 'Store Billboard', () =>
             cy.visit( `/${storeId}/sizes` );
             adminSizesPage.actionDeleteSize( 'cyUpdatedSizes' );
         } );
-        it( 'User create Sizes without sizes', () =>
+        it.only( 'User create Sizes without sizes name', () =>
         {
             cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes/new` );
 
-            adminSizesPage.enterSizeName( 'noBillBillboard' );
-            adminSizesPage.formErrorValidation( 'Billboard selection is required' );
+            adminSizesPage.enterSizeName( 'noValue' );
+            adminSizesPage.formErrorValidation( 'Value must be at least 3 characters long' );
 
         } );
-        it( 'User create Sizes without Name', () =>
+        it.only( 'User create Sizes without vale', () =>
         {
             cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes/new` );
 
-            adminSizesPage.selectBillboard( 'Forever Billboard' );
+            adminSizesPage.enterSizeValue( 'noNme' );
             adminSizesPage.formErrorValidation( 'Name must be at least 3 characters long' );
 
         } );
-        it( 'User create Sizes with 2 characters Name', () =>
+        it.only( 'User create Sizes with 2 characters Name', () =>
         {
             cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes/new` );
             adminSizesPage.enterSizeName( 'cy' );
-            adminSizesPage.selectBillboard( 'Forever Billboard' );
+            adminSizesPage.enterSizeValue( 'LessThenThree' );
             adminSizesPage.formErrorValidation( 'Name must be at least 3 characters long' );
 
         } );

@@ -35,7 +35,7 @@ describe( 'Store Billboard', () =>
 
         } );
         //TODO check why this failed
-        it.only( 'User update Categories', () =>
+        it( 'User update Categories', () =>
         {
             cy.step( 'Going to categories from navigation tab' );
             cy.visit( `/${storeId}/categories` );

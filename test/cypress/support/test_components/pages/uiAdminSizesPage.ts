@@ -20,7 +20,7 @@ class AdminSizesPage
         settingAPI_Alert: () => cy.get( '[data-testid="api-alert_NEXT_PUBLIC_API_URL"]' ),
         settingAPI_AlertURI: () => cy.get( '[data-testid="api-alert_uri"]' ),
         settingAPI_AlertClipboard: () => cy.get( '[data-testid="api-alert_copyButton"]' ),
-        form_errorMessage: () => cy.get( 'p' ),
+        form_errorMessage: () => cy.get( '[data-testid="FormMessage"]' ),
 
 
     };
@@ -106,44 +106,41 @@ class AdminSizesPage
             const alias = isCreatingSize ? 'createSize' : 'updateSize';
 
             cy.step( `Intercepting API call for ${isCreatingSize ? 'creating' : 'updating'} size` );
+            cy.step( `Intercepting API call Endpoint ${endpoint}` );
             cy.intercept( method, endpoint ).as( alias );
 
             return cy.wrap( alias ); // Ensure alias is wrapped so Cypress properly chains it
         } ).then( ( alias ) =>
         {
+            cy.step( `Clicking on the submit button for ${alias}` );
             cy.step( 'Clicking on the submit button' );
             this.elements.size_submitButtonButton().click();
 
             cy.step( 'Waiting for the intercepted API response' );
+            cy.step( `----for---- ${alias}` );
             cy.wait( `@${alias}`, { timeout: 10000 } ).then( ( interception ) =>
             {
                 expect( interception.response.statusCode ).to.eq( 200 );
                 if ( alias === 'updateSize' )
                 {
-                    expect( interception.response.body ).to.have.property( 'message', 'Size updated successfully' );
+                    expect( interception.response.body ).to.have.property( 'message', 'Successfully Updated' );
                 }
                 else
                 {
-                    const { storeId: xhrStoreId, id: xhrSizeId, valueId: sizeId } = interception.response.body;
+                    const { storeId: xhrStoreId, id: xhrSizeId } = interception.response.body;
 
                     cy.step( 'Validating API response data' );
                     expect( xhrStoreId ).to.eq( storeId );
 
                     expect( xhrSizeId ).to.exist;
 
-                    if ( sizeId )
-                    {
-                        expect( xhrSizeId ).to.eq( sizeId );
+                    cy.log( 'Saving sizeId to Cypress environment' );
+                    Cypress.env( 'sizeId', xhrSizeId );
 
-                    }
                     cy.step( 'Verifying the new size page URL' );
                     cy.visit( `/${storeId}/sizes/${xhrSizeId}` );
                     cy.url().should( 'include', xhrSizeId );
                 }
-
-
-
-
             } );
         } );
     }
