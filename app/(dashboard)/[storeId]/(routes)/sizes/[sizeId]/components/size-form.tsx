@@ -44,8 +44,8 @@ const formSchema = z.object({
 	value: z
 		.string()
 		.trim()
-		.min(1, { message: 'Name must be at least 3 characters long' })
-		.max(15, { message: 'Name must not exceed 15 characters' }),
+		.min(1, { message: 'Value must be at least 3 characters long' })
+		.max(15, { message: 'Value must not exceed 15 characters' }),
 });
 
 type SizeFormValues = z.infer<typeof formSchema>;
