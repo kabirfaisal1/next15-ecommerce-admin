@@ -4,19 +4,19 @@ class AdminSizesPage
     elements: { [ key: string ]: () => Cypress.Chainable; } = {
         pageHeaders: () => cy.get( '[data-testid="heading-title"]' ),
         pageDescription: () => cy.get( '[data-testid="heading-description"]' ),
-        addNewButton: () => cy.get( '[data-testid="add-sizeClient-button"]' ),
+        addNewButton: () => cy.get( '[data-testid="add-sizesClient-button"]' ),
 
         // Create New Categories Form
-        size_formInputLabel: () => cy.get( '[data-testid="Size-NameSubtitle"]' ),
+        size_formInputLabel: () => cy.get( 'label[data-testid="size-NameSubtitle"]' ),
         size_formLabelInputField: () => cy.get( '[data-testid="size-NameInput"]' ),
-        size_valueSelectLabel: () => cy.get( '[data-testid="size-BillboardSubtitle"]' ),
-        size_valueSelectTrigger: () => cy.get( '[data-testid="selectTrigger"]' ),
-        size_valueSelectOption: () => cy.get( 'select' ),
+        size_valueLabel: () => cy.get( '[data-testid="size-valueSubtitle"]' ),
+        size_valueInput: () => cy.get( '[data-testid="size-valueInput"]' ),
+
         size_submitButtonButton: () => cy.get( '[data-testid="size-submitButton"]' ),
         sizeDataTable: () => cy.get( '[data-testid="data-table"]' ),
 
         sizeActionColumn: () => cy.get( '[data-testid="cellAction-dropdownMenuTrigger"]' ),
-        sizeActionItem: () => cy.get( 'div[data-side="bottom"][role="menu"]' ),
+        sizeActionItem: () => cy.get( 'div[data-testid="cellAction-dropdownMenuContent"]' ),
         settingAPI_Alert: () => cy.get( '[data-testid="api-alert_NEXT_PUBLIC_API_URL"]' ),
         settingAPI_AlertURI: () => cy.get( '[data-testid="api-alert_uri"]' ),
         settingAPI_AlertClipboard: () => cy.get( '[data-testid="api-alert_copyButton"]' ),
@@ -71,37 +71,22 @@ class AdminSizesPage
         this.elements.size_formLabelInputField().should( 'be.visible' ).clear().type( label ).should( 'have.value', label );
     }
 
-    selectBillboard ( value: string )
+    enterSizeValue ( value: string )
     {
-        cy.step( 'Checking Categories value Select Label' );
-        this.elements.size_valueSelectLabel()
+        cy.step( 'Checking Size value Select Label' );
+        this.elements.size_valueLabel()
             .should( 'be.visible' )
-            .and( 'have.text', 'Billboard' );
+            .and( 'have.text', 'Size Value' );
 
-        cy.step( 'Fix pointer-events issue' ); //TODO: try with out this code
-        cy.get( 'body' ).invoke( 'attr', 'style', 'pointer-events: auto' );
-
-        cy.step( 'Trigger Categories value dropdown' );
-        this.elements.size_valueSelectTrigger()
+        cy.step( `Entering Size value : ${value}` );
+        this.elements.size_valueInput()
             .should( 'be.visible' )
-            .click( { force: true } );
-
-        cy.step( 'Wait for dropdown options to be visible' );
-        cy.get( '[role="option"]', { timeout: 5000 } ) // Adjust this selector if necessary
-            .should( 'be.visible' );
-
-        cy.step( 'Select Billboard from dropdown' );
-        cy.contains( '[role="option"]', value ) // Ensure correct selector for dropdown items
-            .should( 'be.visible' )
-            .click( { force: true } );
-
-        cy.step( 'Verify selection' );
-        this.elements.size_valueSelectTrigger()
-            .find( '[data-testid="SelectValue"]' )
-            .should( 'have.text', value );
+            .clear()
+            .type( value )
+            .should( 'have.value', value );
     }
 
-    clickOnSubmitButton ( storeId: string, valueId: string, sizeId?: string )
+    clickOnSubmitButton ( storeId: string, sizeId?: string )
     {
         cy.step( 'Determining whether to create or update a size' );
 
@@ -113,6 +98,7 @@ class AdminSizesPage
         } ).then( ( buttonText ) =>
         {
             const isCreatingSize = buttonText.includes( 'Create Size' );
+            cy.step( `Button text is: ${buttonText}` );
             const method = isCreatingSize ? 'POST' : 'PATCH';
             const endpoint = isCreatingSize
                 ? `/api/${storeId}/sizes`
@@ -132,29 +118,35 @@ class AdminSizesPage
             cy.wait( `@${alias}`, { timeout: 10000 } ).then( ( interception ) =>
             {
                 expect( interception.response.statusCode ).to.eq( 200 );
-
-                const { storeId: xhrStoreId, id: xhrSizeId, valueId: xhrBillboardId } = interception.response.body;
-
-                cy.step( 'Validating API response data' );
-                expect( xhrStoreId ).to.eq( storeId );
-                expect( xhrBillboardId ).to.eq( valueId );
-                expect( xhrSizeId ).to.exist;
-
-                if ( sizeId )
+                if ( alias === 'updateSize' )
                 {
-                    expect( xhrSizeId ).to.eq( sizeId );
+                    expect( interception.response.body ).to.have.property( 'message', 'Size updated successfully' );
+                }
+                else
+                {
+                    const { storeId: xhrStoreId, id: xhrSizeId, valueId: sizeId } = interception.response.body;
+
+                    cy.step( 'Validating API response data' );
+                    expect( xhrStoreId ).to.eq( storeId );
+
+                    expect( xhrSizeId ).to.exist;
+
+                    if ( sizeId )
+                    {
+                        expect( xhrSizeId ).to.eq( sizeId );
+
+                    }
+                    cy.step( 'Verifying the new size page URL' );
+                    cy.visit( `/${storeId}/sizes/${xhrSizeId}` );
+                    cy.url().should( 'include', xhrSizeId );
                 }
 
-                cy.log( 'Saving sizeId to Cypress environment' );
-                Cypress.env( 'sizeId', xhrSizeId );
 
-                cy.step( 'Verifying the new size page URL' );
-                cy.visit( `/${storeId}/sizes/${xhrSizeId}` );
-                cy.url().should( 'include', xhrSizeId );
+
+
             } );
         } );
     }
-
     actionModifySize ( sizeName: string )
     {
         cy.step( `Going to Modify ${sizeName}` );
@@ -195,7 +187,7 @@ class AdminSizesPage
             sizeName
         );
 
-        cy.step( 'Click on modify from drop-down list' );
+        cy.step( 'Click on Delete from drop-down list' );
 
         // // Find the correct action item in the dropdown and click it
         this.elements.sizeActionItem().should( 'be.visible' )

@@ -1,6 +1,7 @@
 import AdminSizesPage from '@support/test_components/pages/uiAdminSizesPage';
 
-const storeId = 'c936295f-6653-48f3-b0f4-be89bcc331b8';
+const storeId = '00ea910b-ecf0-4d1e-bcb6-5cb72313bb46';
+
 const billboardId = 'a3e3e2ea-5707-45bb-a689-86dfb9d917d6';
 const adminSizesPage = new AdminSizesPage();
 describe( 'Store Billboard', () =>
@@ -16,40 +17,48 @@ describe( 'Store Billboard', () =>
     {
         it( 'User navigate to Sizes', () =>
         {
-            cy.log( 'Going to billboards from navigation tab' );
+            cy.log( 'Going to sizes from navigation tab' );
             cy.navigateTabItem( "Sizes" );
 
         } );
-        it( 'User create new Sizes', () =>
+        it.only( 'User create new Sizes', () =>
         {
-            cy.step( 'Going to billboards from navigation tab' );
+            cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes` );
             adminSizesPage.clickOnAddSizeButton( storeId );
             adminSizesPage.enterSizeName( 'cyCreateSizes' );
-            adminSizesPage.selectBillboard( 'Forever Billboard' );
+            adminSizesPage.enterSizeValue( 'cyCreateSmall' );
             adminSizesPage.clickOnSubmitButton( storeId, billboardId );
 
 
         } );
-        it( 'User update Sizes', () =>
+        it.only( 'User update Sizes Name', () =>
         {
-            cy.step( 'Going to billboards from navigation tab' );
+            cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes` );
-            const categoryId = Cypress.env( 'sizeId' );
+            const sizeId = Cypress.env( 'sizeId' );
             adminSizesPage.actionModifySize( 'cyCreateSizes' );
-            adminSizesPage.enterSizeName( 'cyUpdatedSizes' );
-            adminSizesPage.selectBillboard( 'Forever Billboard' );
-            adminSizesPage.clickOnSubmitButton( storeId, billboardId, categoryId );
+            adminSizesPage.enterSizeName( 'cyUpdatedSizes2' );
+            adminSizesPage.clickOnSubmitButton( storeId, sizeId );
+        } );
+        it.only( 'User update Sizes Value', () =>
+        {
+            cy.step( 'Going to sizes from navigation tab' );
+            cy.visit( `/${storeId}/sizes` );
+            const sizeId = Cypress.env( 'sizeId' );
+            adminSizesPage.actionModifySize( 'cyUpdatedSizes' );
+            adminSizesPage.enterSizeValue( 'cyUpdatedValue' );
+            adminSizesPage.clickOnSubmitButton( storeId, sizeId );
         } );
         it( 'User Delete Sizes', () =>
         {
-            cy.step( 'Going to billboards from navigation tab' );
+            cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes` );
             adminSizesPage.actionDeleteSize( 'cyUpdatedSizes' );
         } );
-        it( 'User create Sizes without billboards', () =>
+        it( 'User create Sizes without sizes', () =>
         {
-            cy.step( 'Going to billboards from navigation tab' );
+            cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes/new` );
 
             adminSizesPage.enterSizeName( 'noBillBillboard' );
@@ -58,7 +67,7 @@ describe( 'Store Billboard', () =>
         } );
         it( 'User create Sizes without Name', () =>
         {
-            cy.step( 'Going to billboards from navigation tab' );
+            cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes/new` );
 
             adminSizesPage.selectBillboard( 'Forever Billboard' );
@@ -67,7 +76,7 @@ describe( 'Store Billboard', () =>
         } );
         it( 'User create Sizes with 2 characters Name', () =>
         {
-            cy.step( 'Going to billboards from navigation tab' );
+            cy.step( 'Going to sizes from navigation tab' );
             cy.visit( `/${storeId}/sizes/new` );
             adminSizesPage.enterSizeName( 'cy' );
             adminSizesPage.selectBillboard( 'Forever Billboard' );
