@@ -1,4 +1,4 @@
-import StoreSwitcher from '../../../support/test_components/uiModal-dialog/uiStoreSwitcher';
+import StoreSwitcher from '@support/test_components/uiModal-dialog/uiStoreSwitcher';
 
 
 const storeSwitcher = new StoreSwitcher();

@@ -1,7 +1,7 @@
-import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
+import { AdminAPIRequestKeys } from '@support/utilities/apiRequestKeys';
 
 /**
- * Defines the structure of API test cases for Stores.
+ * Defines the structure of API test cases for new store users.
  */
 export interface TestData
 {
@@ -23,36 +23,37 @@ export interface TestData
 }
 
 // ✅ Extracting reusable constants for User ID
-const USER_ID = 'user_2qOt3xdN0TBsnKSVgczTsusMYZW';
+const USER_ID = 'user_2rfrlZzqrYe0y1BAXYVYHQRgn8W';
 
 /**
- * List of test cases for testing the Store API.
+ * List of test cases for testing the Store API (No Store User).
  */
 export const TestList: TestData[] = [
     {
-        testDescription: 'Create a new store',
+        testDescription: 'Create a new store for a user with no existing stores',
         endpoint: '/api/stores',
         method: 'POST',
         requestKeys: [ new AdminAPIRequestKeys().storeName ],
-        requestValues: [ 'Create new store' ],
+        requestValues: [ 'NO_STORE_USER' ],
         expectedStatus: 201,
         expectedResponseKeys: [ 'id', 'name', 'userId', 'createdAt', 'updatedAt' ],
         expectedResponseStoreId: true,
-        expectedResponseStoreName: 'Create new store',
+        expectedResponseStoreName: 'NO_STORE_USER',
         expectedResponseUseId: USER_ID,
     },
     {
-        testDescription: 'Update store name',
+
+        testDescription: 'Update store name for a user with no existing stores',
         endpoint: 'dynamic',
         method: 'PATCH',
         queryUser: USER_ID,
         requestKeys: [ new AdminAPIRequestKeys().storeName ],
-        requestValues: [ 'Updating store' ],
+        requestValues: [ 'UPDATED_STORE_NAME' ],
         expectedStatus: 202,
         expectedResponseKeys: [ 'count' ],
     },
     {
-        testDescription: 'Delete store for user',
+        testDescription: 'Delete store for a user with no existing stores',
         endpoint: 'dynamic',
         queryUser: USER_ID,
         method: 'DELETE',

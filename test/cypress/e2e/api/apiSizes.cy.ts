@@ -1,5 +1,5 @@
 // Import the list of test cases and their type definitions
-import { TestList, TestData } from '@fixtures/aipTestData/billborads_data';
+import { TestList, TestData } from '@fixtures/aipTestData/sizes_data';
 import { createRequestBody } from '@support/utilities/globalHelpers';
 
 /**
@@ -12,7 +12,7 @@ const performAPIRequest = ( test: TestData, token: string ) =>
 {
     let requestBody: Record<string, unknown> | null = null;
 
-    cy.generateAPIEndpoint( 'billboards', test.endpoint, test.queryStoreid, 'DESC' ).then( ( resolvedEndpoint ) =>
+    cy.generateAPIEndpoint( 'sizes', test.endpoint, test.queryStoreid, 'DESC' ).then( ( resolvedEndpoint ) =>
     {
         cy.step( `Performing API request to: ${resolvedEndpoint}` );
 
@@ -47,7 +47,7 @@ const performAPIRequest = ( test: TestData, token: string ) =>
 };
 
 // Main test suite for Billboard API tests
-describe( 'User Test Billboards', () =>
+describe( 'User Test sizes', () =>
 {
     let token: string = '';
 
@@ -63,7 +63,7 @@ describe( 'User Test Billboards', () =>
         } );
     } );
 
-    context( 'Billboards API Test', () =>
+    context( 'Sizes API Test', () =>
     {
         // Check if any test is marked as `only`
         const hasOnlyTests = TestList.some( ( test ) => test.testRunner === 'only' );

@@ -1,4 +1,4 @@
-import { createRequestBody } from '../../utilities/globalHelpers';
+import { createRequestBody } from '@support/utilities/globalHelpers';
 class AdminBillboardPage
 {
     elements: { [ key: string ]: () => Cypress.Chainable; } = {

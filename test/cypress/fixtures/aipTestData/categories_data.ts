@@ -1,4 +1,4 @@
-import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
+import { AdminAPIRequestKeys } from '@support/utilities/apiRequestKeys';
 
 /**
  * Defines the structure of API test cases for Categories.
@@ -24,7 +24,7 @@ export interface TestData
 
 // ✅ Extracting reusable constants for store and billboard IDs
 const STORE_ID = 'f8c96f0e-daa1-4e61-9fe4-3d1caf5db964';
-const BILLBOARD_ID = '84eaf450-6525-4681-8751-42f4a156820f';
+const BILLBOARD_ID = '8d3626e3-694b-4594-adaf-e854b3b4ecef';
 
 /**
  * List of test cases for testing the Categories API.

@@ -45,6 +45,13 @@ declare global
                 tableColumnSelector: Chainable<JQuery<HTMLElement>>,
                 searchText: string
             ): Chainable<JQuery<HTMLElement>>;
+            afterSubmitForm (
+                storeId: string,
+                entityType: 'categories' | 'sizes',
+                buttonElement: () => Chainable<JQuery<HTMLElement>>,
+                entityId?: string,
+                additionalValidation?: ( interception: any ) => void
+            ): Chainable<JQuery<HTMLElement>>;
 
         }
     }
@@ -313,3 +320,59 @@ Cypress.Commands.add( 'handlingTable', ( tableRowSelector, tableColumnSelector, 
             } );
     } );
 } );
+//TODO: for submiting categories and sizes and prdoucts 
+Cypress.Commands.add(
+    'afterSubmitForm',
+    ( storeId: string, entityType: 'categories' | 'sizes', buttonElement: () => Cypress.Chainable<JQuery<HTMLElement>>, entityId?: string, additionalValidation?: ( interception: any ) => void ) =>
+    {
+        cy.step( `Determining whether to create or update ${entityType}` );
+
+        cy.wrap( null )
+            .then( () =>
+            {
+                return buttonElement().should( 'be.visible' ).invoke( 'text' );
+            } )
+            .then( ( buttonText ) =>
+            {
+                const isCreating = buttonText.includes( `Create ${entityType.slice( 0, -1 )}` ); // Removing 's' for singular form
+                const method = isCreating ? 'POST' : 'PATCH';
+                const endpoint = isCreating ? `/api/${storeId}/${entityType}` : `/api/${storeId}/${entityType}/${entityId}`;
+                const alias = isCreating ? `create${entityType}` : `update${entityType}`;
+
+                cy.step( `Intercepting API call for ${isCreating ? 'creating' : 'updating'} ${entityType}` );
+                cy.intercept( method, endpoint ).as( alias );
+
+                return cy.wrap( alias );
+            } )
+            .then( ( alias ) =>
+            {
+                cy.step( `Clicking on the submit button for ${entityType}` );
+                buttonElement().click();
+
+                cy.step( `Waiting for the intercepted API response: ${alias}` );
+                cy.wait( `@${alias}`, { timeout: 10000 } ).then( ( interception ) =>
+                {
+                    expect( interception.response.statusCode ).to.eq( 200 );
+
+                    // If additional validation function is provided, execute it
+                    if ( additionalValidation )
+                    {
+                        additionalValidation( interception );
+                    } else
+                    {
+                        const { storeId: xhrStoreId, id: xhrEntityId } = interception.response.body;
+                        cy.step( `Validating API response data for ${entityType}` );
+                        expect( xhrStoreId ).to.eq( storeId );
+                        expect( xhrEntityId ).to.exist;
+
+                        cy.log( `Saving ${entityType.slice( 0, -1 )}Id to Cypress environment` );
+                        Cypress.env( `${entityType.slice( 0, -1 )}Id`, xhrEntityId );
+
+                        cy.step( `Verifying the new ${entityType.slice( 0, -1 )} page URL` );
+                        cy.visit( `/${storeId}/${entityType}/${xhrEntityId}` );
+                        cy.url().should( 'include', xhrEntityId );
+                    }
+                } );
+            } );
+    }
+);

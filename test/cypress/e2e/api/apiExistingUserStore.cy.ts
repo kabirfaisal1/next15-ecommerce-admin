@@ -1,5 +1,5 @@
-import { TestList, TestData } from './testData/existingUserStore_data';
-import { createRequestBody } from '../../support/utilities/globalHelpers';
+import { TestList, TestData } from '@fixtures/aipTestData/existingUserStore_data';
+import { createRequestBody } from '@support/utilities/globalHelpers';
 
 /**
  * Perform an API request for a given test case.

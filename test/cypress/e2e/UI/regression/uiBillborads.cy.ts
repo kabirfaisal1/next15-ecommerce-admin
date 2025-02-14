@@ -1,12 +1,12 @@
 
-import AdminBillboardPage from '../../../support/test_components/pages/uiAdminBillboardPage';
-import { AdminAPIRequestKeys } from '../../../support/utilities/apiRequestKeys';
+import AdminBillboardPage from '@support//test_components/pages/uiAdminBillboardPage';
+import { AdminAPIRequestKeys } from '@support//utilities/apiRequestKeys';
 
 
 const adminBillboardPage = new AdminBillboardPage();
 describe( 'Store Billboard', () =>
 {
-    const storeId = 'c936295f-6653-48f3-b0f4-be89bcc331b8';
+    const storeId = '00ea910b-ecf0-4d1e-bcb6-5cb72313bb46';
 
     let token: string = '';
     beforeEach( () =>

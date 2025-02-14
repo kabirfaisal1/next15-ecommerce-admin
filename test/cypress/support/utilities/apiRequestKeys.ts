@@ -16,6 +16,8 @@ export class AdminAPIRequestKeys implements IEcommerceAPIRequestKeys
 {
     storeName = 'name'; // Example key for the store name
     categoryName = 'name'; // Example key for the category name
+    sizeName = 'name'; // Example key for the size name
+    sizeValue = 'value'; // Example key for the size value
     userid = 'userId'; // Example key for user ID
     storeId = 'storeId'; // Example key for the store ID
     billboardId = 'billboardId'; // Example key for billboard ID
