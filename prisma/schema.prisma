@@ -21,13 +21,6 @@ datasource db {
 
 
 /// The `Stores` model represents a store entity in the database.
-/// 
-/// Fields:
-/// - `id`: A unique identifier for the store, generated as a UUID.
-/// - `name`: The name of the store.
-/// - `userId`: The identifier of the user who owns the store.
-/// - `createdAt`: The timestamp when the store was created, with a default value of the current time.
-/// - `updatedAt`: The timestamp when the store was last updated, automatically set to the current time on update.
 model Stores {
   id              String    @id @default(uuid())
   name            String
@@ -36,24 +29,13 @@ model Stores {
   categories      Categories[] @relation("StoreToCategory")
   sizes           Sizes[] @relation("StoreToSize")
   colors           Colors[] @relation("StoreToColor")
+  products        Products[]  @relation("StoreToProduct")
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 }
 
 
 /// The `Billboards` model represents a billboard entity in the database.
-/// 
-/// Fields:
-/// - `id`: A unique identifier for the billboard, generated as a UUID.
-/// - `storeId`: The identifier of the store associated with the billboard.
-/// - `store`: A relation to the `Stores` model, representing the store associated with the billboard.
-/// - `label`: The label or name of the billboard.
-/// - `imageUrl`: The URL of the image displayed on the billboard.
-/// - `createdAt`: The timestamp when the billboard was created, with a default value of the current time.
-/// - `updatedAt`: The timestamp when the billboard was last updated, automatically set to the current time on update.
-/// 
-/// Indexes:
-/// - `storeId`: An index on the `storeId` field to optimize queries filtering by store.
 model Billboards {
   id          String @id @default(uuid())
   storeId     String
@@ -67,22 +49,7 @@ model Billboards {
   @@index([storeId])
 }
 
-/// The `Categories` model represents the categories in the e-commerce application.
-/// Each category is associated with a store and a billboard.
-/// 
-/// Fields:
-/// - `id`: The unique identifier for the category, generated as a UUID.
-/// - `name`: The name of the category.
-/// - `storeId`: The identifier of the store to which the category belongs.
-/// - `store`: The store associated with the category, defined by the `StoreToCategory` relation.
-/// - `billboardId`: The identifier of the billboard associated with the category.
-/// - `billboard`: The billboard associated with the category.
-/// - `createdAt`: The timestamp when the category was created, with a default value of the current time.
-/// - `updatedAt`: The timestamp when the category was last updated, automatically set to the current time on update.
-///
-/// Indexes:
-/// - `@@index([storeId])`: Index on the `storeId` field.
-/// - `@@index([billboardId])`: Index on the `billboardId` field.
+/// The `Categories` model represents the categories entity in the database.
 model Categories {
   id          String      @id @default(uuid())
   storeId     String      // Foreign Key to Store
@@ -90,6 +57,7 @@ model Categories {
   billboardId String      // Foreign Key to Billboard
   billboard   Billboards   @relation(fields: [billboardId], references: [id])
   name        String
+  products    Products[]   @relation("CategoryToProduct")
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
@@ -97,12 +65,40 @@ model Categories {
   @@index([billboardId])
 }
 
+/// The `Products` model represents the Products entity in the database.
+model Products {
+  id          String    @id @default(uuid())
+  storeId     String    // Foreign Key to Store
+  store       Stores    @relation("StoreToProduct", fields: [storeId], references: [id])
+  categoryId  String    // Foreign Key to Category
+  category    Categories  @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  name        String
+  price       Decimal
+  isFeatured  Boolean   @default(false)
+  isArchived  Boolean   @default(false)
+  sizeId      String    // Foreign Key to Size
+  size        Sizes      @relation(fields: [sizeId], references: [id])
+  colorId     String    // Foreign Key to Color
+  color       Colors     @relation(fields: [colorId], references: [id])
+  images      Images[]   // Relation to Image model
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([storeId])
+  @@index([categoryId])
+  @@index([sizeId])
+  @@index([colorId])
+}
+
+// Intermediary for a many-to-many relationship
 model Sizes {
   id          String      @id @default(uuid())
   storeId     String      // Foreign Key to Store
   store       Stores       @relation("StoreToSize", fields: [storeId], references: [id])
   name        String
   value       String
+  products    Products[] // Relation to Products model
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
@@ -110,15 +106,28 @@ model Sizes {
   
 }
 
+
 model Colors {
   id          String      @id @default(uuid())
   storeId     String      // Foreign Key to Store
   store       Stores       @relation("StoreToColor", fields: [storeId], references: [id])
   name        String
   value       String
+  products    Products[] // Relation to Products model
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   @@index([storeId])
   
+}
+
+model Images {
+  id          String   @id @default(uuid())
+  productId   String   // Foreign Key to Products
+  product     Products  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url         String   // URL of the image
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([productId])
 }

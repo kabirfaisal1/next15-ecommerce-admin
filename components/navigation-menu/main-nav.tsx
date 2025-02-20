@@ -58,6 +58,12 @@ export function MainNav({
 			id: 'colors',
 		},
 		{
+			href: `/${params.storeId}/products`,
+			label: 'Products',
+			active: pathname === `/${params.storeId}/products`,
+			id: 'products',
+		},
+		{
 			href: `/${params.storeId}/settings`,
 			label: 'Settings',
 			active: pathname === `/${params.storeId}/settings`,
