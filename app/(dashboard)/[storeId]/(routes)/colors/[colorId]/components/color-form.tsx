@@ -206,6 +206,7 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 												{...field}
 											/>
 											<div
+												data-testid='color-value-preview'
 												className='border p-4 rounded-full'
 												style={{ backgroundColor: field.value }}
 											/>
