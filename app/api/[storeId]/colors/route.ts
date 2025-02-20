@@ -9,7 +9,7 @@ import prismadb from "@/lib/prismadb";
 // function to POST a new Categories record in the database
 export async function POST (
     req: Request,
-    { params }: { params: { colorId: string; }; }
+    { params }: { params: { storeId: string; }; }
 )
 {
     try
@@ -34,11 +34,11 @@ export async function POST (
         if ( !value ) return new NextResponse( "Color Value is required", { status: 400 } );
 
         // If colorId is not present in the request body, return a 400 Bad Request response
-        if ( !params.colorId ) return new NextResponse( "Store id is required", { status: 400 } );
+        if ( !params.storeId ) return new NextResponse( "Store id is required", { status: 400 } );
 
         const storeByUserId = await prismadb.stores.findFirst( {
             where: {
-                id: params.colorId,
+                id: params.storeId,
                 userId,
             }
         } );
@@ -51,7 +51,7 @@ export async function POST (
             data: {
                 name,
                 value,
-                colorId: params.colorId,
+                storeId: params.storeId,
             }
         } );
 
@@ -74,18 +74,18 @@ export async function POST (
 // function to GET a Categories record in the database
 export async function GET (
     req: Request,
-    { params }: { params: { colorId: string; }; }
+    { params }: { params: { storeId: string; }; }
 )
 {
     try
     {
-        // If colorId is not present in the request body, return a 400 Bad Request response
-        if ( !params.colorId ) return new NextResponse( "Store id is required", { status: 400 } );
+        // If storeId is not present in the request body, return a 400 Bad Request response
+        if ( !params.storeId ) return new NextResponse( "Store id is required", { status: 400 } );
 
         // Fetch all Categories associated with the given colorId from the database
         const colors = await prismadb.colors.findMany( {
             where: {
-                colorId: params.colorId
+                storeId: params.storeId
             }
         } );
 

@@ -27,7 +27,7 @@ export const columns: ColumnDef<ColorColumn>[] = [
 				{row.original.value}
 				<div
 					className='h-6 w-6 rounded-full border'
-					style={{ background: row.original.value }}
+					style={{ backgroundColor: row.original.value }}
 				/>
 			</div>
 		),

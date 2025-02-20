@@ -16,13 +16,13 @@ export async function GET (
             return new NextResponse( "ColorId  is required", { status: 400 } );
         }
 
-        const size = await prismadb.colors.findUnique( {
+        const color = await prismadb.colors.findUnique( {
             where: {
                 id: params.colorId
             }
         } );
 
-        return NextResponse.json( size );
+        return NextResponse.json( color );
     } catch ( error )
     {
         console.log( '[COLORS_GET]', error );

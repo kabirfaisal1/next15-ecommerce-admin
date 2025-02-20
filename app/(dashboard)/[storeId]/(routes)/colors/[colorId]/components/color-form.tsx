@@ -123,7 +123,7 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 		} catch (err) {
 			handleAPIError(err);
 			toast.error(
-				`Make sure you remove all product using for Color first: ${
+				`Make sure you remove all product using for color first: ${
 					typeof params.label === 'string' ? params.label.toUpperCase() : ''
 				}`,
 			);
@@ -197,13 +197,17 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 									</FormLabel>
 
 									<FormControl>
-										<div className='flex items-center'>
+										<div className='flex items-center gap-x-4'>
 											<Input
 												data-testid='color-valueInput'
 												disabled={loading}
 												placeholder='Color hex code e.g., #FFFFFF'
 												maxLength={10}
 												{...field}
+											/>
+											<div
+												className='border p-4 rounded-full'
+												style={{ backgroundColor: field.value }}
 											/>
 											{!fieldState.error && field.value && (
 												<CircleCheckBig className='ml-2 h-4 w-4 text-green-500' />
