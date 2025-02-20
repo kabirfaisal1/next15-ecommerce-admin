@@ -3,7 +3,7 @@ import prismadb from '@/lib/prismadb';
 import { ColorForm } from './components/color-form';
 
 const ColorPage = async ({ params }: { params: { sizeId: string } }) => {
-	const size = await prismadb.sizes.findUnique({
+	const size = await prismadb.colors.findUnique({
 		where: {
 			id: params.sizeId,
 		},

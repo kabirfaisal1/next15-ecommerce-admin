@@ -7,7 +7,7 @@ import { ColorsClient } from './components/client';
 import { ColorColumn } from './components/columns';
 
 const ColorsPage = async ({ params }: { params: { storeId: string } }) => {
-	const sizes = await prismadb.sizes.findMany({
+	const colors = await prismadb.colors.findMany({
 		where: {
 			storeId: params.storeId,
 		},
@@ -16,7 +16,7 @@ const ColorsPage = async ({ params }: { params: { storeId: string } }) => {
 		},
 	});
 
-	const formattedColors: SizeColumn[] = sizes.map(item => ({
+	const formattedColors: ColorColumn[] = colors.map(item => ({
 		id: item.id,
 		name: item.name,
 		value: item.value,
