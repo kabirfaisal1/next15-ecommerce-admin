@@ -39,13 +39,16 @@ const formSchema = z.object({
 	name: z
 		.string()
 		.trim()
-		.min(3, { message: 'Name must be at least 3 characters long' })
+		.min(3, { message: 'Name must be at least 3 characters long.' })
 		.max(21),
 	value: z
 		.string()
 		.trim()
-		.min(1, { message: 'Value must be at least 3 characters long' })
-		.max(15, { message: 'Value must not exceed 15 characters' }),
+		.min(4, { message: 'Value must be at least 4 characters long.' })
+		.regex(/^#/, {
+			message:
+				'Value must be a valid hex code (e.g., #FFFFFF). For more help, visit https://colorhunt.co/',
+		}),
 });
 
 type ColorFormValues = z.infer<typeof formSchema>;
@@ -91,7 +94,7 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 		try {
 			if (initialData) {
 				await axios.patch(
-					`/api/${params.storeId}/colors/${params.sizeId}`,
+					`/api/${params.storeId}/colors/${params.colorId}`,
 					data,
 				);
 			} else {
@@ -114,7 +117,7 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 		setError(null);
 
 		try {
-			await axios.delete(`/api/${params.storeId}/colors/${params.sizeId}`);
+			await axios.delete(`/api/${params.storeId}/colors/${params.colorId}`);
 			router.push(`/${params.storeId}/colors`);
 			toast.success('Color deleted successfully');
 		} catch (err) {
@@ -138,7 +141,7 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 				{initialData && (
 					<Button
 						variant='destructive'
-						size='icon'
+						color='icon'
 						onClick={() => setDialogOpen(true)}
 						disabled={loading}
 						data-testid='Colors-delete-button'
@@ -162,12 +165,12 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 							name='name'
 							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel data-testid='size-NameSubtitle'>Name</FormLabel>
+									<FormLabel data-testid='color-NameSubtitle'>Name</FormLabel>
 
 									<FormControl>
 										<div className='flex items-center'>
 											<Input
-												data-testid='size-NameInput'
+												data-testid='color-NameInput'
 												disabled={loading}
 												placeholder='Color name'
 												maxLength={21}
@@ -189,17 +192,17 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 							name='value'
 							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel data-testid='size-valueSubtitle'>
+									<FormLabel data-testid='color-valueSubtitle'>
 										Color Value
 									</FormLabel>
 
 									<FormControl>
 										<div className='flex items-center'>
 											<Input
-												data-testid='size-valueInput'
+												data-testid='color-valueInput'
 												disabled={loading}
-												placeholder='Color value'
-												maxLength={21}
+												placeholder='Color hex code e.g., #FFFFFF'
+												maxLength={10}
 												{...field}
 											/>
 											{!fieldState.error && field.value && (
@@ -216,7 +219,7 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 					</div>
 					<Button
 						type='submit'
-						data-testid='size-submitButton'
+						data-testid='color-submitButton'
 						disabled={loading}
 					>
 						{loading ? 'Saving...' : action}
@@ -239,12 +242,12 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 							variant='outline'
 							onClick={() => setDialogOpen(false)}
 							disabled={loading}
-							data-testid='size-cancelButton'
+							data-testid='color-cancelButton'
 						>
 							Cancel
 						</Button>
 						<Button
-							data-testid='size-deleteButton'
+							data-testid='color-deleteButton'
 							variant='destructive'
 							onClick={onDelete}
 							disabled={loading}

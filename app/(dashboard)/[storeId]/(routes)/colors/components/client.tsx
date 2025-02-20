@@ -12,11 +12,11 @@ import { ColorColumn, columns } from './columns';
 import { DataTable } from '@/components/ui/data-table';
 import { ApiList } from '@/components/ui/api-list';
 
-interface ColorClientProps {
+interface ColorsClientProps {
 	data: ColorColumn[];
 }
 
-export const ColorsClient: React.FC<ColorClientProps> = ({ data }) => {
+export const ColorsClient: React.FC<ColorsClientProps> = ({ data }) => {
 	const router = useRouter();
 	const params = useParams();
 	return (
@@ -24,7 +24,7 @@ export const ColorsClient: React.FC<ColorClientProps> = ({ data }) => {
 			<div className='flex items-center justify-between'>
 				<Heading
 					title={`Colors (${data.length})`}
-					description='Manage Colors for your store'
+					description='Manage colors for your store'
 				/>
 				<Button
 					data-testid='add-colorsClient-button'
@@ -35,9 +35,12 @@ export const ColorsClient: React.FC<ColorClientProps> = ({ data }) => {
 			</div>
 			<Separator />
 			<DataTable searchKey='name' columns={columns} data={data} />
-			<Heading title='API Routes' description='API routes for managing colors' />
+			<Heading
+				title='API Routes'
+				description='API routes for managing colors'
+			/>
 			<Separator />
-			<ApiList entityName='colors' entityIdName='colorsId' />
+			<ApiList entityName='colors' entityIdName='colorId' />
 		</React.Fragment>
 	);
 };
