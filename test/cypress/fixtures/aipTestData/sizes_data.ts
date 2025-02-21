@@ -87,7 +87,7 @@ export const TestList: TestData[] = [
         expectedError: 'Size name is required',
     },
     {
-        testDescription: 'Create a Size without a billboard ID',
+        testDescription: 'Create a Size without a value ID',
         endpoint: `/api/${STORE_ID}/sizes`,
         method: 'POST',
         requestKeys: [ new AdminAPIRequestKeys().sizeName ],
