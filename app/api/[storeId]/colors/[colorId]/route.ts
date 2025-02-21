@@ -110,6 +110,13 @@ export async function PATCH (
             return new NextResponse( "Value is required", { status: 400 } );
         }
 
+        const hexCodePattern = /^#[0-9A-Fa-f]{6}$/;
+        if ( !hexCodePattern.test( value ) )
+        {
+            return new NextResponse( "Value must be a valid hex code (e.g., #FFFFFF). For more help, visit https://colorhunt.co/", { status: 400 } );
+        }
+
+
         if ( !params.colorId )
         {
             return new NextResponse( "Color ID is required", { status: 400 } );
