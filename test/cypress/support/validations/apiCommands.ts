@@ -35,72 +35,110 @@ declare global
 }
 
 
-const generateSQLQuery = ( tableName: string, parentColumn: string, parentId?: string, orderBy: string = 'DESC' ): string =>
-    parentId
+// 🛠️ **Reusable SQL Query Generator**
+const generateSQLQuery = ( tableName: string, parentColumn: string, parentId?: string, orderBy: string = 'DESC' ) =>
+{
+    return parentId
         ? `SELECT id FROM public."${tableName}" WHERE "${parentColumn}" = '${parentId}' ORDER BY "createdAt" ${orderBy};`
         : '';
-
-// Mapping of API types to their corresponding table and endpoint details
-const API_TABLE_MAP = {
-    stores: { tableName: 'Stores', parentColumn: 'userId', endpoint: '/api/stores/' },
-    billboards: { tableName: 'Billboards', parentColumn: 'storeId', endpoint: `/api/{parentId}/billboards/` },
-    categories: { tableName: 'Categories', parentColumn: 'storeId', endpoint: `/api/{parentId}/categories/` },
-    sizes: { tableName: 'Sizes', parentColumn: 'storeId', endpoint: `/api/{parentId}/sizes/` },
 };
 
-
-Cypress.Commands.add( 'generateAPIEndpoint', ( type, testData, parentId, orderBy = 'DESC' ): Cypress.Chainable<string> =>
-{
-    const config = API_TABLE_MAP[ type ];
-    if ( !config )
+// 🛠️ **Reusable API Endpoint Generator**
+Cypress.Commands.add(
+    'generateAPIEndpoint',
+    ( type: 'stores' | 'billboards' | 'categories', testData: string, parentId?: string, orderBy: 'ASC' | 'DESC' = 'DESC' ): Cypress.Chainable<string> =>
     {
-        throw new Error( `Invalid API type: ${type}` );
-    }
+        const tableMap = {
+            stores: { tableName: 'Stores', parentColumn: 'userId', endpoint: '/api/stores/' },
+            billboards: { tableName: 'Billboards', parentColumn: 'storeId', endpoint: `/api/${parentId}/billboards/` },
+            categories: { tableName: 'Categories', parentColumn: 'storeId', endpoint: `/api/${parentId}/categories/` },
+            sizes: { tableName: 'Sizes', parentColumn: 'storeId', endpoint: `/api/${parentId}/sizes/` },
+        };
 
-    const { tableName, parentColumn, endpoint } = config;
-    const sqlQuery = generateSQLQuery( tableName, parentColumn, parentId, orderBy );
+        const { tableName, parentColumn, endpoint } = tableMap[ type ];
 
-    cy.step( `Generated SQL Query for ${type}: ${sqlQuery}` );
+        const sqlQuery = generateSQLQuery( tableName, parentColumn, parentId, orderBy );
 
-    if ( testData === 'dynamic' && sqlQuery )
-    {
-        return cy.task( 'queryDatabase', sqlQuery ).then( ( rows ) =>
+        cy.step( `Generated SQL Query for ${type}: ${sqlQuery}` );
+
+        if ( testData === 'dynamic' && sqlQuery )
         {
-            if ( rows?.length > 0 )
+            return cy.task( 'queryDatabase', sqlQuery ).then( ( rows ) =>
             {
-                const id = rows[ 0 ].id;
-                cy.step( `Resolved ${type} ID: ${id}` );
-                return cy.wrap( endpoint.replace( '{parentId}', id ) );
-            } else
-            {
-                throw new Error( `No ${type} ID found for the provided ${parentColumn}.` );
-            }
-        } );
+                if ( rows?.length > 0 )
+                {
+                    const id = rows[ 0 ].id;
+                    cy.step( `Resolved ${type} ID: ${id}` );
+                    return cy.wrap( `${endpoint}${id}` );
+                } else
+                {
+                    throw new Error( `No ${type} ID found for the provided ${parentColumn}.` );
+                }
+            } );
+        }
+
+        cy.step( `Returning static testData for ${type}: ${testData}` );
+        return cy.wrap( testData );
     }
+);
 
-    cy.step( `Returning static testData for ${type}: ${testData}` );
-    return cy.wrap( testData );
-} );
-
-
-Cypress.Commands.add( 'validateResponseBody', ( response, expectedResults ) =>
+// 🛠️ **Reusable Response Body Validator**
+Cypress.Commands.add( 'validateResponseBody', ( response: any, expectedResults: any ) =>
 {
     cy.step( 'Validating response body' );
 
-    Object.entries( expectedResults ).forEach( ( [ key, expectedValue ] ) =>
+    Object.keys( expectedResults ).forEach( ( key ) =>
     {
-        if ( key.startsWith( 'expectedResponse' ) )
+        switch ( key )
         {
-            const responseKey = key.replace( 'expectedResponse', '' ).toLowerCase();
-            expect( response ).to.have.property( responseKey, expectedValue );
-            cy.step( `Validated ${responseKey}: ${expectedValue}` );
-        } else if ( key === 'expectedError' )
-        {
-            expect( response ).to.equal( expectedValue );
-            cy.step( `Validated expected error: ${expectedValue}` );
-        } else
-        {
-            cy.step( `No validation logic for key: ${key}` );
+            case 'expectedResponseName':
+                expect( response.name ).to.equal( expectedResults.expectedResponseName );
+                cy.step( `Validated Name: ${expectedResults.expectedResponseName}` );
+                break;
+
+            case 'expectedResponseKeys':
+                expectedResults.expectedResponseKeys.forEach( ( expectedKey: string ) =>
+                {
+                    expect( response ).to.have.property( expectedKey );
+                } );
+                cy.step( `Validated response keys: ${expectedResults.expectedResponseKeys}` );
+                break;
+
+            case 'expectedResponseId':
+                expect( response.id ).to.not.be.empty;
+                cy.step( `Validated ID exists: ${response.id}` );
+                break;
+
+            case 'expectedResponseParentId':
+                expect( response.storeId ).to.equal( expectedResults.expectedResponseParentId );
+                cy.step( `Validated Parent ID: ${expectedResults.expectedResponseParentId}` );
+                break;
+
+            case 'expectedResponseImageUrl':
+                expect( response.imageUrl ).to.equal( expectedResults.expectedResponseImageUrl );
+                cy.step( `Validated Image URL: ${expectedResults.expectedResponseImageUrl}` );
+                break;
+
+            case 'expectedResponseMessage':
+                expect( response.message ).to.equal( expectedResults.expectedResponseMessage );
+                cy.step( `Validated Message: ${expectedResults.expectedResponseMessage}` );
+                break;
+            case 'expectedResponseSizeName':
+                expect( response.name ).to.equal( expectedResults.expectedResponseSizeName );
+                cy.step( `Validated expected Size Name: ${expectedResults.expectedResponseSizeName}` );
+                break;
+            case 'expectedResponseSizeValue':
+                expect( response.value ).to.equal( expectedResults.expectedResponseSizeValue );
+                cy.step( `Validated expected Size value: ${expectedResults.expectedResponseSizeValue}` );
+                break;
+            case 'expectedError':
+                expect( response ).to.equal( expectedResults.expectedError );
+                cy.step( `Validated expected error: ${expectedResults.expectedError}` );
+                break;
+
+            default:
+                cy.step( `No validation logic for key: ${key}` );
+                break;
         }
     } );
 } );
