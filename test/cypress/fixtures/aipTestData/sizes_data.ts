@@ -87,7 +87,7 @@ export const TestList: TestData[] = [
         expectedError: 'Size name is required',
     },
     {
-        testDescription: 'Create a Size without a value ID',
+        testDescription: 'Create a Size without a value',
         endpoint: `/api/${STORE_ID}/sizes`,
         method: 'POST',
         requestKeys: [ new AdminAPIRequestKeys().sizeName ],
