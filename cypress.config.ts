@@ -19,7 +19,7 @@ export default defineConfig( {
     {
       const version = config.env.version || 'local';
       const url: { [ key: string ]: string; } = {
-        local: 'http://localhost:3000/',
+        local: 'http://localhost:3000',
         staging: 'https://google.com',
         production: 'https://amazon.com',
       };

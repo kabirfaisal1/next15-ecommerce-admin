@@ -108,11 +108,21 @@ describe( 'No Store Admin User', () =>
             cy.wait( '@deleteStore' ).then( ( interception ) =>
             {
                 cy.step( `Intercepted Status Code: ${interception.response?.statusCode}` );
+
+                // Ensure response exists before accessing properties
                 expect( interception.response, 'API response should exist' ).to.exist;
                 expect( interception.response.statusCode, 'Status code should be 200' ).to.eq( 200 );
 
                 cy.step( `Intercepted Response Body: ${JSON.stringify( interception.response.body )}` );
-                const responseBody = interception.response.body;
+
+                let responseBody;
+                if ( typeof interception.response.body === 'string' )
+                {
+                    responseBody = JSON.parse( interception.response.body );
+                } else
+                {
+                    responseBody = interception.response.body;
+                }
 
                 expect( responseBody, 'Response body should exist for 200 status' ).to.exist;
                 expect( responseBody.message, 'Response should contain "message"' ).to.equal( 'Deleted successfully' );
