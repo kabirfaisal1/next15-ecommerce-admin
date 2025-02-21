@@ -33,6 +33,12 @@ export async function POST (
         // If value is not present in the request body, return a 400 Bad Request response
         if ( !value ) return new NextResponse( "Color Value is required", { status: 400 } );
 
+        const hexCodePattern = /^#[0-9A-Fa-f]{6}$/;
+        if ( !hexCodePattern.test(value) ) {
+            return new NextResponse( "Value must be a valid hex code (e.g., #FFFFFF). For more help, visit https://colorhunt.co/", { status: 400 } );
+        }
+        
+
         // If colorId is not present in the request body, return a 400 Bad Request response
         if ( !params.storeId ) return new NextResponse( "Store id is required", { status: 400 } );
 
