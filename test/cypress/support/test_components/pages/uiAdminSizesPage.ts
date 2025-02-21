@@ -7,7 +7,7 @@ class AdminSizesPage
 
         // Form Elements
         size_formInputLabel: () => cy.get( 'label[data-testid="size-NameSubtitle"]' ),
-        size_formLabelInputField: () => cy.get( '[data-testid="size-NameInput"]' ),
+        size_formInputField: () => cy.get( '[data-testid="size-NameInput"]' ),
         size_valueLabel: () => cy.get( '[data-testid="size-valueSubtitle"]' ),
         size_valueInput: () => cy.get( '[data-testid="size-valueInput"]' ),
 
@@ -37,8 +37,10 @@ class AdminSizesPage
      */
     enterSizeName ( name: string )
     {
+        cy.step( 'Verifying the size name input label' );
+        this.elements.size_formInputLabel().should( 'have.text', 'Name' );
         cy.step( `Entering size name: ${name}` );
-        this.elements.size_formLabelInputField().clear().type( name ).should( 'have.value', name );
+        this.elements.size_formInputField().clear().type( name ).should( 'have.value', name );
     }
 
     /**
@@ -47,6 +49,9 @@ class AdminSizesPage
      */
     enterSizeValue ( value: string )
     {
+        cy.step( `Entering size value Label` );
+        this.elements.size_valueLabel().should( 'have.text', 'Size Value' );
+
         cy.step( `Entering size value: ${value}` );
         this.elements.size_valueInput().clear().type( value ).should( 'have.value', value );
     }
@@ -120,8 +125,6 @@ class AdminSizesPage
         );
 
         cy.step( 'Clicking on modify from dropdown list' );
-
-        // Select "Modify" from the dropdown menu
         this.elements.sizeActionItem()
             .should( 'be.visible' )
             .contains( 'Modify' )
@@ -129,7 +132,7 @@ class AdminSizesPage
 
         cy.step( `Verifying correct size name: ${sizeName} was selected` );
 
-        this.elements.size_formLabelInputField()
+        this.elements.size_formInputField()
             .should( 'be.visible' )
             .and( 'have.value', sizeName );
     }

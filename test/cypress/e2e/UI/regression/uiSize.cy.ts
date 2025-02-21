@@ -5,7 +5,7 @@ const adminSizesPage = new AdminSizesPage();
 
 describe( 'Store Sizes Management', () =>
 {
-    before( () =>
+    beforeEach( () =>
     {
         cy.visit( '/' );
         cy.loginToAuth0( 'Regular' );
@@ -13,7 +13,7 @@ describe( 'Store Sizes Management', () =>
 
     context( 'Store Size Admin Workflow UI', () =>
     {
-        it.only( 'User navigates to Sizes', () =>
+        it( 'User navigates to Sizes', () =>
         {
             cy.step( 'Navigating to Sizes tab' );
             cy.navigateTabItem( 'Sizes' );
