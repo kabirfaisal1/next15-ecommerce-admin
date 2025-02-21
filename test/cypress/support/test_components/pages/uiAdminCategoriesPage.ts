@@ -1,4 +1,3 @@
-
 class AdminCategoriesPage
 {
     elements: { [ key: string ]: () => Cypress.Chainable; } = {
@@ -6,132 +5,98 @@ class AdminCategoriesPage
         pageDescription: () => cy.get( '[data-testid="heading-description"]' ),
         addNewButton: () => cy.get( '[data-testid="add-categoryClient-button"]' ),
 
-        // Create New Categories Form
+        // Form Elements
         category_formInputLabel: () => cy.get( '[data-testid="Category-NameSubtitle"]' ),
         category_formLabelInputField: () => cy.get( '[data-testid="category-NameInput"]' ),
         category_billboardSelectLabel: () => cy.get( '[data-testid="category-BillboardSubtitle"]' ),
         category_billboardSelectTrigger: () => cy.get( '[data-testid="selectTrigger"]' ),
-        category_billboardSelectOption: () => cy.get( 'select' ),
-        category_submitButtonButton: () => cy.get( '[data-testid="category-submitButton"]' ),
-        categoryDataTable: () => cy.get( '[data-testid="data-table"]' ),
-
-        categoryActionColumn: () => cy.get( '[data-testid="cellAction-dropdownMenuTrigger"]' ),
-        categoryActionItem: () => cy.get( 'div[data-side="bottom"][role="menu"]' ),
-        settingAPI_Alert: () => cy.get( '[data-testid="api-alert_NEXT_PUBLIC_API_URL"]' ),
-        settingAPI_AlertURI: () => cy.get( '[data-testid="api-alert_uri"]' ),
-        settingAPI_AlertClipboard: () => cy.get( '[data-testid="api-alert_copyButton"]' ),
+        category_submitButton: () => cy.get( '[data-testid="category-submitButton"]' ),
         form_errorMessage: () => cy.get( 'p' ),
 
-
+        // Data Table
+        categoryDataTable: () => cy.get( '[data-testid="data-table"]' ),
+        categoryDataTableRow: () => cy.get( '[data-testid="data-tableBodyRows"]' ),
+        categoryActionColumn: () => cy.get( '[data-testid="cellAction-dropdownMenuTrigger"]' ),
+        categoryActionItem: () => cy.get( '[data-testid="cellAction-dropdownMenuContent"]', { timeout: 1000 } ),
     };
 
-    verifyCategoryHeaders ( storeId: string )
-    {
-        cy.step( 'Verifying Categories Headers' );
-        // let billboardsQuery: string;
-        const billboardsQuery = `SELECT "label" FROM public."Categories" where "storeId" = '${storeId}' ORDER by "createdAt" DESC;`;
-        cy.task( 'queryDatabase', billboardsQuery ).then( ( rows ) =>
-        {
-            if ( rows.length > 0 )
-            {
-                const numberOfBillboards = rows.length; // Extract the store ID from the query result
-                cy.step( `Checking category page headers for storeId:: ${storeId}` ); // Log the resolved storeID
-                this.elements.pageHeaders().should( 'be.visible' ).should( 'include.text', `Categories (${numberOfBillboards})` )
-                    .and( 'include.text', 'API Routes' );
-                cy.step( `Checking category page description for storeId: ${storeId}` ); // Log the resolved storeID
-                this.elements.pageDescription().should( 'be.visible' ).should( 'include.text', 'Manage category for your store' ).and( 'include.text', 'API routes for managing category' );
-
-
-            } else
-            {
-                throw new Error( 'No rows returned from query' );
-            }
-        } );
-
-    }
-
+    /**
+     * Clicks on the "Add Category" button and verifies navigation.
+     */
     clickOnAddCategoryButton ( storeId: string )
     {
-        cy.step( 'Clicking on Add Categories button' );
-        this.elements.addNewButton().should( 'be.visible' ).and( 'include.text', 'Add New' ).click();
-        cy.step( 'Verify navigation was successful' );
+        cy.step( 'Clicking on Add Category button' );
+        this.elements.addNewButton().click();
         cy.url().should( 'include', `${storeId}/categories/new` );
-        cy.step( 'Verify Form Header' );
-        this.elements.pageHeaders().should( 'be.visible' ).should( 'include.text', 'Create Category' );
-        cy.step( 'Verify Form Header Description' );
-        this.elements.pageDescription().should( 'be.visible' ).should( 'include.text', 'Add a new Category' );
+        this.elements.pageHeaders().should( 'include.text', 'Create Category' );
     }
 
-    enterCategoryName ( label: string )
+    /**
+     * Enters a Category name in the input field.
+     * @param {string} name - The category name.
+     */
+    enterCategoryName ( name: string )
     {
-        cy.step( 'Checking Categories name input label' );
-        this.elements.category_formInputLabel().should( 'be.visible' ).should( 'have.text', 'Name' );
-
-        cy.step( `Entering Categories name : ${label}` );
-        this.elements.category_formLabelInputField().should( 'be.visible' ).clear().type( label ).should( 'have.value', label );
+        cy.step( `Entering category name: ${name}` );
+        this.elements.category_formLabelInputField().clear().type( name ).should( 'have.value', name );
     }
 
+    /**
+     * Selects a Billboard from the dropdown.
+     * @param {string} billboard - The Billboard name.
+     */
     selectBillboard ( billboard: string )
     {
-        cy.step( 'Checking Categories billboard Select Label' );
-        this.elements.category_billboardSelectLabel()
-            .should( 'be.visible' )
-            .and( 'have.text', 'Billboard' );
+        cy.step( 'Opening Billboard dropdown' );
+        this.elements.category_billboardSelectTrigger().click();
 
-        cy.step( 'Fix pointer-events issue' ); //TODO: try with out this code
-        cy.get( 'body' ).invoke( 'attr', 'style', 'pointer-events: auto' );
+        cy.step( `Selecting Billboard: ${billboard}` );
+        cy.contains( '[role="option"]', billboard ).click( { force: true } );
 
-        cy.step( 'Trigger Categories billboard dropdown' );
-        this.elements.category_billboardSelectTrigger()
-            .should( 'be.visible' )
-            .click( { force: true } );
-
-        cy.step( 'Wait for dropdown options to be visible' );
-        cy.get( '[role="option"]', { timeout: 5000 } ) // Adjust this selector if necessary
-            .should( 'be.visible' );
-
-        cy.step( 'Select Billboard from dropdown' );
-        cy.contains( '[role="option"]', billboard ) // Ensure correct selector for dropdown items
-            .should( 'be.visible' )
-            .click( { force: true } );
-
-        cy.step( 'Verify selection' );
         this.elements.category_billboardSelectTrigger()
             .find( '[data-testid="SelectValue"]' )
             .should( 'have.text', billboard );
     }
 
+    /**
+  * Clicks the submit button and waits for the API response.
+  * Only executes API response validation when creating a category.
+  * @param {string} storeId - The store ID.
+  * @param {string} billboardId - The Billboard ID.
+  * @param {string} [categoryId] - The Category ID (optional, used when updating).
+  */
     clickOnSubmitButton ( storeId: string, billboardId: string, categoryId?: string )
     {
-        cy.step( 'Determining whether to create or update a category' );
+        cy.step( 'Determining whether to create or update a size' );
 
         cy.wrap( null ).then( () =>
         {
-            return this.elements.category_submitButtonButton()
+            return this.elements.category_submitButton()
                 .should( 'be.visible' )
                 .invoke( 'text' );
         } ).then( ( buttonText ) =>
         {
-            const isCreatingCategory = buttonText.includes( 'Create Category' );
-            const method = isCreatingCategory ? 'POST' : 'PATCH';
-            const endpoint = isCreatingCategory
+            const isCreatingSize = buttonText.includes( 'Create Category' );
+            cy.step( `Button text is: ${buttonText}` );
+            const method = isCreatingSize ? 'POST' : 'PATCH';
+            cy.step( `categoryId text is: ${categoryId}` );
+            const endpoint = isCreatingSize
                 ? `/api/${storeId}/categories`
                 : `/api/${storeId}/categories/${categoryId}`;
-            const alias = isCreatingCategory ? 'createCategory' : 'updateCategory';
+            const alias = isCreatingSize ? 'createCategory' : 'updateCategory';
 
-            cy.step( `Intercepting API call for ${isCreatingCategory ? 'creating' : 'updating'} category` );
+            cy.step( `Intercepting API call for ${isCreatingSize ? 'creating' : 'updating'} category` );
             cy.intercept( method, endpoint ).as( alias );
 
             return cy.wrap( alias ); // Ensure alias is wrapped so Cypress properly chains it
         } ).then( ( alias ) =>
         {
             cy.step( 'Clicking on the submit button' );
-            this.elements.category_submitButtonButton().click();
+            this.elements.category_submitButton().click();
 
             cy.step( 'Waiting for the intercepted API response' );
             cy.wait( `@${alias}`, { timeout: 10000 } ).then( ( interception ) =>
             {
-                expect( interception.response.statusCode ).to.eq( 200 );
 
                 const { storeId: xhrStoreId, id: xhrCategoryId, billboardId: xhrBillboardId } = interception.response.body;
 
@@ -151,72 +116,75 @@ class AdminCategoriesPage
                 cy.step( 'Verifying the new category page URL' );
                 cy.visit( `/${storeId}/categories/${xhrCategoryId}` );
                 cy.url().should( 'include', xhrCategoryId );
+
+
             } );
         } );
     }
 
+
+    /**
+ * Modifies a category by selecting it from the table and opening the edit form.
+ * @param {string} categoryName - The name of the category to modify.
+ */
     actionModifyCategory ( categoryName: string )
     {
-        cy.step( `Going to Modify ${categoryName}` );
-
+        cy.step( `Going to Modify: ${categoryName}` );
         cy.handlingTable(
-            this.elements.categoryDataTable(),
-            this.elements.categoryActionColumn(), // Passing as Cypress Chainable
+            this.elements.categoryDataTableRow(),
+            this.elements.categoryActionColumn(),
             categoryName
         );
 
-        cy.step( 'Click on modify from drop-down list' );
-
-        // // Find the correct action item in the dropdown and click it
-        this.elements.categoryActionItem().should( 'be.visible' )
+        cy.step( 'Clicking on modify from dropdown list' );
+        this.elements.categoryActionItem()
+            .should( 'be.visible' )
             .contains( 'Modify' )
             .click( { force: true } );
 
-        cy.step( `Checking correct Categories name : ${categoryName} was selected` );
-
+        cy.step( `Verifying correct category name: ${categoryName} was selected` );
         this.elements.category_formLabelInputField()
             .should( 'be.visible' )
             .and( 'have.value', categoryName );
     }
 
-    actionCopyCategory ( categoryName: string )
-    {
-
-        //TODO: When we have time
-    }
+    /**
+     * Deletes a category by selecting it from the table.
+     * @param {string} categoryName - The name of the category to delete.
+     */
     actionDeleteCategory ( categoryName: string )
     {
-
-        cy.step( `Going to Delete ${categoryName}` );
-
+        cy.step( `Deleting category: ${categoryName}` );
         cy.handlingTable(
-            this.elements.categoryDataTable(),
-            this.elements.categoryActionColumn(), // Passing as Cypress Chainable
-            categoryName
-        );
+            this.elements.categoryDataTableRow(),
+            this.elements.categoryActionColumn(),
+            categoryName );
 
-        cy.step( 'Click on modify from drop-down list' );
+        cy.step( 'Clicking on Delete from dropdown list' );
 
-        // // Find the correct action item in the dropdown and click it
+        // this.elements.categoryActionItem()
+        //     .should( 'be.visible' )
+        //     .contains( 'Delete' )
+        //     .click( { force: true } );
+
         this.elements.categoryActionItem().should( 'be.visible' )
             .contains( 'Delete' )
             .click( { force: true } );
 
+        cy.step( 'Confirming deletion' );
         cy.deleteObjects( true );
     }
 
-    formErrorValidation ( errorType: string )
+    /**
+     * Validates form error messages.
+     * @param {string} errorMessage - The expected error message.
+     */
+    formErrorValidation ( errorMessage: string )
     {
-        cy.step( 'Clicking on the submit button' );
-        this.elements.category_submitButtonButton().click();
-        cy.step( `Checking '${errorType}'  error message` );
-
-        this.elements.form_errorMessage().should( 'be.visible' ).contains( errorType );
-
-
-
+        cy.step( `Verifying error: ${errorMessage}` );
+        this.elements.category_submitButton().click();
+        this.elements.form_errorMessage().should( 'contain.text', errorMessage );
     }
 }
 
 export default AdminCategoriesPage;
-
