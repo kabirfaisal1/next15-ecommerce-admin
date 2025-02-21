@@ -1,101 +1,104 @@
 import AdminSizesPage from '@support/test_components/pages/uiAdminSizesPage';
 
 const storeId = '00ea910b-ecf0-4d1e-bcb6-5cb72313bb46';
-
-const billboardId = 'a3e3e2ea-5707-45bb-a689-86dfb9d917d6';
 const adminSizesPage = new AdminSizesPage();
-describe( 'Store Billboard', () =>
+
+describe( 'Store Sizes Management', () =>
 {
-    let token: string = '';
-    beforeEach( () =>
+    before( () =>
     {
         cy.visit( '/' );
-        cy.loginToAuth0( "Regular" );
-
+        cy.loginToAuth0( 'Regular' );
     } );
-    context( 'Store category Admin workflow UI', () =>
-    {
-        it.only( 'User navigate to Sizes', () =>
-        {
-            cy.log( 'Going to sizes from navigation tab' );
-            cy.navigateTabItem( "Sizes" );
 
-        } );
-        it( 'User create new Sizes', () =>
+    context( 'Store Size Admin Workflow UI', () =>
+    {
+        it.only( 'User navigates to Sizes', () =>
         {
-            cy.step( 'Going to sizes from navigation tab' );
+            cy.step( 'Navigating to Sizes tab' );
+            cy.navigateTabItem( 'Sizes' );
+        } );
+
+        it( 'User creates a new Size', () =>
+        {
+            cy.step( 'Navigating to Sizes page' );
             cy.visit( `/${storeId}/sizes` );
+
             adminSizesPage.clickOnAddSizeButton( storeId );
             adminSizesPage.enterSizeName( 'cyCreateSizes' );
             adminSizesPage.enterSizeValue( 'cyCreateSmall' );
-            adminSizesPage.clickOnSubmitButton( storeId, billboardId );
-
-
+            adminSizesPage.clickOnSubmitButton( storeId );
         } );
-        it( 'User update Sizes Name', () =>
+
+        it( 'User updates Size Name', () =>
         {
-            cy.step( 'Going to sizes from navigation tab' );
+            cy.step( 'Navigating to Sizes page' );
             cy.visit( `/${storeId}/sizes` );
+
             const sizeId = Cypress.env( 'sizeId' );
             adminSizesPage.actionModifySize( 'cyCreateSizes' );
             adminSizesPage.enterSizeName( 'cyUpdatedSizes' );
             adminSizesPage.clickOnSubmitButton( storeId, sizeId );
         } );
-        it( 'User update Sizes Value', () =>
+
+        it( 'User updates Size Value', () =>
         {
-            cy.step( 'Going to sizes from navigation tab' );
+            cy.step( 'Navigating to Sizes page' );
             cy.visit( `/${storeId}/sizes` );
+
             const sizeId = Cypress.env( 'sizeId' );
             adminSizesPage.actionModifySize( 'cyUpdatedSizes' );
             adminSizesPage.enterSizeValue( 'cyUpdatedValue' );
             adminSizesPage.clickOnSubmitButton( storeId, sizeId );
         } );
-        it( 'User Delete Sizes', () =>
+
+        it( 'User deletes a Size', () =>
         {
-            cy.step( 'Going to sizes from navigation tab' );
+            cy.step( 'Navigating to Sizes page' );
             cy.visit( `/${storeId}/sizes` );
+
             adminSizesPage.actionDeleteSize( 'cyUpdatedSizes' );
         } );
-        it( 'User create Sizes without sizes value', () =>
+
+        context( 'Error Validation Tests', () =>
         {
-            cy.step( 'Going to sizes from navigation tab' );
-            cy.visit( `/${storeId}/sizes/new` );
+            it( 'Fails when creating a Size without a Size Value', () =>
+            {
+                cy.step( 'Navigating to new Size form' );
+                cy.visit( `/${storeId}/sizes/new` );
 
-            adminSizesPage.enterSizeName( 'noValue' );
-            adminSizesPage.formErrorValidation( 'Value must be at least 3 characters long' );
+                adminSizesPage.enterSizeName( 'noValue' );
+                adminSizesPage.formErrorValidation( 'Value must be at least 3 characters long' );
+            } );
 
+            it( 'Fails when creating a Size without a Name', () =>
+            {
+                cy.step( 'Navigating to new Size form' );
+                cy.visit( `/${storeId}/sizes/new` );
+
+                adminSizesPage.enterSizeValue( 'noNme' );
+                adminSizesPage.formErrorValidation( 'Name must be at least 3 characters long' );
+            } );
+
+            it( 'Fails when creating a Size with a 2-character Name', () =>
+            {
+                cy.step( 'Navigating to new Size form' );
+                cy.visit( `/${storeId}/sizes/new` );
+
+                adminSizesPage.enterSizeName( 'cy' );
+                adminSizesPage.enterSizeValue( 'LessThanThree' );
+                adminSizesPage.formErrorValidation( 'Name must be at least 3 characters long' );
+            } );
+
+            it( 'Fails when creating a Size Value > 15 characters', () =>
+            {
+                cy.step( 'Navigating to new Size form' );
+                cy.visit( `/${storeId}/sizes/new` );
+
+                adminSizesPage.enterSizeName( 'cyBoundary' );
+                adminSizesPage.enterSizeValue( 'thisIsCypressTest' );
+                adminSizesPage.formErrorValidation( 'Value must not exceed 15 characters' );
+            } );
         } );
-        it( 'User create Sizes without name', () =>
-        {
-            cy.step( 'Going to sizes from navigation tab' );
-            cy.visit( `/${storeId}/sizes/new` );
-            adminSizesPage.enterSizeValue( 'noNme' );
-            adminSizesPage.formErrorValidation( 'Name must be at least 3 characters long' );
-
-        } );
-        it( 'User create Sizes with 2 characters Name', () =>
-        {
-            cy.step( 'Going to sizes from navigation tab' );
-            cy.visit( `/${storeId}/sizes/new` );
-            adminSizesPage.enterSizeName( 'cy' );
-            adminSizesPage.enterSizeValue( 'LessThenThree' );
-            adminSizesPage.formErrorValidation( 'Name must be at least 3 characters long' );
-
-        } );
-        it( 'User create Sizes sizes value > 15', () =>
-        {
-            cy.step( 'Going to sizes from navigation tab' );
-            cy.visit( `/${storeId}/sizes/new` );
-
-            adminSizesPage.enterSizeName( 'cyBoundary' );
-            adminSizesPage.enterSizeValue( 'thisIsCypressTest' );
-            adminSizesPage.formErrorValidation( 'Value must not exceed 15 characters' );
-
-        } );
-
-
     } );
-
-
-
 } );

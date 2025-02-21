@@ -6,7 +6,8 @@ const updatedBillboardId = 'e63f7f1f-887b-4fd0-bbd5-690da885a34d';
 ;
 const adminCategoriesPage = new AdminCategoriesPage();
 
-describe( 'Store Billboard', () => {
+describe( 'Store Billboard', () =>
+{
 
 
     beforeEach( () =>
@@ -18,75 +19,75 @@ describe( 'Store Billboard', () => {
 
     } );
 
-context( 'Store Category Admin Workflow UI', () =>
-{
-    it( 'User navigates to Categories', () =>
+    context( 'Store Category Admin Workflow UI', () =>
     {
-        cy.step( 'Navigating to Categories tab' );
-        cy.navigateTabItem( 'Categories' );
-    } );
-
-    it( 'User creates a new Category', () =>
-    {
-        cy.step( 'Navigating to Categories page' );
-        cy.visit( `/${storeId}/categories` );
-
-        adminCategoriesPage.clickOnAddCategoryButton( storeId );
-        adminCategoriesPage.enterCategoryName( 'cyCreateCategories' );
-        adminCategoriesPage.selectBillboard( 'Do not delete' );
-        adminCategoriesPage.clickOnSubmitButton( storeId, billboardId );
-    } );
-
-    it( 'User updates an existing Category', () =>
-    {
-        cy.step( 'Navigating to Categories page' );
-        cy.visit( `/${storeId}/categories` );
-
-        const categoryId = Cypress.env( 'categoryId' );
-
-        adminCategoriesPage.actionModifyCategory( 'cyCreateCategories' );
-        adminCategoriesPage.enterCategoryName( 'cyUpdatedCategories' );
-        adminCategoriesPage.selectBillboard( 'Forever Billboard' );
-        adminCategoriesPage.clickOnSubmitButton( storeId, updatedBillboardId, categoryId );
-    } );
-
-    it( 'User deletes a Category', () =>
-    {
-        cy.step( 'Navigating to Categories page' );
-        cy.visit( `/${storeId}/categories` );
-
-        adminCategoriesPage.actionDeleteCategory( 'cyUpdatedCategories' );
-    } );
-
-    context( 'Validation Tests', () =>
-    {
-        it( 'Fails when creating a Category without selecting a Billboard', () =>
+        it( 'User navigates to Categories', () =>
         {
-            cy.step( 'Navigating to new Category form' );
-            cy.visit( `/${storeId}/categories/new` );
-
-            adminCategoriesPage.enterCategoryName( 'noBillboardCategory' );
-            adminCategoriesPage.formErrorValidation( 'Billboard selection is required' );
+            cy.step( 'Navigating to Categories tab' );
+            cy.navigateTabItem( 'Categories' );
         } );
 
-        it( 'Fails when creating a Category without a Name', () =>
+        it( 'User creates a new Category', () =>
         {
-            cy.step( 'Navigating to new Category form' );
-            cy.visit( `/${storeId}/categories/new` );
+            cy.step( 'Navigating to Categories page' );
+            cy.visit( `/${storeId}/categories` );
 
+            adminCategoriesPage.clickOnAddCategoryButton( storeId );
+            adminCategoriesPage.enterCategoryName( 'cyCreateCategories' );
             adminCategoriesPage.selectBillboard( 'Do not delete' );
-            adminCategoriesPage.formErrorValidation( 'Name must be at least 3 characters long' );
+            adminCategoriesPage.clickOnSubmitButton( storeId, billboardId );
         } );
 
-        it( 'Fails when creating a Category with a 2-character Name', () =>
+        it( 'User updates an existing Category', () =>
         {
-            cy.step( 'Navigating to new Category form' );
-            cy.visit( `/${storeId}/categories/new` );
+            cy.step( 'Navigating to Categories page' );
+            cy.visit( `/${storeId}/categories` );
 
-            adminCategoriesPage.enterCategoryName( 'cy' );
-            adminCategoriesPage.selectBillboard( 'Do not delete' );
-            adminCategoriesPage.formErrorValidation( 'Name must be at least 3 characters long' );
+            const categoryId = Cypress.env( 'categoryId' );
+
+            adminCategoriesPage.actionModifyCategory( 'cyCreateCategories' );
+            adminCategoriesPage.enterCategoryName( 'cyUpdatedCategories' );
+            adminCategoriesPage.selectBillboard( 'Forever Billboard' );
+            adminCategoriesPage.clickOnSubmitButton( storeId, updatedBillboardId, categoryId );
+        } );
+
+        it( 'User deletes a Category', () =>
+        {
+            cy.step( 'Navigating to Categories page' );
+            cy.visit( `/${storeId}/categories` );
+
+            adminCategoriesPage.actionDeleteCategory( 'cyUpdatedCategories' );
+        } );
+
+        context( 'Error Validation Tests', () =>
+        {
+            it( 'Fails when creating a Category without selecting a Billboard', () =>
+            {
+                cy.step( 'Navigating to new Category form' );
+                cy.visit( `/${storeId}/categories/new` );
+
+                adminCategoriesPage.enterCategoryName( 'noBillboardCategory' );
+                adminCategoriesPage.formErrorValidation( 'Billboard selection is required' );
+            } );
+
+            it( 'Fails when creating a Category without a Name', () =>
+            {
+                cy.step( 'Navigating to new Category form' );
+                cy.visit( `/${storeId}/categories/new` );
+
+                adminCategoriesPage.selectBillboard( 'Do not delete' );
+                adminCategoriesPage.formErrorValidation( 'Name must be at least 3 characters long' );
+            } );
+
+            it( 'Fails when creating a Category with a 2-character Name', () =>
+            {
+                cy.step( 'Navigating to new Category form' );
+                cy.visit( `/${storeId}/categories/new` );
+
+                adminCategoriesPage.enterCategoryName( 'cy' );
+                adminCategoriesPage.selectBillboard( 'Do not delete' );
+                adminCategoriesPage.formErrorValidation( 'Name must be at least 3 characters long' );
+            } );
         } );
     } );
-} );
 } );

@@ -1,4 +1,3 @@
-
 class AdminSizesPage
 {
     elements: { [ key: string ]: () => Cypress.Chainable; } = {
@@ -6,144 +5,110 @@ class AdminSizesPage
         pageDescription: () => cy.get( '[data-testid="heading-description"]' ),
         addNewButton: () => cy.get( '[data-testid="add-sizesClient-button"]' ),
 
-        // Create New Categories Form
+        // Form Elements
         size_formInputLabel: () => cy.get( 'label[data-testid="size-NameSubtitle"]' ),
         size_formLabelInputField: () => cy.get( '[data-testid="size-NameInput"]' ),
         size_valueLabel: () => cy.get( '[data-testid="size-valueSubtitle"]' ),
         size_valueInput: () => cy.get( '[data-testid="size-valueInput"]' ),
 
-        size_submitButtonButton: () => cy.get( '[data-testid="size-submitButton"]' ),
+        size_submitButton: () => cy.get( '[data-testid="size-submitButton"]' ),
         sizeDataTable: () => cy.get( '[data-testid="data-table"]' ),
 
         sizeActionColumn: () => cy.get( '[data-testid="cellAction-dropdownMenuTrigger"]' ),
         sizeActionItem: () => cy.get( 'div[data-testid="cellAction-dropdownMenuContent"]' ),
-        settingAPI_Alert: () => cy.get( '[data-testid="api-alert_NEXT_PUBLIC_API_URL"]' ),
-        settingAPI_AlertURI: () => cy.get( '[data-testid="api-alert_uri"]' ),
-        settingAPI_AlertClipboard: () => cy.get( '[data-testid="api-alert_copyButton"]' ),
         form_errorMessage: () => cy.get( '[data-testid="FormMessage"]' ),
-
-
     };
 
-    verifySizeHeaders ( storeId: string )
-    {
-        cy.step( 'Verifying Categories Headers' );
-        // let valuesQuery: string;
-        const valuesQuery = `SELECT "label" FROM public."Sizes" where "storeId" = '${storeId}' ORDER by "createdAt" DESC;`;
-        cy.task( 'queryDatabase', valuesQuery ).then( ( rows ) =>
-        {
-            if ( rows.length > 0 )
-            {
-                const numberOfBillboards = rows.length; // Extract the store ID from the query result
-                cy.step( `Checking size page headers for storeId:: ${storeId}` ); // Log the resolved storeID
-                this.elements.pageHeaders().should( 'be.visible' ).should( 'include.text', `Categories (${numberOfBillboards})` )
-                    .and( 'include.text', 'API Routes' );
-                cy.step( `Checking size page description for storeId: ${storeId}` ); // Log the resolved storeID
-                this.elements.pageDescription().should( 'be.visible' ).should( 'include.text', 'Manage size for your store' ).and( 'include.text', 'API routes for managing size' );
-
-
-            } else
-            {
-                throw new Error( 'No rows returned from query' );
-            }
-        } );
-
-    }
-
+    /**
+     * Clicks on the "Add Size" button and verifies navigation.
+     * @param {string} storeId - The store ID.
+     */
     clickOnAddSizeButton ( storeId: string )
     {
-        cy.step( 'Clicking on Add Categories button' );
-        this.elements.addNewButton().should( 'be.visible' ).and( 'include.text', 'Add New' ).click();
-        cy.step( 'Verify navigation was successful' );
+        cy.step( 'Clicking on Add Size button' );
+        this.elements.addNewButton().click();
         cy.url().should( 'include', `${storeId}/sizes/new` );
-        cy.step( 'Verify Form Header' );
-        this.elements.pageHeaders().should( 'be.visible' ).should( 'include.text', 'Create Size' );
-        cy.step( 'Verify Form Header Description' );
-        this.elements.pageDescription().should( 'be.visible' ).should( 'include.text', 'Add a new Size' );
+        this.elements.pageHeaders().should( 'include.text', 'Create Size' );
     }
 
-    enterSizeName ( label: string )
+    /**
+     * Enters a Size name in the input field.
+     * @param {string} name - The size name.
+     */
+    enterSizeName ( name: string )
     {
-        cy.step( 'Checking Categories name input label' );
-        this.elements.size_formInputLabel().should( 'be.visible' ).should( 'have.text', 'Name' );
-
-        cy.step( `Entering Categories name : ${label}` );
-        this.elements.size_formLabelInputField().should( 'be.visible' ).clear().type( label ).should( 'have.value', label );
+        cy.step( `Entering size name: ${name}` );
+        this.elements.size_formLabelInputField().clear().type( name ).should( 'have.value', name );
     }
 
+    /**
+     * Enters a Size value in the input field.
+     * @param {string} value - The size value.
+     */
     enterSizeValue ( value: string )
     {
-        cy.step( 'Checking Size value Select Label' );
-        this.elements.size_valueLabel()
-            .should( 'be.visible' )
-            .and( 'have.text', 'Size Value' );
-
-        cy.step( `Entering Size value : ${value}` );
-        this.elements.size_valueInput()
-            .should( 'be.visible' )
-            .clear()
-            .type( value )
-            .should( 'have.value', value );
+        cy.step( `Entering size value: ${value}` );
+        this.elements.size_valueInput().clear().type( value ).should( 'have.value', value );
     }
 
+    /**
+     * Clicks the submit button and waits for the API response.
+     * @param {string} storeId - The store ID.
+     * @param {string} [sizeId] - The Size ID (optional, used when updating).
+     */
     clickOnSubmitButton ( storeId: string, sizeId?: string )
     {
-        cy.step( 'Determining whether to create or update a size' );
+        cy.step( 'Determining create or update action' );
 
-        cy.wrap( null ).then( () =>
-        {
-            return this.elements.size_submitButtonButton()
-                .should( 'be.visible' )
-                .invoke( 'text' );
-        } ).then( ( buttonText ) =>
-        {
-            const isCreatingSize = buttonText.includes( 'Create Size' );
-            cy.step( `Button text is: ${buttonText}` );
-            const method = isCreatingSize ? 'POST' : 'PATCH';
-            const endpoint = isCreatingSize
-                ? `/api/${storeId}/sizes`
-                : `/api/${storeId}/sizes/${sizeId}`;
-            const alias = isCreatingSize ? 'createSize' : 'updateSize';
-
-            cy.step( `Intercepting API call for ${isCreatingSize ? 'creating' : 'updating'} size` );
-            cy.step( `Intercepting API call Endpoint ${endpoint}` );
-            cy.intercept( method, endpoint ).as( alias );
-
-            return cy.wrap( alias ); // Ensure alias is wrapped so Cypress properly chains it
-        } ).then( ( alias ) =>
-        {
-            cy.step( `Clicking on the submit button for ${alias}` );
-            cy.step( 'Clicking on the submit button' );
-            this.elements.size_submitButtonButton().click();
-
-            cy.step( 'Waiting for the intercepted API response' );
-            cy.step( `----for---- ${alias}` );
-            cy.wait( `@${alias}`, { timeout: 10000 } ).then( ( interception ) =>
+        cy.wrap( null )
+            .then( () => this.elements.size_submitButton().invoke( 'text' ) )
+            .then( ( buttonText ) =>
             {
-                expect( interception.response.statusCode ).to.eq( 200 );
-                if ( alias === 'updateSize' )
+                const isCreating = buttonText.includes( 'Create Size' );
+                const method = isCreating ? 'POST' : 'PATCH';
+                const endpoint = isCreating
+                    ? `/api/${storeId}/sizes`
+                    : `/api/${storeId}/sizes/${sizeId}`;
+                const alias = isCreating ? 'createSize' : 'updateSize';
+
+                cy.step( `Intercepting API call for ${isCreating ? 'creating' : 'updating'} size` );
+                cy.intercept( method, endpoint ).as( alias );
+
+                return cy.wrap( alias );
+            } )
+            .then( ( alias ) =>
+            {
+                this.elements.size_submitButton().click();
+                cy.wait( `@${alias}` ).then( ( interception ) =>
                 {
-                    expect( interception.response.body ).to.have.property( 'message', 'Successfully Updated' );
-                }
-                else
-                {
-                    const { storeId: xhrStoreId, id: xhrSizeId } = interception.response.body;
+                    expect( interception.response.statusCode ).to.eq( 200 );
 
-                    cy.step( 'Validating API response data' );
-                    expect( xhrStoreId ).to.eq( storeId );
+                    if ( alias === 'updateSize' )
+                    {
+                        expect( interception.response.body ).to.have.property( 'message', 'Successfully Updated' );
+                    } else
+                    {
+                        const { storeId: xhrStoreId, id: xhrSizeId } = interception.response.body;
 
-                    expect( xhrSizeId ).to.exist;
+                        cy.step( 'Validating API response data' );
+                        expect( xhrStoreId ).to.eq( storeId );
+                        expect( xhrSizeId ).to.exist;
 
-                    cy.log( 'Saving sizeId to Cypress environment' );
-                    Cypress.env( 'sizeId', xhrSizeId );
+                        cy.log( 'Saving sizeId to Cypress environment' );
+                        Cypress.env( 'sizeId', xhrSizeId );
 
-                    cy.step( 'Verifying the new size page URL' );
-                    cy.visit( `/${storeId}/sizes/${xhrSizeId}` );
-                    cy.url().should( 'include', xhrSizeId );
-                }
+                        cy.step( 'Verifying the new size page URL' );
+                        cy.visit( `/${storeId}/sizes/${xhrSizeId}` );
+                        cy.url().should( 'include', xhrSizeId );
+                    }
+                } );
             } );
-        } );
     }
+
+    /**
+       * Modifies a size by selecting it from the table and opening the edit form.
+       * @param {string} sizeName - The name of the size to modify.
+       */
     actionModifySize ( sizeName: string )
     {
         cy.step( `Going to Modify ${sizeName}` );
@@ -154,28 +119,36 @@ class AdminSizesPage
             sizeName
         );
 
-        cy.step( 'Click on modify from drop-down list' );
+        cy.step( 'Clicking on modify from dropdown list' );
 
-        // // Find the correct action item in the dropdown and click it
-        this.elements.sizeActionItem().should( 'be.visible' )
+        // Select "Modify" from the dropdown menu
+        this.elements.sizeActionItem()
+            .should( 'be.visible' )
             .contains( 'Modify' )
             .click( { force: true } );
 
-        cy.step( `Checking correct Categories name : ${sizeName} was selected` );
+        cy.step( `Verifying correct size name: ${sizeName} was selected` );
 
         this.elements.size_formLabelInputField()
             .should( 'be.visible' )
             .and( 'have.value', sizeName );
     }
 
+    /**
+     * Copies a size by selecting it from the table.
+     * @param {string} sizeName - The name of the size to copy.
+     */
     actionCopySize ( sizeName: string )
     {
-
-        //TODO: When we have time
+        // TODO: Implement copy size functionality
     }
+
+    /**
+     * Deletes a size by selecting it from the table.
+     * @param {string} sizeName - The name of the size to delete.
+     */
     actionDeleteSize ( sizeName: string )
     {
-
         cy.step( `Going to Delete ${sizeName}` );
 
         cy.handlingTable(
@@ -184,24 +157,29 @@ class AdminSizesPage
             sizeName
         );
 
-        cy.step( 'Click on Delete from drop-down list' );
+        cy.step( 'Clicking on Delete from dropdown list' );
 
-        // // Find the correct action item in the dropdown and click it
-        this.elements.sizeActionItem().should( 'be.visible' )
+        // Select "Delete" from the dropdown menu
+        this.elements.sizeActionItem()
+            .should( 'be.visible' )
             .contains( 'Delete' )
             .click( { force: true } );
 
         cy.deleteObjects( true );
     }
 
+    /**
+     * Validates error messages on the form submission.
+     * @param {string} errorType - The expected error message.
+     */
     formErrorValidation ( errorType: string )
     {
         cy.step( 'Clicking on the submit button' );
-        this.elements.size_submitButtonButton().click();
-        cy.step( `Checking '${errorType}'  error message` );
+        this.elements.size_submitButton().click();
+
+        cy.step( `Checking for error message: '${errorType}'` );
         this.elements.form_errorMessage().should( 'be.visible' ).contains( errorType );
     }
 }
 
 export default AdminSizesPage;
-

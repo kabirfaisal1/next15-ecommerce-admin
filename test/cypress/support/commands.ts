@@ -148,6 +148,9 @@ Cypress.Commands.add( 'navigateTabItem', ( element: string ) =>
         'Store Overview': '[data-testid="store_overview"]',
         'Billboards': '[data-testid="billboards"]',
         'Categories': '[data-testid="categories"]',
+        'Sizes': '[data-testid="sizes"]',
+        'Colors': '[data-testid="colors"]',
+        'Products': '[data-testid="products"]',
         'Settings': '[data-testid="store_settings"]',
         'User Button': '[data-clerk-component="UserButton"]',
     };
