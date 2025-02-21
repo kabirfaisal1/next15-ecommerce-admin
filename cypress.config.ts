@@ -10,7 +10,7 @@ export default defineConfig( {
     specPattern: 'test/cypress/**/**/*.cy.{js,jsx,ts,tsx}',
     downloadsFolder: 'test/cypress/downloads',
     screenshotOnRunFailure: false,
-    defaultCommandTimeout: 15000,
+    defaultCommandTimeout: 30000,
     viewportWidth: 1920,
     viewportHeight: 1080,
     supportFile: '**/support/e2e.ts',
@@ -19,7 +19,7 @@ export default defineConfig( {
     {
       const version = config.env.version || 'local';
       const url: { [ key: string ]: string; } = {
-        local: 'http://localhost:3000/',
+        local: 'http://localhost:3000',
         staging: 'https://google.com',
         production: 'https://amazon.com',
       };

@@ -9,6 +9,10 @@ export interface IEcommerceAPIRequestKeys
     billboardId: string;
     billboardName: string;
     imageUrl: string;
+    colorName: string;
+    colorValue: string;
+    sizeName: string;
+    sizeValue: string;
 }
 
 // Class implementing the IEcommerceAPIRequestKeys interface
@@ -17,6 +21,8 @@ export class AdminAPIRequestKeys implements IEcommerceAPIRequestKeys
     storeName = 'name'; // Example key for the store name
     categoryName = 'name'; // Example key for the category name
     sizeName = 'name'; // Example key for the size name
+    colorName = 'name'; // Example key for the color name
+    colorValue = 'value'; // Example key for the color value
     sizeValue = 'value'; // Example key for the size value
     userid = 'userId'; // Example key for user ID
     storeId = 'storeId'; // Example key for the store ID
