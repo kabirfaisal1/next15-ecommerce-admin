@@ -1,5 +1,7 @@
 import { createRequestBody } from '@support/utilities/globalHelpers';
-
+/**
+ * A Page Object Model for the Admin Billboard page.
+ */
 class AdminBillboardPage
 {
     /**

@@ -1,3 +1,6 @@
+/**
+ * A Page Object Model for the Admin Sizes page.
+ */
 class AdminSizesPage
 {
     elements: { [ key: string ]: () => Cypress.Chainable; } = {

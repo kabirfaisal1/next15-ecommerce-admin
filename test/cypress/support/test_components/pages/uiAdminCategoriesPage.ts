@@ -1,3 +1,6 @@
+/**
+ * A Page Object Model for the Admin Categories page.
+ */
 class AdminCategoriesPage
 {
     elements: { [ key: string ]: () => Cypress.Chainable; } = {
