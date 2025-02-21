@@ -34,14 +34,7 @@ declare global
     }
 }
 
-/**
- * Generates a SQL query to fetch IDs from a given table.
- * @param {string} tableName - The database table name.
- * @param {string} parentColumn - The column name used to filter by parentId.
- * @param {string} [parentId] - Optional parent ID used to filter results.
- * @param {string} [orderBy='DESC'] - Sorting order ('ASC' or 'DESC').
- * @returns {string} - The SQL query string.
- */
+
 const generateSQLQuery = ( tableName: string, parentColumn: string, parentId?: string, orderBy: string = 'DESC' ): string =>
     parentId
         ? `SELECT id FROM public."${tableName}" WHERE "${parentColumn}" = '${parentId}' ORDER BY "createdAt" ${orderBy};`
@@ -55,14 +48,7 @@ const API_TABLE_MAP = {
     sizes: { tableName: 'Sizes', parentColumn: 'storeId', endpoint: `/api/{parentId}/sizes/` },
 };
 
-/**
- * Generates an API endpoint dynamically based on provided parameters.
- * @param {'stores' | 'billboards' | 'categories' | 'sizes'} type - The type of API resource.
- * @param {string} testData - The test data, either a static value or 'dynamic' for database-driven values.
- * @param {string} [parentId] - Optional parent ID to fetch data dynamically.
- * @param {'ASC' | 'DESC'} [orderBy='DESC'] - The sorting order of fetched records.
- * @returns {Cypress.Chainable<string>} - The dynamically generated API endpoint.
- */
+
 Cypress.Commands.add( 'generateAPIEndpoint', ( type, testData, parentId, orderBy = 'DESC' ): Cypress.Chainable<string> =>
 {
     const config = API_TABLE_MAP[ type ];
@@ -96,11 +82,7 @@ Cypress.Commands.add( 'generateAPIEndpoint', ( type, testData, parentId, orderBy
     return cy.wrap( testData );
 } );
 
-/**
- * Validates the response body against expected results.
- * @param {any} response - The actual API response body.
- * @param {any} expectedResults - The expected response values to validate.
- */
+
 Cypress.Commands.add( 'validateResponseBody', ( response, expectedResults ) =>
 {
     cy.step( 'Validating response body' );
