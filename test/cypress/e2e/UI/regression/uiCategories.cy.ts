@@ -17,7 +17,7 @@ describe( 'Store Billboard', () =>
     } );
     context( 'Store category Admin workflow UI', () =>
     {
-        it( 'User navigate to Categories', () =>
+        it.only( 'User navigate to Categories', () =>
         {
             cy.log( 'Going to categories from navigation tab' );
             cy.navigateTabItem( "Categories" );

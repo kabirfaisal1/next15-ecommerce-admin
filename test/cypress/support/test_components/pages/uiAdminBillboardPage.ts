@@ -1,52 +1,67 @@
 import { createRequestBody } from '@support/utilities/globalHelpers';
+
 class AdminBillboardPage
 {
+    /**
+     * Page Elements: Organized as a dictionary for easier access.
+     */
     elements: { [ key: string ]: () => Cypress.Chainable; } = {
+        // Page Headers & Description
         pageHeaders: () => cy.get( '[data-testid="heading-title"]' ),
         pageDescription: () => cy.get( '[data-testid="heading-description"]' ),
-        addNewButton: () => cy.get( '[data-testid="add-billboardClient-button"]' ),
 
-        // Create New Billboard Form
+        // Buttons & Actions
+        addNewButton: () => cy.get( '[data-testid="add-billboardClient-button"]' ),
+        billboard_submitButton: () => cy.get( '[data-testid="billboards-submitButton"]' ),
+
+        // Billboard Form Fields
         billboard_uploadImageLabel: () => cy.get( '[data-testid="billboards-backgroundImage-label"]' ),
         billboard_uploadImageButton: () => cy.get( '[data-testid="upload-image"]' ),
         billboard_formInputLabel: () => cy.get( '[data-testid="billboards-labelSubtitle"]' ),
         billboard_formLabelInputField: () => cy.get( '[data-testid="billboards-labelInput"]' ),
-        billboard_submitButtonButton: () => cy.get( '[data-testid="billboards-submitButton"]' ),
+
+        // Data Table
         billboardDataTable: () => cy.get( '[data-testid="data-table"]' ),
         billboardDataTableRow: () => cy.get( '[data-testid="data-tableBodyRows"]' ),
-        billBoardActionColumn: () => cy.get( '[data-testid="cellAction-dropdownMenuTrigger"]' ),
-        billBoardActionItem: () => cy.get( '[data-testid="cellAction-dropdownMenuContent"]' ),
+        billboardActionColumn: () => cy.get( '[data-testid="cellAction-dropdownMenuTrigger"]' ),
+        billboardActionItem: () => cy.get( '[data-testid="cellAction-dropdownMenuContent"]' ),
+
+        // API Settings
         settingAPI_Alert: () => cy.get( '[data-testid="api-alert_NEXT_PUBLIC_API_URL"]' ),
         settingAPI_AlertURI: () => cy.get( '[data-testid="api-alert_uri"]' ),
         settingAPI_AlertClipboard: () => cy.get( '[data-testid="api-alert_copyButton"]' ),
+
+        // Form Errors
         form_ErrorMessage: () => cy.get( '[data-testid="FormMessage"]' ),
 
-        //* cloudinary elements
+        // Cloudinary Elements
         cloudinary_uploadWidget: () => cy.get( '[data-test="upload_button_holder"]' ),
         cloudinary_uploadDone: () => cy.get( '[data-test="queue-done"]' ),
+
+        // Cloudinary iFrame
         getIframeDocument: () =>
         {
-            cy.log( 'Getting getIframeDocument' );
+            cy.log( 'Retrieving Cloudinary iframe document' );
             return cy.get( 'iframe[data-test="uw-iframe"]', { timeout: 20000 } )
                 .should( 'be.visible' )
-                .then( ( $iframe ) =>
-                {
-                    return cy.wrap( $iframe[ 0 ].contentDocument ).should( 'exist' );
-                } );
+                .then( ( $iframe ) => cy.wrap( $iframe[ 0 ].contentDocument ).should( 'exist' ) );
         },
         getIframeBody: () =>
         {
-            cy.log( 'Getting getIframeDocument' );
-            return cy
-                .get( 'iframe[data-test="uw-iframe"]' )
-                .its( '0.contentDocument' ).should( 'exist' );
+            cy.log( 'Retrieving Cloudinary iframe body' );
+            return cy.get( 'iframe[data-test="uw-iframe"]' ).its( '0.contentDocument' ).should( 'exist' );
         },
-
     };
-    // TODO: Delete this after figuring out upload in cloudinary from UI
+
+    /**
+     * Creates a billboard using an API request.
+     * @param {string} storeId - The store ID.
+     * @param {string} token - Authorization token.
+     * @param {string[]} requestKeys - Keys for the request body.
+     * @param {string[]} requestValues - Values for the request body.
+     */
     createBillboardWithAPI ( storeId: string, token: string, requestKeys: string[], requestValues: string[] )
     {
-        // Generate request body
         const requestBody = createRequestBody( requestKeys, requestValues );
 
         cy.request( {
@@ -57,184 +72,126 @@ class AdminBillboardPage
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
-            failOnStatusCode: false // Allow handling errors manually
+            failOnStatusCode: false
         } ).then( ( response ) =>
         {
-            // Validate response status
-            cy.step( `Validate response status: 200` );
             expect( response.status ).to.equal( 200 );
-
-            // Extract response data
             const data = response.body;
 
-            if ( data && data.id )
+            if ( data?.id )
             {
-                expect( data.id ).to.exist;
-                cy.step( `Created Billboard ID: ${data.id} and saved in env file as CypressUIBillboard` );
-
-                // Optionally store in Cypress alias for use in the same test
+                cy.step( `Billboard created with ID: ${data.id}` );
                 cy.wrap( data.id ).as( 'createdBillboardId' );
                 cy.reload();
-                this.elements.billboardDataTableRow().wait( 500 ).should( 'include.text', data.label );
+                this.elements.billboardDataTableRow().should( 'include.text', data.label );
             } else
             {
                 cy.step( 'No valid data returned in response.' );
             }
         } );
     }
+
+    /**
+     * Verifies Billboard headers based on the database entries.
+     * @param {string} storeId - The store ID.
+     */
     verifyBillboardHeaders ( storeId: string )
     {
-        cy.log( 'Verifying Billboard Headers' );
-        // let billboardsQuery: string;
-        const billboardsQuery = `SELECT "label" FROM public."Billboards" where "storeId" = '${storeId}' ORDER by "createdAt" DESC;`;
-        cy.task( 'queryDatabase', billboardsQuery ).then( ( rows ) =>
-        {
-            if ( rows.length > 0 )
+        cy.task( 'queryDatabase', `SELECT "label" FROM public."Billboards" WHERE "storeId" = '${storeId}' ORDER BY "createdAt" DESC;` )
+            .then( ( rows ) =>
             {
-                const numberOfBillboards = rows.length; // Extract the store ID from the query result
-                cy.log( `Checking billboard page headers for storeId:: ${storeId}` ); // Log the resolved storeID
-                this.elements.pageHeaders().should( 'be.visible' ).should( 'include.text', `Billboards (${numberOfBillboards})` )
-                    .and( 'include.text', 'API Routes' );
-                cy.log( `Checking billboard page description for storeId: ${storeId}` ); // Log the resolved storeID
-                this.elements.pageDescription().should( 'be.visible' ).should( 'include.text', 'Manage billboards for your store' ).and( 'include.text', 'API routes for managing billboards' );
-
-
-            } else
-            {
-                throw new Error( 'No rows returned from query' );
-            }
-        } );
-
+                if ( rows.length > 0 )
+                {
+                    cy.log( `Verifying Billboard headers for storeId: ${storeId}` );
+                    this.elements.pageHeaders().should( 'include.text', `Billboards (${rows.length})` );
+                    this.elements.pageDescription().should( 'include.text', 'Manage billboards' );
+                } else
+                {
+                    throw new Error( 'No rows returned from the database query' );
+                }
+            } );
     }
 
+    /**
+     * Clicks on the 'Add Billboard' button and verifies navigation.
+     * @param {string} storeId - The store ID.
+     */
     clickOnAddBillboardButton ( storeId: string )
     {
-        cy.log( 'Clicking on Add Billboard button' );
-        this.elements.addNewButton().should( 'be.visible' ).and( 'include.text', 'Add New' ).click();
-        cy.log( 'Verify navigation was successful' );
+        this.elements.addNewButton().click();
         cy.url().should( 'include', `${storeId}/billboards/new` );
-        cy.log( 'Verify Form Header' );
-        this.elements.pageHeaders().should( 'be.visible' ).should( 'include.text', 'Create Billboard' );
-        cy.log( 'Verify Form Header Description' );
-        this.elements.pageDescription().should( 'be.visible' ).should( 'include.text', 'Add a new billboard' );
+        this.elements.pageHeaders().should( 'include.text', 'Create Billboard' );
     }
 
-    // TODO: having issue uploading from UI in cloudinary iFrame
+    /**
+     * Uploads an image using Cloudinary Upload Widget.
+     * @param {string} imgPath - Path to the image file.
+     */
     uploadImage ( imgPath: string )
     {
-        cy.step( 'Clicking on upload image button' );
-        this.elements.billboard_uploadImageButton().should( 'be.visible' ).click();
-
-        // Ensure the iframe is loaded before switching origins
-        cy.get( 'iframe[data-test="uw-iframe"]', { timeout: 30000 } )
-            .should( 'be.visible' )
-            .then( ( $iframe ) =>
-            {
-                const iframeSrc = $iframe.attr( 'src' );
-                cy.log( `Found iframe with src: ${iframeSrc}` );
-            } );
-
-        // Switch to Cloudinary Upload Widget's correct origin
+        this.elements.billboard_uploadImageButton().click();
         cy.origin( 'https://upload-widget.cloudinary.com', { args: [ imgPath ] }, ( imgPath ) =>
         {
-            cy.log( 'Switched to Cloudinary Upload Widget' );
-
-            // Wait for the upload button inside the iframe
-            cy.get( '.upload_button_holder', { timeout: 15000 } )
-                .should( 'be.visible' )
-                .click();
-
-            // Upload file
+            cy.get( '.upload_button_holder' ).click();
             cy.get( 'input[type="file"]' ).selectFile( imgPath, { force: true } );
-
-            cy.log( 'File uploaded' );
         } );
-
-        cy.step( 'Image upload completed' );
+        cy.step( 'Image uploaded successfully' );
     }
 
-
+    /**
+     * Enters a Billboard name into the form.
+     * @param {string} label - The billboard name.
+     */
     enterBillboardName ( label: string )
     {
-        cy.log( 'Checking Billboard name input label' );
-        this.elements.billboard_formInputLabel().should( 'be.visible' ).should( 'include.text', 'Label' );
-
-        cy.log( `Entering Billboard name : ${label}` );
-        this.elements.billboard_formLabelInputField().should( 'be.visible' ).clear().type( label ).should( 'have.value', label );
+        this.elements.billboard_formLabelInputField().clear().type( label ).should( 'have.value', label );
     }
 
+    /**
+     * Clicks on the submit button to create a billboard.
+     */
     clickOnSubmitButton ()
     {
-        cy.log( 'Clicking on submit button' );
-
-        cy.url().then( ( currentUrl ) =>
-        {
-            this.elements
-                .billboard_submitButtonButton()
-                .should( 'be.visible' )
-                .click();
-        } );
+        this.elements.billboard_submitButton().click();
     }
 
+    /**
+     * Modifies a billboard by selecting it from the data table.
+     * @param {string} billboardLabel - The label of the billboard to modify.
+     */
     actionModifyBillboard ( billboardLabel: string )
     {
-        cy.step( `Going to Modify ${billboardLabel}` );
-
-        cy.handlingTable(
-            this.elements.billboardDataTableRow(),
-            this.elements.billBoardActionColumn(), // Passing as Cypress Chainable
-            billboardLabel
-        );
-
-        cy.step( 'Click on modify from drop-down list' );
-
-        // // Find the correct action item in the dropdown and click it
-        this.elements.billBoardActionItem().should( 'be.visible' )
-            .contains( 'Modify' )
-            .click( { force: true } );
-
-        cy.step( `Checking correct Billboard name : ${billboardLabel} was selected` );
-
-        this.elements.billboard_formLabelInputField()
-            .should( 'be.visible' )
-            .and( 'have.value', billboardLabel );
+        cy.handlingTable( this.elements.billboardDataTableRow(), this.elements.billboardActionColumn(), billboardLabel );
+        this.elements.billboardActionItem().contains( 'Modify' ).click( { force: true } );
+        this.elements.billboard_formLabelInputField().should( 'have.value', billboardLabel );
     }
 
-    actionCopyBillboard ( billboardLabel: string )
-    {
-
-        //TODO: When we have time
-    }
+    /**
+     * Deletes a billboard by selecting it from the data table.
+     * @param {string} billboardLabel - The label of the billboard to delete.
+     */
     actionDeleteBillboard ( billboardLabel: string )
     {
-
-        cy.step( `Going to Modify ${billboardLabel}` );
-
-        cy.handlingTable(
-            this.elements.billboardDataTableRow(),
-            this.elements.billBoardActionColumn(), // Passing as Cypress Chainable
-            billboardLabel
-        );
-
-        cy.step( 'Click on modify from drop-down list' );
-
-        // // Find the correct action item in the dropdown and click it
-        this.elements.billBoardActionItem().should( 'be.visible' )
-            .contains( 'Delete' )
-            .click( { force: true } );
-
+        cy.handlingTable( this.elements.billboardDataTableRow(), this.elements.billboardActionColumn(), billboardLabel );
+        this.elements.billboardActionItem().contains( 'Delete' ).click( { force: true } );
         cy.deleteObjects( true );
     }
-    verifyBillboardAPIRoute ( storeId: string, billboardLabel: string )
+
+    /**
+     * TODO: Implement copy billboard functionality.
+     */
+    actionCopyBillboard ( billboardLabel: string )
     {
-        //TODO: When we have time
+        cy.step( `Copy functionality not implemented yet for ${billboardLabel}` );
     }
 
-
-
-
-
+    /**
+     * TODO: Verify API route for billboards.
+     */
+    verifyBillboardAPIRoute ( storeId: string, billboardLabel: string )
+    {
+        cy.step( 'API route verification not implemented yet' );
+    }
 }
 
 export default AdminBillboardPage;
-

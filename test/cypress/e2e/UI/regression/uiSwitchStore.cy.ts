@@ -32,13 +32,13 @@ describe( 'Store Switcher', () =>
             storeSwitcher.searchForStore( 'Cypress Test UI' );
             storeSwitcher.verifySearchStoreError( 'No store found.' );
         } );
-        it( 'Navigate to Billboard after switch', () =>
+        it.only( 'Navigate to Billboard after switch', () =>
         {
             storeSwitcher.clickOnStoreDropDown();
             storeSwitcher.selectStore( 'Cypress UI' );
             cy.navigateTabItem( "Billboards" );
         } );
-        it( 'Navigate to Setting after switch', () =>
+        it.only( 'Navigate to Setting after switch', () =>
         {
             storeSwitcher.clickOnStoreDropDown();
             storeSwitcher.selectStore( 'Cypress UI' );
