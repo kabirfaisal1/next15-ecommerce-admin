@@ -6,7 +6,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export default defineConfig( {
+  projectId: "h69q3m",
   e2e: {
+
     specPattern: 'test/cypress/**/**/*.cy.{js,jsx,ts,tsx}',
     downloadsFolder: 'test/cypress/downloads',
     screenshotOnRunFailure: false,
