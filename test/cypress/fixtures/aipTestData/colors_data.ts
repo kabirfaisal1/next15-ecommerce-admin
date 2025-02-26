@@ -1,12 +1,22 @@
 import { AdminAPIRequestKeys } from '@support/utilities/apiRequestKeys';
 
+ /** Options for running tests.
+ * - 'only': Run only this test.
+ * - 'skip': Skip this test.
+ */;
+type TestRunnerOptions = 'only' | 'skip';
+
 /**
  * Defines the structure of API test cases for Categories.
  */
+
 export interface TestData
 {
+    /**
+ * Optional: Specify if you want to run, skip, or mark the test as todo.
+ */
+    testRunner?: TestRunnerOptions;
     testDescription: string;
-    testRunner?: string;
     endpoint: string;
     method: string;
     requestKeys?: string[];
@@ -31,7 +41,6 @@ const STORE_ID = 'f8c96f0e-daa1-4e61-9fe4-3d1caf5db964';
  */
 export const TestList: TestData[] = [
     {
-
         testDescription: 'Create a new Color',
         endpoint: `/api/${STORE_ID}/colors`,
         method: 'POST',
@@ -101,6 +110,6 @@ export const TestList: TestData[] = [
         requestKeys: [ new AdminAPIRequestKeys().colorName, new AdminAPIRequestKeys().colorValue ],
         requestValues: [ 'cyAPIColore', 'D69ADE' ],
         expectedStatus: 400,
-        expectedError: 'Value must be a valid hex code (e.g., #FFFFFF).',
+        expectedError: 'Value must be a valid hex code (e.g., #FFFFFF). For more help, visit https://colorhunt.co/',
     },
 ];

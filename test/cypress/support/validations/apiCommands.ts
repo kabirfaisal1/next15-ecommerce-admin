@@ -25,7 +25,7 @@ declare global
              * @returns {Cypress.Chainable<string>} - The dynamically generated API endpoint.
              */
             generateAPIEndpoint (
-                type: 'stores' | 'billboards' | 'categories' | 'sizes',
+                type: 'stores' | 'billboards' | 'categories' | 'sizes' | 'colors',
                 testData: string,
                 parentId?: string,
                 orderBy?: 'ASC' | 'DESC'
@@ -53,6 +53,7 @@ Cypress.Commands.add(
             billboards: { tableName: 'Billboards', parentColumn: 'storeId', endpoint: `/api/${parentId}/billboards/` },
             categories: { tableName: 'Categories', parentColumn: 'storeId', endpoint: `/api/${parentId}/categories/` },
             sizes: { tableName: 'Sizes', parentColumn: 'storeId', endpoint: `/api/${parentId}/sizes/` },
+            colors: { tableName: 'Colors', parentColumn: 'storeId', endpoint: `/api/${parentId}/colors/` },
         };
 
         const { tableName, parentColumn, endpoint } = tableMap[ type ];
