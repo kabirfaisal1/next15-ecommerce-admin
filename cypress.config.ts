@@ -16,7 +16,15 @@ export default defineConfig( {
     viewportWidth: 1920,
     viewportHeight: 1080,
     supportFile: '**/support/e2e.ts',
-    // chromeWebSecurity: false,
+    retries: {
+      // Configure retry attempts for `cypress run`
+      // Default is 0
+      runMode: 1,
+      // Configure retry attempts for `cypress open`
+      // Default is 0
+      openMode: 0,
+    },
+    chromeWebSecurity: false,
     setupNodeEvents ( on, config )
     {
       const version = config.env.version || 'local';

@@ -13,6 +13,7 @@ class AdminColorsPage
         color_formInputField: () => cy.get( '[data-testid="color-NameInput"]' ),
         color_valueLabel: () => cy.get( '[data-testid="color-valueSubtitle"]' ),
         color_valueInput: () => cy.get( '[data-testid="color-valueInput"]' ),
+        color_valuePreview: () => cy.get( '[data-testid="color-value-preview"]', { timeout: 500 } ),
 
         color_submitButton: () => cy.get( '[data-testid="color-submitButton"]' ),
         colorDataTable: () => cy.get( '[data-testid="data-table"]' ),
@@ -52,12 +53,16 @@ class AdminColorsPage
      */
     enterColorValue ( value: string )
     {
-        cy.step( `Entering color value Label` );
+        cy.step( `Verifying color value Label` );
         this.elements.color_valueLabel().should( 'have.text', 'Color Value' );
 
         cy.step( `Entering color value: ${value}` );
         this.elements.color_valueInput().clear().type( value ).should( 'have.value', value );
+
+        cy.step( `Verifying color value Preview: ${value}` );
+        this.elements.color_valuePreview().should( 'exist' );
     }
+
 
     /**
      * Clicks the submit button and waits for the API response.

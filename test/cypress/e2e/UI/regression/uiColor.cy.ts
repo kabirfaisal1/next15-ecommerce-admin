@@ -25,8 +25,8 @@ describe( 'Store Colors Management', () =>
             cy.visit( `/${storeId}/colors` );
 
             adminColorsPage.clickOnAddColorButton( storeId );
-            adminColorsPage.enterColorName( 'cyCreateColors' );
-            adminColorsPage.enterColorValue( 'cyCreateSmall' );
+            adminColorsPage.enterColorName( 'cyCreateGreen' );
+            adminColorsPage.enterColorValue( '#809D3C' );
             adminColorsPage.clickOnSubmitButton( storeId );
         } );
 
@@ -36,8 +36,8 @@ describe( 'Store Colors Management', () =>
             cy.visit( `/${storeId}/colors` );
 
             const colorId = Cypress.env( 'colorId' );
-            adminColorsPage.actionModifyColor( 'cyCreateColors' );
-            adminColorsPage.enterColorName( 'cyUpdatedColors' );
+            adminColorsPage.actionModifyColor( 'cyCreateGreen' );
+            adminColorsPage.enterColorName( 'cyUpdateSage' );
             adminColorsPage.clickOnSubmitButton( storeId, colorId );
         } );
 
@@ -47,8 +47,8 @@ describe( 'Store Colors Management', () =>
             cy.visit( `/${storeId}/colors` );
 
             const colorId = Cypress.env( 'colorId' );
-            adminColorsPage.actionModifyColor( 'cyUpdatedColors' );
-            adminColorsPage.enterColorValue( 'cyUpdatedValue' );
+            adminColorsPage.actionModifyColor( 'cyUpdateSage' );
+            adminColorsPage.enterColorValue( '#8D77AB' );
             adminColorsPage.clickOnSubmitButton( storeId, colorId );
         } );
 
@@ -57,7 +57,7 @@ describe( 'Store Colors Management', () =>
             cy.step( 'Navigating to Colors page' );
             cy.visit( `/${storeId}/colors` );
 
-            adminColorsPage.actionDeleteColor( 'cyUpdatedColors' );
+            adminColorsPage.actionDeleteColor( 'cyUpdateSage' );
         } );
 
         context( 'Error Validation Tests', () =>
@@ -68,7 +68,7 @@ describe( 'Store Colors Management', () =>
                 cy.visit( `/${storeId}/colors/new` );
 
                 adminColorsPage.enterColorName( 'noValue' );
-                adminColorsPage.formErrorValidation( 'Value must be at least 3 characters long' );
+                adminColorsPage.formErrorValidation( 'Value must be at least 4 characters long' );
             } );
 
             it( 'Fails when creating a Color without a Name', () =>
@@ -86,18 +86,18 @@ describe( 'Store Colors Management', () =>
                 cy.visit( `/${storeId}/colors/new` );
 
                 adminColorsPage.enterColorName( 'cy' );
-                adminColorsPage.enterColorValue( 'LessThanThree' );
+                adminColorsPage.enterColorValue( '#F29F58' );
                 adminColorsPage.formErrorValidation( 'Name must be at least 3 characters long' );
             } );
 
-            it( 'Fails when creating a Color Value > 15 characters', () =>
+            it( 'Fails when creating a Color without value hex code (#)', () =>
             {
                 cy.step( 'Navigating to new Color form' );
                 cy.visit( `/${storeId}/colors/new` );
 
-                adminColorsPage.enterColorName( 'cyBoundary' );
-                adminColorsPage.enterColorValue( 'thisIsCypressTest' );
-                adminColorsPage.formErrorValidation( 'Value must not exceed 15 characters' );
+                adminColorsPage.enterColorName( 'withOut#' );
+                adminColorsPage.enterColorValue( 'F29F58' );
+                adminColorsPage.formErrorValidation( 'Value must be a valid hex code (e.g., #FFFFFF). For more help, visit https://colorhunt.co/' );
             } );
         } );
     } );
