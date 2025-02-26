@@ -1,9 +1,9 @@
-import AdminSizesPage from '@support/test_components/pages/uiAdminSizesPage';
+import AdminColorsPage from '@support/test_components/pages/uiAdminColorsPage';
 
 const storeId = '00ea910b-ecf0-4d1e-bcb6-5cb72313bb46';
-const adminSizesPage = new AdminSizesPage();
+const adminColorsPage = new AdminColorsPage();
 
-describe( 'Store Sizes Management', () =>
+describe( 'Store Colors Management', () =>
 {
     beforeEach( () =>
     {
@@ -11,93 +11,93 @@ describe( 'Store Sizes Management', () =>
         cy.loginToAuth0( 'Regular' );
     } );
 
-    context( 'Store Size Admin Workflow UI', () =>
+    context( 'Store Color Admin Workflow UI', () =>
     {
-        it( 'User navigates to Sizes', () =>
+        it( 'User navigates to Colors', () =>
         {
-            cy.step( 'Navigating to Sizes tab' );
-            cy.navigateTabItem( 'Sizes' );
+            cy.step( 'Navigating to Colors tab' );
+            cy.navigateTabItem( 'Colors' );
         } );
 
-        it( 'User creates a new Size', () =>
+        it( 'User creates a new Color', () =>
         {
-            cy.step( 'Navigating to Sizes page' );
-            cy.visit( `/${storeId}/sizes` );
+            cy.step( 'Navigating to Colors page' );
+            cy.visit( `/${storeId}/colors` );
 
-            adminSizesPage.clickOnAddSizeButton( storeId );
-            adminSizesPage.enterSizeName( 'cyCreateSizes' );
-            adminSizesPage.enterSizeValue( 'cyCreateSmall' );
-            adminSizesPage.clickOnSubmitButton( storeId );
+            adminColorsPage.clickOnAddColorButton( storeId );
+            adminColorsPage.enterColorName( 'cyCreateColors' );
+            adminColorsPage.enterColorValue( 'cyCreateSmall' );
+            adminColorsPage.clickOnSubmitButton( storeId );
         } );
 
-        it( 'User updates Size Name', () =>
+        it( 'User updates Color Name', () =>
         {
-            cy.step( 'Navigating to Sizes page' );
-            cy.visit( `/${storeId}/sizes` );
+            cy.step( 'Navigating to Colors page' );
+            cy.visit( `/${storeId}/colors` );
 
-            const sizeId = Cypress.env( 'sizeId' );
-            adminSizesPage.actionModifySize( 'cyCreateSizes' );
-            adminSizesPage.enterSizeName( 'cyUpdatedSizes' );
-            adminSizesPage.clickOnSubmitButton( storeId, sizeId );
+            const colorId = Cypress.env( 'colorId' );
+            adminColorsPage.actionModifyColor( 'cyCreateColors' );
+            adminColorsPage.enterColorName( 'cyUpdatedColors' );
+            adminColorsPage.clickOnSubmitButton( storeId, colorId );
         } );
 
-        it( 'User updates Size Value', () =>
+        it( 'User updates Color Value', () =>
         {
-            cy.step( 'Navigating to Sizes page' );
-            cy.visit( `/${storeId}/sizes` );
+            cy.step( 'Navigating to Colors page' );
+            cy.visit( `/${storeId}/colors` );
 
-            const sizeId = Cypress.env( 'sizeId' );
-            adminSizesPage.actionModifySize( 'cyUpdatedSizes' );
-            adminSizesPage.enterSizeValue( 'cyUpdatedValue' );
-            adminSizesPage.clickOnSubmitButton( storeId, sizeId );
+            const colorId = Cypress.env( 'colorId' );
+            adminColorsPage.actionModifyColor( 'cyUpdatedColors' );
+            adminColorsPage.enterColorValue( 'cyUpdatedValue' );
+            adminColorsPage.clickOnSubmitButton( storeId, colorId );
         } );
 
-        it( 'User deletes a Size', () =>
+        it( 'User deletes a Color', () =>
         {
-            cy.step( 'Navigating to Sizes page' );
-            cy.visit( `/${storeId}/sizes` );
+            cy.step( 'Navigating to Colors page' );
+            cy.visit( `/${storeId}/colors` );
 
-            adminSizesPage.actionDeleteSize( 'cyUpdatedSizes' );
+            adminColorsPage.actionDeleteColor( 'cyUpdatedColors' );
         } );
 
         context( 'Error Validation Tests', () =>
         {
-            it( 'Fails when creating a Size without a Size Value', () =>
+            it( 'Fails when creating a Color without a Color Value', () =>
             {
-                cy.step( 'Navigating to new Size form' );
-                cy.visit( `/${storeId}/sizes/new` );
+                cy.step( 'Navigating to new Color form' );
+                cy.visit( `/${storeId}/colors/new` );
 
-                adminSizesPage.enterSizeName( 'noValue' );
-                adminSizesPage.formErrorValidation( 'Value must be at least 3 characters long' );
+                adminColorsPage.enterColorName( 'noValue' );
+                adminColorsPage.formErrorValidation( 'Value must be at least 3 characters long' );
             } );
 
-            it( 'Fails when creating a Size without a Name', () =>
+            it( 'Fails when creating a Color without a Name', () =>
             {
-                cy.step( 'Navigating to new Size form' );
-                cy.visit( `/${storeId}/sizes/new` );
+                cy.step( 'Navigating to new Color form' );
+                cy.visit( `/${storeId}/colors/new` );
 
-                adminSizesPage.enterSizeValue( 'noNme' );
-                adminSizesPage.formErrorValidation( 'Name must be at least 3 characters long' );
+                adminColorsPage.enterColorValue( 'noNme' );
+                adminColorsPage.formErrorValidation( 'Name must be at least 3 characters long' );
             } );
 
-            it( 'Fails when creating a Size with a 2-character Name', () =>
+            it( 'Fails when creating a Color with a 2-character Name', () =>
             {
-                cy.step( 'Navigating to new Size form' );
-                cy.visit( `/${storeId}/sizes/new` );
+                cy.step( 'Navigating to new Color form' );
+                cy.visit( `/${storeId}/colors/new` );
 
-                adminSizesPage.enterSizeName( 'cy' );
-                adminSizesPage.enterSizeValue( 'LessThanThree' );
-                adminSizesPage.formErrorValidation( 'Name must be at least 3 characters long' );
+                adminColorsPage.enterColorName( 'cy' );
+                adminColorsPage.enterColorValue( 'LessThanThree' );
+                adminColorsPage.formErrorValidation( 'Name must be at least 3 characters long' );
             } );
 
-            it( 'Fails when creating a Size Value > 15 characters', () =>
+            it( 'Fails when creating a Color Value > 15 characters', () =>
             {
-                cy.step( 'Navigating to new Size form' );
-                cy.visit( `/${storeId}/sizes/new` );
+                cy.step( 'Navigating to new Color form' );
+                cy.visit( `/${storeId}/colors/new` );
 
-                adminSizesPage.enterSizeName( 'cyBoundary' );
-                adminSizesPage.enterSizeValue( 'thisIsCypressTest' );
-                adminSizesPage.formErrorValidation( 'Value must not exceed 15 characters' );
+                adminColorsPage.enterColorName( 'cyBoundary' );
+                adminColorsPage.enterColorValue( 'thisIsCypressTest' );
+                adminColorsPage.formErrorValidation( 'Value must not exceed 15 characters' );
             } );
         } );
     } );
