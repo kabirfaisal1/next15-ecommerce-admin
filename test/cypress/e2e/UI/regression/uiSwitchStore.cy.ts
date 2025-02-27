@@ -7,8 +7,7 @@ describe( 'Store Switcher Functionality', () =>
 
     beforeEach( () =>
     {
-        cy.clearCookies();
-        cy.clearLocalStorage();
+
         cy.step( 'Visiting the base URL and logging in' );
         cy.visit( '/' );
         cy.loginToAuth0( 'Regular' );
