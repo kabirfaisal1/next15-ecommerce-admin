@@ -82,4 +82,12 @@ describe( 'User Test sizes', () =>
             } );
         } );
     } );
+
+    afterEach( () =>
+    {
+        cy.step( 'Cleaning up test data' );
+        cy.clearCookies();
+        cy.clearLocalStorage();
+    }
+    );
 } );

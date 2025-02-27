@@ -101,4 +101,11 @@ describe( 'Store Colors Management', () =>
             } );
         } );
     } );
+    afterEach( () =>
+    {
+        cy.step( 'Cleaning up test data' );
+        cy.clearCookies();
+        cy.clearLocalStorage();
+    }
+    );
 } );

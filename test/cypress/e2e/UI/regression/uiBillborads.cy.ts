@@ -11,6 +11,7 @@ describe( 'Store Billboard', () =>
     let token: string = '';
     beforeEach( () =>
     {
+
         cy.visit( '/' );
         cy.loginToAuth0( "Regular" );
 
@@ -68,7 +69,11 @@ describe( 'Store Billboard', () =>
         } );
 
     } );
-
-
-
+    afterEach( () =>
+    {
+        cy.step( 'Cleaning up test data' );
+        cy.clearCookies();
+        cy.clearLocalStorage();
+    }
+    );
 } );

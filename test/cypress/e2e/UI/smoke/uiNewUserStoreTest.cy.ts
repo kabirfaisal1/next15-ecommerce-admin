@@ -134,4 +134,12 @@ describe( 'No Store Admin User', () =>
         } );
 
     } );
+
+    afterEach( () =>
+    {
+        cy.step( 'Cleaning up test data' );
+        cy.clearCookies();
+        cy.clearLocalStorage();
+    }
+    );
 } );

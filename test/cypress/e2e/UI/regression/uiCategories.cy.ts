@@ -90,4 +90,11 @@ describe( 'Store Billboard', () =>
             } );
         } );
     } );
+    afterEach( () =>
+    {
+        cy.step( 'Cleaning up test data' );
+        cy.clearCookies();
+        cy.clearLocalStorage();
+    }
+    );
 } );
