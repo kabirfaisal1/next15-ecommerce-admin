@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "open:CypressDashboard": "npx cypress open --env version=local",
-    "cypressAPI:Headless": "npx cypress run --spec 'test/cypress/e2e/api/**/*.cy.{js,ts}' --env version=local"
+    "cypressAPI:Headless": "npx cypress run --spec 'test/cypress/e2e/api/**/*.cy.{js,ts}' --env version=local --record --key 1d56e659-3649-4919-af23-a9130a7af2ac",
+    "cypressUI:Headless": "npx cypress run --spec 'test/cypress/e2e/ui/**/*.cy.{js,ts}' --env version=local --record --key 1d56e659-3649-4919-af23-a9130a7af2ac"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.9.6",
@@ -54,7 +55,7 @@
     "@types/pg": "^8.11.10",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "cypress": "^14.0.2",
+    "cypress": "^14.1.0",
     "cypress-iframe": "^1.0.1",
     "cypress-plugin-steps": "^1.1.1",
     "eslint": "^9.18.0",

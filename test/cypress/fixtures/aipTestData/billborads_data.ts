@@ -1,11 +1,19 @@
 import { AdminAPIRequestKeys } from '@support/utilities/apiRequestKeys';
+ /** Options for running tests.
+ * - 'only': Run only this test.
+ * - 'skip': Skip this test.
+ */;
+type TestRunnerOptions = 'only' | 'skip';
 
 /**
  * Defines the structure of API test cases for Billboards.
  */
 export interface TestData
 {
-    testRunner?: string;
+    /**
+ * Optional: Specify if you want to run, skip, or mark the test as todo.
+ */
+    testRunner?: TestRunnerOptions;
     testDescription: string;
     endpoint: string;
     method: string;

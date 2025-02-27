@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export default defineConfig( {
+  projectId: "h69q3m",
   e2e: {
     specPattern: 'test/cypress/**/**/*.cy.{js,jsx,ts,tsx}',
     downloadsFolder: 'test/cypress/downloads',
@@ -14,6 +15,14 @@ export default defineConfig( {
     viewportWidth: 1920,
     viewportHeight: 1080,
     supportFile: '**/support/e2e.ts',
+    retries: {
+      // Configure retry attempts for `cypress run`
+      // Default is 0
+      runMode: 2,
+      // Configure retry attempts for `cypress open`
+      // Default is 0
+      openMode: 0,
+    },
     // chromeWebSecurity: false,
     setupNodeEvents ( on, config )
     {

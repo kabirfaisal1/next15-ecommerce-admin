@@ -9,11 +9,31 @@ declare global
     {
         interface Chainable
         {
+            /**
+             * Validates the response body against expected results.
+             * @param {any} response - The actual API response body.
+             * @param {any} expectedResults - The expected response values to validate.
+             */
             validateResponseBody ( response: any, expectedResults: any ): void;
-            generateAPIEndpoint ( type: 'stores' | 'billboards' | 'categories' | 'sizes', testData: string, parentId?: string, orderBy?: 'ASC' | 'DESC' ): Chainable;
+
+            /**
+             * Generates an API endpoint dynamically based on provided parameters.
+             * @param {'stores' | 'billboards' | 'categories' | 'sizes'} type - The type of API resource.
+             * @param {string} testData - The test data, either a static value or 'dynamic' for database-driven values.
+             * @param {string} [parentId] - Optional parent ID to fetch data dynamically.
+             * @param {'ASC' | 'DESC'} [orderBy='DESC'] - The sorting order of fetched records.
+             * @returns {Cypress.Chainable<string>} - The dynamically generated API endpoint.
+             */
+            generateAPIEndpoint (
+                type: 'stores' | 'billboards' | 'categories' | 'sizes' | 'colors',
+                testData: string,
+                parentId?: string,
+                orderBy?: 'ASC' | 'DESC'
+            ): Chainable<string>;
         }
     }
 }
+
 
 // 🛠️ **Reusable SQL Query Generator**
 const generateSQLQuery = ( tableName: string, parentColumn: string, parentId?: string, orderBy: string = 'DESC' ) =>
@@ -33,6 +53,7 @@ Cypress.Commands.add(
             billboards: { tableName: 'Billboards', parentColumn: 'storeId', endpoint: `/api/${parentId}/billboards/` },
             categories: { tableName: 'Categories', parentColumn: 'storeId', endpoint: `/api/${parentId}/categories/` },
             sizes: { tableName: 'Sizes', parentColumn: 'storeId', endpoint: `/api/${parentId}/sizes/` },
+            colors: { tableName: 'Colors', parentColumn: 'storeId', endpoint: `/api/${parentId}/colors/` },
         };
 
         const { tableName, parentColumn, endpoint } = tableMap[ type ];
@@ -122,4 +143,3 @@ Cypress.Commands.add( 'validateResponseBody', ( response: any, expectedResults: 
         }
     } );
 } );
-

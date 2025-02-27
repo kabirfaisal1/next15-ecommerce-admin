@@ -11,6 +11,7 @@ describe( 'Store Billboard', () =>
     let token: string = '';
     beforeEach( () =>
     {
+
         cy.visit( '/' );
         cy.loginToAuth0( "Regular" );
 
@@ -43,8 +44,6 @@ describe( 'Store Billboard', () =>
         } );
         it( 'User update store', () =>
         {
-
-
             cy.visit( `/${storeId}/billboards` );
             adminBillboardPage.verifyBillboardHeaders( storeId );
 
@@ -63,7 +62,6 @@ describe( 'Store Billboard', () =>
 
         it( 'User delete store', () =>
         {
-
             cy.visit( `/${storeId}/billboards` );
             adminBillboardPage.verifyBillboardHeaders( storeId );
             adminBillboardPage.actionDeleteBillboard( 'ToBeDeleted' );
@@ -71,7 +69,11 @@ describe( 'Store Billboard', () =>
         } );
 
     } );
-
-
-
+    afterEach( () =>
+    {
+        cy.step( 'Cleaning up test data' );
+        cy.clearCookies();
+        cy.clearLocalStorage();
+    }
+    );
 } );

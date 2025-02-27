@@ -1,30 +1,16 @@
 ## Project Summary
 
-The Next.js 15 App Router is a powerful tool that enables you to easily create complex client-side routing in Next.js applications. This project uses the Next.js 15 App Router to build a fully functional E-Commerce platform with an Admin Dashboard, providing seamless navigation and an enhanced user experience.
+The Next.js 15 App Router is a powerful tool that enables the creation of complex client-side routing in Next.js applications. This project leverages the Next.js 15 App Router to build a fully functional E-Commerce platform with an Admin Dashboard, providing seamless navigation and an enhanced user experience.
 
-## Tools and Libraries Used <TODO: add icons and link>
+## Table of Contents
 
-This project leverages a variety of tools and libraries to achieve its functionality:
+- [Project Summary](#project-summary)
+- [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
+- [Plugins and Setup](#plugins-and-setup)
+- [Running Tests](#running-tests)
 
-- `@clerk`: 
-- `@prisma`: 
-- `@radix`:
-- `axios`
-- `class-variance-authority`
-- `clsx`
-- `cmdk`
-- `lucide-react`
-- `next`
-- `next-cloudinary`: 
-- `prisma`: 
-- `react`: 
-- `tailwind`
-- `zod`:
-- `zustand`: 
-- `cypress`
-- `thunder client`
-
-## Getting Started
+## **![Getting Started](https://img.shields.io/badge/Getting%20Started-2D3748?style=for-the-badge&logo=rocket&logoColor=white)**
 
 First, run the development server:
 
@@ -44,17 +30,73 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## **![Project Structure](https://img.shields.io/badge/Project%20Structure-2D3748?style=for-the-badge&logo=structure&logoColor=white)**
 
-To learn more about Next.js, take a look at the following resources:
+The project is organized into several key directories and files:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `app/`: Contains the main application components and pages.
+- `components/`: Reusable UI components.
+- `lib/`: Utility functions and libraries.
+- `pages/`: Traditional Next.js pages.
+- `public/`: Static assets like images and fonts.
+- `styles/`: Global styles and CSS files.
+- `prisma/`: Prisma schema and migration files.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## **![Plugins and Setup](https://img.shields.io/badge/Plugins%20and%20Setup-2D3748?style=for-the-badge&logo=plugin&logoColor=white)**
 
-## Deploy on Vercel
+This project uses several plugins to enhance functionality. Below are the plugins and steps to set them up:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **![Clerk](https://img.shields.io/badge/Clerk-2D3748?style=for-the-badge&logo=clerk&logoColor=white)**:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Install: `npm install @clerk/clerk-sdk-node`
+- Setup: Follow the [Clerk documentation](https://docs.clerk.dev/) to configure authentication.
+
+2. **![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)** : 
+
+- Setup: Follow the [Prisma documentation](prisma/readme.md) to configure your database and generate the Prisma client.
+
+3. **![Axios](https://img.shields.io/badge/Axios-2D3748?style=for-the-badge&logo=axios&logoColor=white)**:
+
+- Install: `npm install axios`
+- Setup: Follow the [Axios documentation](https://axios-http.com/docs/intro) to configure HTTP requests.
+
+4. **![Next Cloudinary](https://img.shields.io/badge/Next%20Cloudinary-2D3748?style=for-the-badge&logo=cloudinary&logoColor=white)**:
+
+- Install: `npm install next-cloudinary`
+- Setup: Follow the [Next Cloudinary documentation](https://next-cloudinary.spacejelly.dev/) to configure image handling.
+
+5. **![Zod](https://img.shields.io/badge/Zod-2D3748?style=for-the-badge&logo=zod&logoColor=white)**:
+
+- Install: `npm install zod`
+- Setup: Follow the [Zod documentation](https://zod.dev/) to configure schema validation.
+
+6. **![Zustand](https://img.shields.io/badge/Zustand-2D3748?style=for-the-badge&logo=zustand&logoColor=white)**:
+
+- Install: `npm install zustand`
+- Setup: Follow the [Zustand documentation](https://docs.pmnd.rs/zustand/getting-started/introduction) to configure state management.
+
+
+
+## **![Running Tests](https://img.shields.io/badge/Tests-2D3748?style=for-the-badge&logo=testing-library&logoColor=white)** //TODO Move this inside test folder and map it back
+
+This project uses Cypress for end-to-end testing and Thunder Client for API testing.
+
+1. **![Cypress](https://img.shields.io/badge/Cypress-2D3748?style=for-the-badge&logo=cypress&logoColor=white)**:
+- Install: `npm install cypress`
+- Setup: Run `npx cypress open` to open the Cypress test runner.
+- Write tests in the `cypress/integration` directory.
+
+2. **![Thunder Client](https://img.shields.io/badge/Thunder%20Client-2D3748?style=for-the-badge&logo=thunder-client&logoColor=white)**:
+- Install: Thunder Client is a VSCode extension. Install it from the VSCode marketplace.
+- Setup: Create and manage API requests directly within VSCode using Thunder Client.
+- Write tests in the Thunder Client interface within VSCode.
+
+Run the tests using the following command:
+
+```bash
+npm run test
+```
+
+This will execute all the configured tests and provide a report of the results.
+
+
