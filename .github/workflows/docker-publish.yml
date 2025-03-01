@@ -13,7 +13,7 @@ jobs:
 
       - name: Create .env file from GitHub Secret
         run: |
-          echo "${{ secrets.APP_SECRET }}" > .env
+          printf "%s" "${{ secrets.APP_SECRET }}" > .env
           echo "=== Debug: .env File Contents ==="
           cat .env  # Show raw contents of .env file
 
