@@ -14,13 +14,14 @@ jobs:
       - name: Create .env file from GitHub Secret
         run: |
           echo "${{ secrets.APP_SECRET }}" > .env
-          cat .env  # Debug: Show contents of .env
+          echo "=== Debug: .env File Contents ==="
+          cat .env  # Show raw contents of .env file
 
-      - name: Extract environment variables from .env
+      - name: Extract and Print Environment Variables
         run: |
           export $(grep -v '^#' .env | xargs)
-          echo "DOCKER_USERNAME=$DOCKER_USERNAME"
-          echo "DOCKER_CONTAINER_NAME=$DOCKER_CONTAINER_NAME"
+          echo "=== Debug: Extracted Environment Variables ==="
+          env | grep -E 'DOCKER_USERNAME|DOCKER_CONTAINER_NAME'
 
       - name: Log in to Docker Hub
         run: |
