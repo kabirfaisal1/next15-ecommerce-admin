@@ -1,0 +1,42 @@
+name: Build and Push Docker Image
+
+on:
+  workflow_dispatch:  # Allows manual trigger from any branch
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create .env file from GitHub Secret
+        run: |
+          echo "${{ secrets.APP_SECRET }}" > .env
+          cat .env  # Debug: Show contents of .env
+
+      - name: Extract environment variables from .env
+        run: |
+          export $(grep -v '^#' .env | xargs)
+          echo "DOCKER_USERNAME=$DOCKER_USERNAME"
+          echo "DOCKER_CONTAINER_NAME=$DOCKER_CONTAINER_NAME"
+
+      - name: Log in to Docker Hub
+        run: |
+          export $(grep -v '^#' .env | xargs)
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - name: Build Docker Image (Include .env in Image)
+        run: |
+          export $(grep -v '^#' .env | xargs)
+          docker build -f docker/Dockerfile.stage \
+            --build-arg DOCKER_CONTAINER_NAME="$DOCKER_CONTAINER_NAME" \
+            --build-arg DOCKER_USERNAME="$DOCKER_USERNAME" \
+            --build-arg DOCKER_PASSWORD="$DOCKER_PASSWORD" \
+            -t "$DOCKER_CONTAINER_NAME":latest .
+
+      - name: Push Docker Image
+        run: |
+          export $(grep -v '^#' .env | xargs)
+          docker push "$DOCKER_CONTAINER_NAME":latest
