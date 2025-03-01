@@ -6,6 +6,7 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 120  # Automatically stop after 2 hours
 
     steps:
       - name: Restrict Execution to Repository Owner
@@ -47,3 +48,20 @@ jobs:
         run: |
           export $(grep -v '^#' .env | xargs)
           docker push "$DOCKER_CONTAINER_NAME":latest
+
+      - name: Print Deployment Instructions
+        run: |
+          export $(grep -v '^#' .env | xargs)
+          echo "================ Deployment Instructions ================"
+          echo "To run this Docker container on another system, follow these steps:"
+          echo ""
+          echo "1. Ensure Docker is installed on your system."
+          echo "2. Log in to Docker Hub (if required):"
+          echo "   docker login -u \"$DOCKER_USERNAME\""
+          echo "3. Pull the latest Docker image:"
+          echo "   docker pull \"$DOCKER_CONTAINER_NAME\":latest"
+          echo "4. Run the container:"
+          echo "   docker run -d --name \"$DOCKER_CONTAINER_NAME\" -p 8000:8000 \"$DOCKER_CONTAINER_NAME\":latest"
+          echo ""
+          echo "Note: Modify the port mapping (-p 8000:8000) if needed."
+          echo "========================================================="
