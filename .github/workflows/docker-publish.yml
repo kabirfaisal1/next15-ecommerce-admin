@@ -13,24 +13,43 @@ jobs:
 
       - name: Create .env file from GitHub Secret
         run: |
-          printf "%s" "${{ secrets.APP_SECRET }}" > .env
+          cat <<EOF > .env
+          ${{ secrets.APP_SECRET }}
+          EOF
+
           echo "=== Debug: .env File Contents ==="
           cat .env  # Show raw contents of .env file
 
       - name: Extract and Print Environment Variables
         run: |
-          export $(grep -v '^#' .env | xargs)
-          echo "=== Debug: Extracted Environment Variables ==="
-          env | grep -E 'DOCKER_USERNAME|DOCKER_CONTAINER_NAME'
+          echo "=== Debug: Parsed Environment Variables ==="
+          while IFS='=' read -r key value || [ -n "$key" ]; do
+            if [[ ! -z "$key" && ! "$key" =~ ^# ]]; then
+              echo "$key=$value"
+            fi
+          done < .env
+
+      - name: Load and Export Environment Variables
+        run: |
+          set -a
+          source .env || echo "Warning: Some variables may not have loaded properly"
+          set +a
+
+          echo "=== Debug: Confirm Loaded Variables ==="
+          env | grep -E 'DOCKER_USERNAME|DOCKER_CONTAINER_NAME|CYPRESS_RECORD_KEY|MY_SECRET'
 
       - name: Log in to Docker Hub
         run: |
-          export $(grep -v '^#' .env | xargs)
+          set -a
+          source .env
+          set +a
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
       - name: Build Docker Image (Include .env in Image)
         run: |
-          export $(grep -v '^#' .env | xargs)
+          set -a
+          source .env
+          set +a
           docker build -f docker/Dockerfile.stage \
             --build-arg DOCKER_CONTAINER_NAME="$DOCKER_CONTAINER_NAME" \
             --build-arg DOCKER_USERNAME="$DOCKER_USERNAME" \
@@ -39,5 +58,7 @@ jobs:
 
       - name: Push Docker Image
         run: |
-          export $(grep -v '^#' .env | xargs)
+          set -a
+          source .env
+          set +a
           docker push "$DOCKER_CONTAINER_NAME":latest
