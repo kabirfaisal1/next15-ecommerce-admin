@@ -53,7 +53,7 @@ jobs:
       # Log in to Docker Hub
       - name: Log in to Docker Hub
         run: |
-          echo "${{ secrets.APP_SECRET.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.APP_SECRET.DOCKER_USERNAME }}" --password-stdin
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
 
       # Build Docker Image (Include .env in Image)
       - name: Build Docker Image (Include .env in Image)
