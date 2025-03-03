@@ -44,11 +44,7 @@ docker --version
 
 ```
 Project
-│── docker
-│   │── Dockerfile.local
-│   │── Dockerfile.stage
-│   │── Dockerfile.prod
-│── docker-compose.yml
+│── Dockerfile
 │── .dockerignore
 ```
 
