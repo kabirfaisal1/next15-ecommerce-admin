@@ -1,4 +1,4 @@
-name: Stop, and Cleanup Docker Container
+name: Stop, and Cleanup Stage Docker Container
 
 on:
   workflow_dispatch:
