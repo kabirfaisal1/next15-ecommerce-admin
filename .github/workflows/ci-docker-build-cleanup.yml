@@ -38,12 +38,6 @@ jobs:
           echo "::add-mask::$DOCKER_PASSWORD"
           echo "DOCKER_PASSWORD set."
 
-          # Validate environment variables
-          if [ -z "$DOCKER_USERNAME" ] || [ -z "$DOCKER_CONTAINER_NAME" ] || [ -z "$DOCKER_PASSWORD" ]; then
-            echo "ERROR: Missing required environment variables."
-            exit 1
-          fi
-
       # Log in to Docker Hub
       - name: Log in to Docker Hub
         run: |
