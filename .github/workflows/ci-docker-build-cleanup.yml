@@ -26,12 +26,6 @@ jobs:
         run: |
           echo "${{ secrets.APP_SECRET }}" > .env
           echo "Generated .env file:"
-         
-      #TODO Delete
-      - name: Debug .env file
-        run: |
-          echo "Contents of .env file:"
-          cat .env  # Debugging output
 
       # Extract and Validate Environment Variables
       - name: Extract and Validate Environment Variables
@@ -39,15 +33,13 @@ jobs:
           set -a
           source .env
           set +a
-          echo "DOCKER_USERNAME is set: ${DOCKER_USERNAME}"
-          echo "DOCKER_PASSWORD is set: ${DOCKER_PASSWORD}"
           echo "DOCKER_IMAGE_NAME=${DOCKER_CONTAINER_NAME}"
 
-       
       # Log in to Docker Hub
       - name: Log in to Docker Hub
         run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            echo "Logged in to Docker Hub as ${{ secrets.DOCKER_USERNAME }}"
 
       # Build Docker Image (Include .env in Image)
       - name: Build Docker Image (Include .env in Image)
@@ -59,8 +51,8 @@ jobs:
 
           docker build -f docker/Dockerfile.stage \
             --build-arg DOCKER_CONTAINER_NAME="$DOCKER_CONTAINER_NAME" \
-            --build-arg DOCKER_USERNAME="$DOCKER_USERNAME" \
-            --build-arg DOCKER_PASSWORD="$DOCKER_PASSWORD" \
+            --build-arg DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}" \
+            --build-arg DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}" \
             -t "$DOCKER_CONTAINER_NAME:latest" .
 
       # Run Container for Debugging (Check Logs)
@@ -110,7 +102,7 @@ jobs:
           echo ""
           echo "1. Ensure Docker is installed on your system."
           echo "2. Log in to Docker Hub (if required):"
-          echo "   docker login -u $DOCKER_USERNAME"
+          echo "   docker login -u ${{ secrets.DOCKER_USERNAME }}"
           echo "3. Pull the latest Docker image:"
           echo "   docker pull $DOCKER_CONTAINER_NAME:latest"
           echo "4. Run the container:"
