@@ -55,32 +55,6 @@ jobs:
             --build-arg DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}" \
             -t "$DOCKER_CONTAINER_NAME:latest" .
 
-      # Run Container for Debugging (Check Logs)
-      - name: Run Container for Debugging (Check Logs)
-        run: |
-          echo "Running container to check if it exits immediately..."
-          CONTAINER_NAME="next15_container"
-          IMAGE_NAME="$DOCKER_CONTAINER_NAME:latest"
-
-          # Start container
-          CONTAINER_ID=$(docker run -d --name $CONTAINER_NAME -p 8000:8000 $IMAGE_NAME)
-
-          # Save container ID to a file
-          echo "$CONTAINER_ID" > container_id.txt
-
-          # Wait for container to stabilize
-          sleep 5
-          echo "Container Logs:"
-          docker logs $CONTAINER_ID || echo "No logs available."
-
-          # Check if container is still running
-          STATUS=$(docker inspect -f '{{.State.Status}}' $CONTAINER_ID)
-          if [ "$STATUS" != "running" ]; then
-            echo "ERROR: Container exited unexpectedly."
-            docker logs $CONTAINER_ID
-            exit 1
-          fi
-
       # Upload Container ID for Stop Workflow
       - name: Upload Container ID for Stop Workflow
         uses: actions/upload-artifact@v4
