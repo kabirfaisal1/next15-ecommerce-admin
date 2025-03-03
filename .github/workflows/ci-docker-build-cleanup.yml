@@ -1,7 +1,7 @@
-name: Build and Push Docker Image for Stage
+name: Build, Push, Stop, and Cleanup Docker Container
 
 on:
-  workflow_dispatch:  # Allows manual trigger from any branch
+  workflow_dispatch:  # Allows manual trigger
 
 jobs:
   build-and-push:
@@ -62,6 +62,9 @@ jobs:
           # Start container
           CONTAINER_ID=$(docker run -d --name $CONTAINER_NAME -p 8000:8000 $IMAGE_NAME)
 
+          # Save container ID to a file
+          echo "$CONTAINER_ID" > container_id.txt
+
           # Wait for container to stabilize
           sleep 5
           echo "Container Logs:"
@@ -75,9 +78,11 @@ jobs:
             exit 1
           fi
 
-          # Cleanup
-          docker stop $CONTAINER_ID
-          docker rm $CONTAINER_ID
+      - name: Upload Container ID for Stop Workflow
+        uses: actions/upload-artifact@v3
+        with:
+          name: container-id
+          path: container_id.txt
 
       - name: Push Docker Image
         run: |
@@ -99,3 +104,42 @@ jobs:
           echo ""
           echo "Note: Modify the port mapping (-p 8000:8000) if needed."
           echo "========================================================="
+
+  stop-and-cleanup:
+    needs: build-and-push  # Ensures this runs after build-and-push job
+    runs-on: ubuntu-latest
+    timeout-minutes: 5  # Safety limit for cleanup
+
+    steps:
+      - name: Download Container ID
+        uses: actions/download-artifact@v3
+        with:
+          name: container-id
+
+      - name: Read Container ID
+        run: |
+          CONTAINER_ID=$(cat container_id.txt)
+          echo "Stopping container: $CONTAINER_ID"
+
+      - name: Stop and Remove Container
+        run: |
+          CONTAINER_ID=$(cat container_id.txt)
+
+          if [ -n "$CONTAINER_ID" ]; then
+            echo "Stopping container..."
+            docker stop "$CONTAINER_ID" || echo "Container already stopped."
+
+            echo "Removing container..."
+            docker rm "$CONTAINER_ID" || echo "Container already removed."
+          else
+            echo "No container ID found!"
+          fi
+
+      - name: Remove Docker Image
+        run: |
+          export $(grep -v '^#' .env | xargs)
+          echo "Removing Docker image: $DOCKER_CONTAINER_NAME:latest"
+          docker rmi "$DOCKER_CONTAINER_NAME:latest" || echo "Image already removed."
+
+      - name: Cleanup Container ID File
+        run: rm -f container_id.txt
