@@ -56,13 +56,13 @@ jobs:
           set -a
           source .env
           set +a
-          echo "Building Docker image: ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
+          echo "Building Docker image: $DOCKER_CONTAINER_NAME:latest"
 
           docker build -f docker/Dockerfile.stage \
             --build-arg DOCKER_CONTAINER_NAME="${DOCKER_CONTAINER_NAME}" \
             --build-arg DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}" \
             --build-arg DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}" \
-            -t "${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest" .
+            -t "$DOCKER_CONTAINER_NAME:latest" .
 
       # Upload Container ID for Stop Workflow
       - name: Upload Container ID for Stop Workflow
