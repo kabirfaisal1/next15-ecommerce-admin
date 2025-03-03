@@ -69,8 +69,8 @@ jobs:
         run: |
           docker images
           echo "${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest" > container_id.txt
-        uses: actions/upload-artifact@v4
-        with:
+          uses: actions/upload-artifact@v4
+          with:
           name: container-id
           path: container_id.txt
 
