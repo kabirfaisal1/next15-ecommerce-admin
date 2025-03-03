@@ -1,4 +1,4 @@
-name: Stop, and Cleanup Stage Container
+name: Stop, and Cleanup Docker Container
 
 on:
   workflow_dispatch:
@@ -29,14 +29,17 @@ jobs:
             echo "No container found with name $CONTAINER_NAME. Skipping stop and remove."
           fi
 
-      # Remove Docker Image if it exists
+      # Remove Docker Image if it exists, and ignore "No such image" error
       - name: Remove Docker Image
         run: |
           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/next15-ecommerce:stage"
 
-          if docker images -q "$IMAGE_NAME"; then
-            echo "Removing Docker image..."
-            docker rmi "$IMAGE_NAME"
-          else
+          OUTPUT=$(docker rmi "$IMAGE_NAME" 2>&1) || true
+          
+          if echo "$OUTPUT" | grep -q "No such image"; then
             echo "No image found with name $IMAGE_NAME. Skipping removal."
+            exit 0  # Prevents job failure
+          elif [ -n "$OUTPUT" ]; then
+            echo "Error while removing image: $OUTPUT"
+            exit 1  # Fails for any other error
           fi
