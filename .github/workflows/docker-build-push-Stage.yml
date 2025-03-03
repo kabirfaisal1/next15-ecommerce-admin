@@ -1,4 +1,4 @@
-name: Build, Push, Stop, and Cleanup Docker Container
+name: Build, Push, Stage, Docker Container
 
 on:
   workflow_dispatch:
