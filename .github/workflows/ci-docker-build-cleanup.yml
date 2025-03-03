@@ -25,7 +25,8 @@ jobs:
       - name: Create .env file from GitHub Secrets
         run: |
           echo "Generating .env file..."
-          echo "${{ secrets.APP_SECRET }}" > .env
+          echo "DOCKER_CONTAINER_NAME=ecommerce-admin" > .env
+          echo "${{ secrets.APP_SECRET }}" >> .env
           cat .env
 
       # Extract and Validate Environment Variables
@@ -34,9 +35,10 @@ jobs:
           set -a
           source .env
           set +a
-          echo "Extracted DOCKER_CONTAINER_NAME: '${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME'"
 
-          # Validate the name format (must be lowercase and contain only allowed characters)
+          echo "Extracted DOCKER_CONTAINER_NAME: '$DOCKER_CONTAINER_NAME'"
+
+          # Ensure it's a valid Docker name (alphanumeric, dashes, underscores, periods)
           if [[ ! "$DOCKER_CONTAINER_NAME" =~ ^[a-z0-9]+([._-][a-z0-9]+)*$ ]]; then
             echo "Invalid Docker container name: $DOCKER_CONTAINER_NAME"
             exit 1
@@ -48,8 +50,8 @@ jobs:
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           echo "Logged in to Docker Hub as ${{ secrets.DOCKER_USERNAME }}"
 
-      # Build Docker Image (Include .env in Image)
-      - name: Build Docker Image (Include .env in Image)
+      # Build Docker Image
+      - name: Build Docker Image
         run: |
           set -a
           source .env
@@ -57,13 +59,16 @@ jobs:
           echo "Building Docker image: ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
 
           docker build -f docker/Dockerfile.stage \
-            --build-arg DOCKER_CONTAINER_NAME="${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME" \
+            --build-arg DOCKER_CONTAINER_NAME="${DOCKER_CONTAINER_NAME}" \
             --build-arg DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}" \
             --build-arg DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}" \
-            -t "${DOCKER_CONTAINER_NAME}:latest" .
+            -t "${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest" .
 
       # Upload Container ID for Stop Workflow
       - name: Upload Container ID for Stop Workflow
+        run: |
+          docker images
+          echo "${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest" > container_id.txt
         uses: actions/upload-artifact@v4
         with:
           name: container-id
@@ -72,10 +77,10 @@ jobs:
       # Validate Docker Image Before Push
       - name: Validate Docker Image
         run: |
-          echo "Validating Docker Image: ${DOCKER_CONTAINER_NAME}:latest"
-          docker images | grep "${DOCKER_CONTAINER_NAME}"
+          echo "Validating Docker Image: ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
+          docker images | grep "${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME"
           if [[ $? -ne 0 ]]; then
-            echo "Error: Docker image ${DOCKER_CONTAINER_NAME}:latest not found."
+            echo "Error: Docker image not found."
             exit 1
           fi
 
@@ -83,7 +88,7 @@ jobs:
       - name: Push Docker Image
         run: |
           echo "Pushing image to Docker Hub..."
-          docker push "${{ secrets.DOCKER_USERNAME }}/${DOCKER_CONTAINER_NAME}:latest"
+          docker push "${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
 
       # Print Deployment Instructions
       - name: Print Deployment Instructions
@@ -95,9 +100,9 @@ jobs:
           echo "2. Log in to Docker Hub (if required):"
           echo "   docker login -u ${{ secrets.DOCKER_USERNAME }}"
           echo "3. Pull the latest Docker image:"
-          echo "   docker pull ${{ secrets.DOCKER_USERNAME }}/${DOCKER_CONTAINER_NAME}:latest"
+          echo "   docker pull ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
           echo "4. Run the container:"
-          echo "   docker run -d --name next15_container -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/${DOCKER_CONTAINER_NAME}:latest"
+          echo "   docker run -d --name ecommerce-admin -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
           echo ""
           echo "Note: Modify the port mapping (-p 8000:8000) if needed."
           echo "========================================================="
@@ -142,7 +147,7 @@ jobs:
           source .env
           set +a
           echo "Removing Docker image: ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
-          docker rmi "$DOCKER_CONTAINER_NAME:latest" || echo "Image already removed."
+          docker rmi "${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest" || echo "Image already removed."
 
       # Cleanup Container ID File
       - name: Cleanup Container ID File
