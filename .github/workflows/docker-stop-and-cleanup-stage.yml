@@ -20,7 +20,7 @@ jobs:
         run: |
           CONTAINER_NAME="appStage-container"
 
-          if [ "$(docker ps -a -q -f name=$CONTAINER_NAME)" ]; then
+          if [ "$(docker ps -a name=$CONTAINER_NAME)" ]; then
             echo "Stopping container..."
             docker stop $CONTAINER_NAME
             echo "Removing container..."
