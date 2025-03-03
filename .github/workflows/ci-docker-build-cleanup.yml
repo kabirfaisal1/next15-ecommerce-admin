@@ -1,23 +1,14 @@
 name: Build, Push, Stop, and Cleanup Docker Container
 
 on:
-  workflow_dispatch:  # Allows manual trigger
+  workflow_dispatch:
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    timeout-minutes: 120  # Automatically stop after 2 hours
+    timeout-minutes: 120
 
     steps:
-      # Restrict Execution to Repository Owner
-      - name: Restrict Execution to Repository Owner
-        run: |
-          if [[ "${{ github.actor }}" != "${{ github.repository_owner }}" ]]; then
-            echo "Only the repository owner can run this workflow."
-            exit 1
-          fi
-
-      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -28,20 +19,13 @@ jobs:
           echo "${{ secrets.APP_SECRET }}" >> .env
           cat .env
 
-      # Extract and Validate Environment Variables
-      - name: Extract and Validate Environment Variables
+      # Load Environment Variables
+      - name: Load Environment Variables
         run: |
           set -a
           source .env
           set +a
-
-          echo "Extracted DOCKER_CONTAINER_NAME: '$DOCKER_CONTAINER_NAME'"
-
-          # Ensure it's a valid Docker name (alphanumeric, dashes, underscores, periods)
-          if [[ ! "$DOCKER_CONTAINER_NAME" =~ ^[a-z0-9]+([._-][a-z0-9]+)*$ ]]; then
-            echo "Invalid Docker container name: $DOCKER_CONTAINER_NAME"
-            exit 1
-          fi
+          echo "Using Docker Image Name: $DOCKER_IMAGE_NAME"
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
@@ -52,102 +36,52 @@ jobs:
       # Build Docker Image
       - name: Build Docker Image
         run: |
-          set -a
-          source .env
-          set +a
-          echo "Building Docker image: $DOCKER_CONTAINER_NAME:latest"
-
-          docker build -f docker/Dockerfile.stage \
-            --build-arg DOCKER_CONTAINER_NAME="${DOCKER_CONTAINER_NAME}" \
-            --build-arg DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}" \
-            --build-arg DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}" \
-            -t "$DOCKER_CONTAINER_NAME:latest" .
-
-      # Upload Container ID for Stop Workflow
-      - name: Upload Container ID for Stop Workflow
-        run: |
-          docker images
-          echo "${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest" > container_id.txt
-          uses: actions/upload-artifact@v4
-          with:
-          name: container-id
-          path: container_id.txt
-
-      # Validate Docker Image Before Push
-      - name: Validate Docker Image
-        run: |
-          echo "Validating Docker Image: ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
-          docker images | grep "${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME"
-          if [[ $? -ne 0 ]]; then
-            echo "Error: Docker image not found."
-            exit 1
-          fi
+          echo "Building Docker image..."
+          docker build -f docker/Dockerfile.stage -t "$DOCKER_IMAGE_NAME:stage" .
 
       # Push Docker Image to Docker Hub
       - name: Push Docker Image
         run: |
           echo "Pushing image to Docker Hub..."
-          docker push "${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
+          docker push "$DOCKER_IMAGE_NAME:stage"
 
       # Print Deployment Instructions
       - name: Print Deployment Instructions
         run: |
           echo "================ Deployment Instructions ================"
-          echo "To run this Docker container on another system, follow these steps:"
+          echo "To pull and run the image anywhere, use the following commands:"
           echo ""
-          echo "1. Ensure Docker is installed on your system."
-          echo "2. Log in to Docker Hub (if required):"
-          echo "   docker login -u ${{ secrets.DOCKER_USERNAME }}"
-          echo "3. Pull the latest Docker image:"
-          echo "   docker pull ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
-          echo "4. Run the container:"
-          echo "   docker run -d --name ecommerce-admin -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
-          echo ""
-          echo "Note: Modify the port mapping (-p 8000:8000) if needed."
+          echo "1. Pull the latest image:"
+          echo "   docker pull $DOCKER_IMAGE_NAME:stage"
+          echo "2. Run the container:"
+          echo "   docker run -p 8000:3000 --name appStage-container $DOCKER_IMAGE_NAME:stage"
           echo "========================================================="
 
   stop-and-cleanup:
-    needs: build-and-push  # Ensures this runs after build-and-push job
+    needs: build-and-push
     runs-on: ubuntu-latest
-    timeout-minutes: 5  # Safety limit for cleanup
+    timeout-minutes: 5
 
     steps:
-      # Download Container ID from previous job
-      - name: Download Container ID
-        uses: actions/download-artifact@v4
-        with:
-          name: container-id
-
-      # Read Container ID from file
-      - name: Read Container ID
-        run: |
-          CONTAINER_ID=$(cat container_id.txt)
-          echo "Stopping container: $CONTAINER_ID"
-
-      # Stop and Remove Container
-      - name: Stop and Remove Container
-        run: |
-          CONTAINER_ID=$(cat container_id.txt)
-
-          if [ -n "$CONTAINER_ID" ]; then
-            echo "Stopping container..."
-            docker stop "$CONTAINER_ID" || echo "Container already stopped."
-
-            echo "Removing container..."
-            docker rm "$CONTAINER_ID" || echo "Container already removed."
-          else
-            echo "No container ID found!"
-          fi
-
-      # Remove Docker Image
-      - name: Remove Docker Image
+      # Load Environment Variables
+      - name: Load Environment Variables
         run: |
           set -a
           source .env
           set +a
-          echo "Removing Docker image: ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
-          docker rmi "${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest" || echo "Image already removed."
+          echo "Using Docker Image Name: $DOCKER_IMAGE_NAME"
 
-      # Cleanup Container ID File
-      - name: Cleanup Container ID File
-        run: rm -f container_id.txt
+      # Stop and Remove Container
+      - name: Stop and Remove Container
+        run: |
+          echo "Stopping container..."
+          docker stop next15-container || echo "Container already stopped."
+
+          echo "Removing container..."
+          docker rm next15-container || echo "Container already removed."
+
+      # Remove Docker Image
+      - name: Remove Docker Image
+        run: |
+          echo "Removing Docker image..."
+          docker rmi "$DOCKER_IMAGE_NAME:stage" || echo "Image already removed."
