@@ -78,16 +78,29 @@ jobs:
         run: sleep 7200
 
       # Stop and remove the container
-      - name: Stop and Remove Docker Container
+      - name: Check and Stop/Remove Container
         run: |
-          echo "Stopping and removing the container..."
-          docker stop appStage-container
-          docker rm appStage-container
+          CONTAINER_NAME="appStage-container"
+          if [ "$(docker ps -a -q -f name=$CONTAINER_NAME)" ]; then
+            echo "Stopping container..."
+            docker stop $CONTAINER_NAME
+            echo "Removing container..."
+            docker rm $CONTAINER_NAME
+          else
+            echo "No container found with name $CONTAINER_NAME. Skipping stop and remove."
+          fi
 
       # Remove the Docker image
       - name: Remove Docker Image
         run: |
-          echo "Removing the Docker image..."
-          docker rmi "$DOCKER_IMAGE_NAME:stage" || echo "Image already removed"
+          echo "Checking if the Docker image exists..."
+          if docker images | grep -q "$DOCKER_IMAGE_NAME:stage"; then
+            echo "Removing the Docker image..."
+            docker rmi "$DOCKER_IMAGE_NAME:stage"
+          else
+            echo "Docker image $DOCKER_IMAGE_NAME:stage not found. Skipping removal."
+          fi
         env:
           DOCKER_IMAGE_NAME: mdkabirfaisal1/next15-ecommerce
+
+

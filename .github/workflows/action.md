@@ -100,20 +100,33 @@ Allows the container to run for testing and verification.
 #### **Stop and Remove the Container**
 Stops and removes the running container.
 ```yaml
-- name: Stop and Remove Docker Container
-  run: |
-    docker stop appStage-container
-    docker rm appStage-container
+  - name: Check and Stop/Remove Container
+        run: |
+          CONTAINER_NAME="appStage-container"
+          if [ "$(docker ps -a -q -f name=$CONTAINER_NAME)" ]; then
+            echo "Stopping container..."
+            docker stop $CONTAINER_NAME
+            echo "Removing container..."
+            docker rm $CONTAINER_NAME
+          else
+            echo "No container found with name $CONTAINER_NAME. Skipping stop and remove."
+          fi
 ```
 
 #### **Remove the Docker Image**
 Deletes the Docker image to free up space.
 ```yaml
-- name: Remove Docker Image
-  run: |
-    docker rmi "$DOCKER_IMAGE_NAME:stage" || echo "Image already removed"
-  env:
-    DOCKER_IMAGE_NAME: <dockerRepo>/<containerName>
+  - name: Remove Docker Image
+        run: |
+          echo "Checking if the Docker image exists..."
+          if docker images | grep -q "$DOCKER_IMAGE_NAME:stage"; then
+            echo "Removing the Docker image..."
+            docker rmi "$DOCKER_IMAGE_NAME:stage"
+          else
+            echo "Docker image $DOCKER_IMAGE_NAME:stage not found. Skipping removal."
+          fi
+        env:
+          DOCKER_IMAGE_NAME: mdkabirfaisal1/next15-ecommerce
 ```
 
 
