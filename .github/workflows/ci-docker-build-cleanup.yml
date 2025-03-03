@@ -9,6 +9,7 @@ jobs:
     timeout-minutes: 120  # Automatically stop after 2 hours
 
     steps:
+      # Restrict Execution to Repository Owner
       - name: Restrict Execution to Repository Owner
         run: |
           if [[ "${{ github.actor }}" != "${{ github.repository_owner }}" ]]; then
@@ -16,15 +17,18 @@ jobs:
             exit 1
           fi
 
+      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Create .env file from GitHub Secrets
       - name: Create .env file from GitHub Secrets
         run: |
           echo "${{ secrets.APP_SECRET }}" > .env
           echo "Generated .env file:"
           cat .env  # Debugging output
 
+      # Extract and Validate Environment Variables
       - name: Extract and Validate Environment Variables
         run: |
           set -a
@@ -40,10 +44,12 @@ jobs:
             exit 1
           fi
 
+      # Log in to Docker Hub
       - name: Log in to Docker Hub
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
+      # Build Docker Image (Include .env in Image)
       - name: Build Docker Image (Include .env in Image)
         run: |
           set -a
@@ -57,6 +63,7 @@ jobs:
             --build-arg DOCKER_PASSWORD="$DOCKER_PASSWORD" \
             -t "$DOCKER_CONTAINER_NAME:latest" .
 
+      # Run Container for Debugging (Check Logs)
       - name: Run Container for Debugging (Check Logs)
         run: |
           echo "Running container to check if it exits immediately..."
@@ -82,17 +89,20 @@ jobs:
             exit 1
           fi
 
+      # Upload Container ID for Stop Workflow
       - name: Upload Container ID for Stop Workflow
         uses: actions/upload-artifact@v4
         with:
           name: container-id
           path: container_id.txt
 
+      # Push Docker Image to Docker Hub
       - name: Push Docker Image
         run: |
           echo "Pushing image to Docker Hub..."
           docker push "$DOCKER_CONTAINER_NAME:latest"
 
+      # Print Deployment Instructions
       - name: Print Deployment Instructions
         run: |
           echo "================ Deployment Instructions ================"
@@ -115,16 +125,19 @@ jobs:
     timeout-minutes: 5  # Safety limit for cleanup
 
     steps:
+      # Download Container ID from previous job
       - name: Download Container ID
         uses: actions/download-artifact@v4
         with:
           name: container-id
 
+      # Read Container ID from file
       - name: Read Container ID
         run: |
           CONTAINER_ID=$(cat container_id.txt)
           echo "Stopping container: $CONTAINER_ID"
 
+      # Stop and Remove Container
       - name: Stop and Remove Container
         run: |
           CONTAINER_ID=$(cat container_id.txt)
@@ -139,6 +152,7 @@ jobs:
             echo "No container ID found!"
           fi
 
+      # Remove Docker Image
       - name: Remove Docker Image
         run: |
           set -a
@@ -147,6 +161,6 @@ jobs:
           echo "Removing Docker image: $DOCKER_CONTAINER_NAME:latest"
           docker rmi "$DOCKER_CONTAINER_NAME:latest" || echo "Image already removed."
 
+      # Cleanup Container ID File
       - name: Cleanup Container ID File
         run: rm -f container_id.txt
-
