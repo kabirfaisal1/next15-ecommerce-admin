@@ -1,5 +1,29 @@
 # ![GitHub Action](https://img.shields.io/badge/githubaction-2D3748?style=for-the-badge&logo=github&logoColor=white)
 
+## Table of Contents
+- [Build, Push, Stage, Docker Container](#build-push-stage-docker-container)
+  - [Overview](#overview)
+  - [Workflow Trigger](#workflow-trigger)
+  - [Jobs and Their Purpose](#jobs-and-their-purpose)
+    - [Build and Push Docker Image](#1-build-and-push-docker-image)
+      - [Checkout Repository](#checkout-repository)
+      - [Create `.env` file from Secrets](#create-env-file-from-secrets)
+      - [Load and Validate Environment Variables](#load-and-validate-environment-variables)
+      - [Log in to Docker Hub](#log-in-to-docker-hub)
+      - [Build Docker Image](#build-docker-image)
+      - [Push Docker Image to Docker Hub](#push-docker-image-to-docker-hub)
+      - [Print Deployment Instructions](#print-deployment-instructions)
+      - [Run Container for 120 Minutes](#run-container-for-120-minutes)
+      - [Stop and Remove the Container](#stop-and-remove-the-container)
+      - [Remove the Docker Image](#remove-the-docker-image)
+- [Stop and Cleanup Stage Docker Container](#stop-and-cleanup-stage-docker-container)
+  - [Overview](#overview-1)
+  - [Workflow Trigger](#workflow-trigger-1)
+  - [Jobs and Their Purpose](#jobs-and-their-purpose-1)
+    - [Stop and Cleanup Docker Container](#1-stop-and-cleanup-docker-container)
+      - [Log in to Docker Hub](#log-in-to-docker-hub-1)
+      - [Check and Stop/Remove Container](#check-and-stopremove-container)
+      - [Remove Docker Image](#remove-docker-image)
 
 ## Build, Push, Stage, Docker Container
 
@@ -128,7 +152,6 @@ Deletes the Docker image to free up space.
         env:
           DOCKER_IMAGE_NAME: mdkabirfaisal1/next15-ecommerce
 ```
-
 
 ## Stop and Cleanup Stage Docker Container
 

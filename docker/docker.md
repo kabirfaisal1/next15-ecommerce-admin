@@ -90,7 +90,9 @@ CMD ["npm", "run", "<scriptName>"]
 Run the following command inside the project folder (where your Dockerfile is located):
 
 ```sh
+```sh
 docker build -t <dockerhub-username>/<repository-name>:<tag> .
+```
 ```
 * `-t <dockerhub-username>/<repository-name>:<tag>` → Tags the image with latest.
 * `.` → Specifies the current directory as the build context.
@@ -108,6 +110,7 @@ Run the following command to start the container:
 ```sh
 docker run -p <host>:<Docker Host> --name <containerName>-container <dockerhub-username>/<repository-name>:<tag>
 ```
+
 * `-p <host>:<Docker Host>` → Maps port `<host (i.e: 3000)>` of the container to port `<Docker Host (i.e: 3000)> ` on your local machine.
 * `--name <containerName>-container` → Assigns a name to the running container.
 * `<dockerhub-username>/<repository-name>:<tag>` → Runs the built image.
@@ -133,14 +136,14 @@ docker ps -a
 ## Stop and Remove Docker Containers
 To stop the container:
 
-```sh 
-docker stop <containerName>-container
+```sh
+docker stop <containerName>
 ```
 
 To remove the container:
 
 ```sh 
-docker rm <containerName>-container
+docker rm <containerName>
 ```
 
 To remove the Docker image:
