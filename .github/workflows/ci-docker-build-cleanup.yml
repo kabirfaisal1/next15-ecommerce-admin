@@ -10,12 +10,12 @@ jobs:
 
     steps:
       # Restrict Execution to Repository Owner
-      # - name: Restrict Execution to Repository Owner
-      #   run: |
-      #     if [[ "${{ github.actor }}" != "${{ github.repository_owner }}" ]]; then
-      #       echo "Only the repository owner can run this workflow."
-      #       exit 1
-      #     fi
+      - name: Restrict Execution to Repository Owner
+        run: |
+          if [[ "${{ github.actor }}" != "${{ github.repository_owner }}" ]]; then
+            echo "Only the repository owner can run this workflow."
+            exit 1
+          fi
 
       # Checkout repository
       - name: Checkout repository
