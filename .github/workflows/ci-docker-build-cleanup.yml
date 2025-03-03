@@ -26,18 +26,24 @@ jobs:
         run: |
           echo "${{ secrets.APP_SECRET }}" > .env
           echo "Generated .env file:"
+         
+      #TODO Delete
+      - name: Debug .env file
+        run: |
+          echo "Contents of .env file:"
           cat .env  # Debugging output
 
       # Extract and Validate Environment Variables
       - name: Extract and Validate Environment Variables
         run: |
           set -a
-          DOCKER_USERNAME=$(grep -oP '(?<=DOCKER_USERNAME=).*' .env | tr -d '\r')
-          DOCKER_PASSWORD=$(grep -oP '(?<=DOCKER_PASSWORD=).*' .env | tr -d '\r')
-          echo "DOCKER_USERNAME=$DOCKER_USERNAME" >> $GITHUB_ENV
-          echo "::add-mask::$DOCKER_PASSWORD"
-          echo "DOCKER_PASSWORD set."
+          source .env
+          set +a
+          echo "DOCKER_USERNAME is set: ${DOCKER_USERNAME}"
+          echo "DOCKER_PASSWORD is set: ${DOCKER_PASSWORD}"
+          echo "DOCKER_IMAGE_NAME=${DOCKER_CONTAINER_NAME}"
 
+       
       # Log in to Docker Hub
       - name: Log in to Docker Hub
         run: |
