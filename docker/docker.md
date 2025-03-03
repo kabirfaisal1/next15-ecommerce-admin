@@ -90,9 +90,9 @@ CMD ["npm", "run", "<scriptName>"]
 Run the following command inside the project folder (where your Dockerfile is located):
 
 ```sh
-docker build -t <containerName>:latest .
+docker build -t <dockerhub-username>/<repository-name>:<tag> .
 ```
-* `-t <containerName>:latest` → Tags the image with latest.
+* `-t <dockerhub-username>/<repository-name>:<tag>` → Tags the image with latest.
 * `.` → Specifies the current directory as the build context.
 
 ## Verify the Image is Built
@@ -106,11 +106,11 @@ docker images
 Run the following command to start the container:
 
 ```sh
-docker run -p <host>:<Docker Host> --name <containerName>-container <containerName>:latest
+docker run -p <host>:<Docker Host> --name <containerName>-container <dockerhub-username>/<repository-name>:<tag>
 ```
 * `-p <host>:<Docker Host>` → Maps port `<host (i.e: 3000)>` of the container to port `<Docker Host (i.e: 3000)> ` on your local machine.
 * `--name <containerName>-container` → Assigns a name to the running container.
-* `<containerName>:latest` → Runs the built image.
+* `<dockerhub-username>/<repository-name>:<tag>` → Runs the built image.
 
 ## Check if it’s Running
 Open a browser and go to: `http://localhost:<host (i.e: 3000)> `
@@ -146,7 +146,7 @@ docker rm <containerName>-container
 To remove the Docker image:
 
 ```sh 
-docker rmi <containerName>:latest
+docker rmi <dockerhub-username>/<repository-name>:<tag>
 ```
 
 ## Push the Image to Docker Hub (Optional)
@@ -159,7 +159,7 @@ docker login
 Then, push the image:
 
 ```sh
-docker push <containerName>:latest
+docker push <dockerhub-username>/<repository-name>:<tag>
 ```
 > ℹ️ Now, you can pull and run this image from anywhere.
 
@@ -167,29 +167,29 @@ docker push <containerName>:latest
 On any machine with Docker installed, run:
 
 ```sh
-docker pull <containerName>:latest
+docker pull <dockerhub-username>/<repository-name>:<tag>
 
-docker run -p 3000:3000 --name <containerName>-container <containerName>:latest
+docker run -p 3000:3000 --name <containerName>-container <dockerhub-username>/<repository-name>:<tag>
 ```
 
 ## How to Use docker-compose for Different Environments
 #### For Local Development
 ```sh
 docker build -f docker/Dockerfile.local -t myapp:local .
-docker run -p <host>:<Docker Host> --name <appLocal>-container <containerName>:latest
+docker run -p <host>:<Docker Host> --name <appLocal>-container <dockerhub-username>/<repository-name>:<tag>
 ```
 
 #### For Local Stage
 ```sh
 docker build -f docker/Dockerfile.stage -t myapp:stage .
-docker run -p <host>:<Docker Host> --name <appStage>-container <containerName>:latest
+docker run -p <host>:<Docker Host> --name <appStage>-container <dockerhub-username>/<repository-name>:<tag>
 ```
 
 #### For Local Prod
 ```sh
-docker build -f docker/Dockerfile.prod -t myapp:prod .
+docker build -f docker/Dockerfile.<env> -t myapp:<env> .
 
-docker run -p <host>:<Docker Host> --name <appProd>-container <containerName>:latest
+docker run -p <host>:<Docker Host> --name <appProd>-container <dockerhub-username>/<repository-name>:<tag>
 ```
 
 ## How to Remove docker-compose for Different Environments
@@ -199,7 +199,7 @@ docker login
 ```
 ##### 2. Build the image
 ```sh
-docker build -f docker/Dockerfile.prod -t myapp:prod .
+docker build -f docker/Dockerfile.<env> -t myapp:prod .
 ```
 ##### 3. Tag the image for Docker Hub
 ```sh
