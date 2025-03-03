@@ -18,7 +18,7 @@ jobs:
       # Check if the container exists before stopping and removing
       - name: Check and Stop/Remove Container
         run: |
-          CONTAINER_NAME="appStage-container"
+          CONTAINER_NAME="mdkabirfaisal1/next15-ecommerce:stage"
 
           if [ "$(docker ps -a -q -f name=$CONTAINER_NAME)" ]; then
             echo "Stopping container..."
@@ -32,7 +32,7 @@ jobs:
       # Remove Docker Image if it exists, and ignore "No such image" error
       - name: Remove Docker Image
         run: |
-          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/next15-ecommerce:stage"
+          IMAGE_NAME="mdkabirfaisal1/next15-ecommerce:stage"
 
           OUTPUT=$(docker rmi "$IMAGE_NAME" 2>&1) || true
           
