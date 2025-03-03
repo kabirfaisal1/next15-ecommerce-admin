@@ -32,11 +32,11 @@ jobs:
       - name: Extract and Validate Environment Variables
         run: |
           set -a
-          source .env
-          set +a
-          echo "DOCKER_USERNAME is set: ${DOCKER_USERNAME:+Yes}"
-          echo "DOCKER_PASSWORD is set: ${DOCKER_PASSWORD:+Yes}"
-          echo "DOCKER_IMAGE_NAME=${DOCKER_CONTAINER_NAME}"
+          DOCKER_USERNAME=$(grep -oP '(?<=DOCKER_USERNAME=).*' .env | tr -d '\r')
+          DOCKER_PASSWORD=$(grep -oP '(?<=DOCKER_PASSWORD=).*' .env | tr -d '\r')
+          echo "DOCKER_USERNAME=$DOCKER_USERNAME" >> $GITHUB_ENV
+          echo "::add-mask::$DOCKER_PASSWORD"
+          echo "DOCKER_PASSWORD set."
 
           # Validate environment variables
           if [ -z "$DOCKER_USERNAME" ] || [ -z "$DOCKER_CONTAINER_NAME" ] || [ -z "$DOCKER_PASSWORD" ]; then
@@ -47,7 +47,7 @@ jobs:
       # Log in to Docker Hub
       - name: Log in to Docker Hub
         run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
 
       # Build Docker Image (Include .env in Image)
       - name: Build Docker Image (Include .env in Image)
