@@ -34,7 +34,7 @@ jobs:
           set -a
           source .env
           set +a
-          echo "Extracted DOCKER_CONTAINER_NAME: '$DOCKER_CONTAINER_NAME'"
+          echo "Extracted DOCKER_CONTAINER_NAME: '${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME'"
 
           # Validate the name format (must be lowercase and contain only allowed characters)
           if [[ ! "$DOCKER_CONTAINER_NAME" =~ ^[a-z0-9]+([._-][a-z0-9]+)*$ ]]; then
@@ -54,10 +54,10 @@ jobs:
           set -a
           source .env
           set +a
-          echo "Building Docker image: $DOCKER_CONTAINER_NAME:latest"
+          echo "Building Docker image: ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
 
           docker build -f docker/Dockerfile.stage \
-            --build-arg DOCKER_CONTAINER_NAME="$DOCKER_CONTAINER_NAME" \
+            --build-arg DOCKER_CONTAINER_NAME="${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME" \
             --build-arg DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}" \
             --build-arg DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}" \
             -t "${DOCKER_CONTAINER_NAME}:latest" .
@@ -83,7 +83,7 @@ jobs:
       - name: Push Docker Image
         run: |
           echo "Pushing image to Docker Hub..."
-          docker push "${DOCKER_CONTAINER_NAME}:latest"
+          docker push "${{ secrets.DOCKER_USERNAME }}/${DOCKER_CONTAINER_NAME}:latest"
 
       # Print Deployment Instructions
       - name: Print Deployment Instructions
@@ -95,9 +95,9 @@ jobs:
           echo "2. Log in to Docker Hub (if required):"
           echo "   docker login -u ${{ secrets.DOCKER_USERNAME }}"
           echo "3. Pull the latest Docker image:"
-          echo "   docker pull ${DOCKER_CONTAINER_NAME}:latest"
+          echo "   docker pull ${{ secrets.DOCKER_USERNAME }}/${DOCKER_CONTAINER_NAME}:latest"
           echo "4. Run the container:"
-          echo "   docker run -d --name next15_container -p 8000:8000 ${DOCKER_CONTAINER_NAME}:latest"
+          echo "   docker run -d --name next15_container -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/${DOCKER_CONTAINER_NAME}:latest"
           echo ""
           echo "Note: Modify the port mapping (-p 8000:8000) if needed."
           echo "========================================================="
@@ -141,7 +141,7 @@ jobs:
           set -a
           source .env
           set +a
-          echo "Removing Docker image: $DOCKER_CONTAINER_NAME:latest"
+          echo "Removing Docker image: ${{ secrets.DOCKER_USERNAME }}/$DOCKER_CONTAINER_NAME:latest"
           docker rmi "$DOCKER_CONTAINER_NAME:latest" || echo "Image already removed."
 
       # Cleanup Container ID File
