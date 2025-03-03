@@ -18,7 +18,7 @@ jobs:
       # Check if the container exists before stopping and removing
       - name: Check and Stop/Remove Container
         run: |
-          CONTAINER_NAME="mdkabirfaisal1/next15-ecommerce:stage"
+          CONTAINER_NAME="appStage-container"
 
           if [ "$(docker ps -a -q -f name=$CONTAINER_NAME)" ]; then
             echo "Stopping container..."
