@@ -1,0 +1,42 @@
+name: Stop, and Cleanup Docker Container
+
+on:
+  workflow_dispatch:
+
+jobs:
+  stop-and-cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      # Log in to Docker Hub
+      - name: Log in to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          echo "Logged in to Docker Hub as ${{ secrets.DOCKER_USERNAME }}"
+
+      # Check if the container exists before stopping and removing
+      - name: Check and Stop/Remove Container
+        run: |
+          CONTAINER_NAME="appStage-container"
+
+          if [ "$(docker ps -a -q -f name=$CONTAINER_NAME)" ]; then
+            echo "Stopping container..."
+            docker stop $CONTAINER_NAME
+            echo "Removing container..."
+            docker rm $CONTAINER_NAME
+          else
+            echo "No container found with name $CONTAINER_NAME. Skipping stop and remove."
+          fi
+
+      # Remove Docker Image if it exists
+      - name: Remove Docker Image
+        run: |
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/next15-ecommerce:stage"
+
+          if docker images -q "$IMAGE_NAME"; then
+            echo "Removing Docker image..."
+            docker rmi "$IMAGE_NAME"
+          else
+            echo "No image found with name $IMAGE_NAME. Skipping removal."
+          fi
