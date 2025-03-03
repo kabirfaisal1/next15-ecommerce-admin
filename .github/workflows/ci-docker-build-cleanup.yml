@@ -24,8 +24,9 @@ jobs:
       # Create .env file from GitHub Secrets
       - name: Create .env file from GitHub Secrets
         run: |
+          echo "Generating .env file..."
           echo "${{ secrets.APP_SECRET }}" > .env
-          echo "Generated .env file:"
+          cat .env
 
       # Extract and Validate Environment Variables
       - name: Extract and Validate Environment Variables
@@ -33,13 +34,19 @@ jobs:
           set -a
           source .env
           set +a
-          echo "DOCKER_IMAGE_NAME=${DOCKER_CONTAINER_NAME}"
+          echo "Extracted DOCKER_CONTAINER_NAME: '$DOCKER_CONTAINER_NAME'"
+
+          # Validate the name format (must be lowercase and contain only allowed characters)
+          if [[ ! "$DOCKER_CONTAINER_NAME" =~ ^[a-z0-9]+([._-][a-z0-9]+)*$ ]]; then
+            echo "Invalid Docker container name: $DOCKER_CONTAINER_NAME"
+            exit 1
+          fi
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
         run: |
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-            echo "Logged in to Docker Hub as ${{ secrets.DOCKER_USERNAME }}"
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          echo "Logged in to Docker Hub as ${{ secrets.DOCKER_USERNAME }}"
 
       # Build Docker Image (Include .env in Image)
       - name: Build Docker Image (Include .env in Image)
@@ -53,7 +60,7 @@ jobs:
             --build-arg DOCKER_CONTAINER_NAME="$DOCKER_CONTAINER_NAME" \
             --build-arg DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}" \
             --build-arg DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}" \
-            -t "$DOCKER_CONTAINER_NAME:latest" .
+            -t "${DOCKER_CONTAINER_NAME}:latest" .
 
       # Upload Container ID for Stop Workflow
       - name: Upload Container ID for Stop Workflow
@@ -62,11 +69,21 @@ jobs:
           name: container-id
           path: container_id.txt
 
+      # Validate Docker Image Before Push
+      - name: Validate Docker Image
+        run: |
+          echo "Validating Docker Image: ${DOCKER_CONTAINER_NAME}:latest"
+          docker images | grep "${DOCKER_CONTAINER_NAME}"
+          if [[ $? -ne 0 ]]; then
+            echo "Error: Docker image ${DOCKER_CONTAINER_NAME}:latest not found."
+            exit 1
+          fi
+
       # Push Docker Image to Docker Hub
       - name: Push Docker Image
         run: |
           echo "Pushing image to Docker Hub..."
-          docker push "$DOCKER_CONTAINER_NAME:latest"
+          docker push "${DOCKER_CONTAINER_NAME}:latest"
 
       # Print Deployment Instructions
       - name: Print Deployment Instructions
@@ -78,9 +95,9 @@ jobs:
           echo "2. Log in to Docker Hub (if required):"
           echo "   docker login -u ${{ secrets.DOCKER_USERNAME }}"
           echo "3. Pull the latest Docker image:"
-          echo "   docker pull $DOCKER_CONTAINER_NAME:latest"
+          echo "   docker pull ${DOCKER_CONTAINER_NAME}:latest"
           echo "4. Run the container:"
-          echo "   docker run -d --name next15_container -p 8000:8000 $DOCKER_CONTAINER_NAME:latest"
+          echo "   docker run -d --name next15_container -p 8000:8000 ${DOCKER_CONTAINER_NAME}:latest"
           echo ""
           echo "Note: Modify the port mapping (-p 8000:8000) if needed."
           echo "========================================================="
