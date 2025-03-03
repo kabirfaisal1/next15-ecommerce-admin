@@ -46,14 +46,14 @@ jobs:
 
       - name: Debug Environment Variables
         run: |
-          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}"
+          echo "DOCKER_USERNAME=${{ secrets.APP_SECRET.DOCKER_USERNAME }}"
           echo "DOCKER_PASSWORD length: ${#DOCKER_PASSWORD}"
 
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
         run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          echo "${{ secrets.APP_SECRET.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.APP_SECRET.DOCKER_USERNAME }}" --password-stdin
 
       # Build Docker Image (Include .env in Image)
       - name: Build Docker Image (Include .env in Image)
