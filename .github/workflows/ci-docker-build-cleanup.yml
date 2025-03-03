@@ -17,15 +17,23 @@ jobs:
         run: |
           echo "Generating .env file..."
           echo "${{ secrets.APP_SECRET }}" >> .env
+          echo "DOCKER_IMAGE_NAME=mdkabirfaisal1/next15-ecommerce" >> .env
           cat .env
 
-      # Load Environment Variables
+      # Load Environment Variables and Validate
       - name: Load Environment Variables
         run: |
           set -a
           source .env
           set +a
-          echo "Using Docker Image Name: $DOCKER_IMAGE_NAME"
+          
+          # Debugging: Ensure DOCKER_IMAGE_NAME is set correctly
+          echo "DOCKER_IMAGE_NAME is set to: $DOCKER_IMAGE_NAME"
+
+          if [[ -z "$DOCKER_IMAGE_NAME" ]]; then
+            echo "ERROR: DOCKER_IMAGE_NAME is empty! Check your .env file."
+            exit 1
+          fi
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
@@ -36,7 +44,7 @@ jobs:
       # Build Docker Image
       - name: Build Docker Image
         run: |
-          echo "Building Docker image..."
+          echo "Building Docker image: $DOCKER_IMAGE_NAME:stage"
           docker build -f docker/Dockerfile.stage -t "$DOCKER_IMAGE_NAME:stage" .
 
       # Push Docker Image to Docker Hub
@@ -63,13 +71,23 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      # Load Environment Variables
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Load Environment Variables and Validate
       - name: Load Environment Variables
         run: |
           set -a
           source .env
           set +a
-          echo "Using Docker Image Name: $DOCKER_IMAGE_NAME"
+          
+          # Debugging: Ensure DOCKER_IMAGE_NAME is set correctly
+          echo "DOCKER_IMAGE_NAME is set to: $DOCKER_IMAGE_NAME"
+
+          if [[ -z "$DOCKER_IMAGE_NAME" ]]; then
+            echo "ERROR: DOCKER_IMAGE_NAME is empty! Check your .env file."
+            exit 1
+          fi
 
       # Stop and Remove Container
       - name: Stop and Remove Container
