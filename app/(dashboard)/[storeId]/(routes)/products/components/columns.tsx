@@ -8,7 +8,12 @@ import { CellAction } from './cell-action';
 export type ProductColumn = {
 	id: string;
 	name: string;
-	value: string;
+	price: string;
+	category: string;
+	size: string;
+	color: string;
+	isFeatured: boolean;
+	isArchived: boolean;
 	createdAt: string;
 	updatedAt: string;
 };
@@ -18,18 +23,44 @@ export const columns: ColumnDef<ProductColumn>[] = [
 		accessorKey: 'name',
 		header: 'Name',
 	},
-
 	{
-		accessorKey: 'value',
-		header: 'Value',
+		accessorKey: 'price',
+		header: 'Price',
+	},
+	{
+		accessorKey: 'isArchived',
+		header: 'Archived',
+	},
+	{
+		accessorKey: 'isFeatured',
+		header: 'Featured',
+	},
+	{
+		accessorKey: 'category',
+		header: 'Category',
+	},
+	{
+		accessorKey: 'size',
+		header: 'Size',
+	},
+	{
+		accessorKey: 'color',
+		header: 'Color',
+		cell: ({ row }) => (
+			<div data-testid='color-value' className='flex items-center gap-x-2'>
+				{row.original.color}
+
+				<div
+					data-testid='color-box'
+					className='h-6 w-6 rounded-full border'
+					// The color column displays the color name and a colored box with the corresponding hex value.
+				/>
+			</div>
+		),
 	},
 	{
 		accessorKey: 'createdAt',
 		header: 'Created Date',
-	},
-	{
-		accessorKey: 'updatedAt',
-		header: 'Modified Date',
 	},
 	{
 		id: 'actions',

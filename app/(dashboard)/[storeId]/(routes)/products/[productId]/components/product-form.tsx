@@ -37,7 +37,7 @@ import {
 import toast from 'react-hot-toast';
 
 const formSchema = z.object({
-	label: z
+	name: z
 		.string()
 		.min(1, 'Name is required')
 		.max(21, 'Name must be less than 21 characters'),
@@ -50,9 +50,7 @@ interface ProductFormProps {
 	initialData: Products | null;
 }
 
-export const ProductForm: React.FC<ProductFormProps> = ({
-	initialData,
-}) => {
+export const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
@@ -63,7 +61,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 	const form = useForm<ProductFormValues>({
 		resolver: zodResolver(formSchema),
 		defaultValues: initialData || {
-			label: '',
+			name: '',
 			imageUrl: '',
 		},
 	});
@@ -112,9 +110,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 		setError(null);
 
 		try {
-			await axios.delete(
-				`/api/${params.storeId}/products/${params.productId}`,
-			);
+			await axios.delete(`/api/${params.storeId}/products/${params.productId}`);
 			router.push(`/${params.storeId}/products`);
 			toast.success('Product deleted successfully');
 		} catch (err: unknown) {
@@ -163,7 +159,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 						name='imageUrl'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel data-testid='products-backgroundImage-label'>
+								<FormLabel data-testid='products-backgroundImage-name'>
 									Background Image
 								</FormLabel>
 
@@ -181,17 +177,17 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 					<div className='grid grid-cols-3 gap-8'>
 						<FormField
 							control={form.control}
-							name='label'
+							name='name'
 							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel data-testid='products-labelSubtitle'>
-										Label
+									<FormLabel data-testid='products-nameSubtitle'>
+										Name
 									</FormLabel>
 
 									<FormControl>
 										<div className='flex items-center'>
 											<Input
-												data-testid='products-labelInput'
+												data-testid='products-nameInput'
 												disabled={loading}
 												placeholder='Product name'
 												maxLength={21}
@@ -226,8 +222,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 						<DialogTitle>Confirm Deletion</DialogTitle>
 					</DialogHeader>
 					<p>
-						Are you sure you want to delete this product? This action cannot
-						be undone.
+						Are you sure you want to delete this product? This action cannot be
+						undone.
 					</p>
 					<DialogFooter>
 						<Button
