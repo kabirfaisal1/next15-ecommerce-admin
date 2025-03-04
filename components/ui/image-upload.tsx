@@ -30,7 +30,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
 	const onUpload = (results: { info?: { secure_url: string } | string }) => {
 		if (typeof results.info === 'object' && results.info?.secure_url) {
-			console.log('secure_url', results.info.secure_url);
 			onChange(results.info.secure_url);
 		} else {
 			console.error('Upload failed or info is missing');
