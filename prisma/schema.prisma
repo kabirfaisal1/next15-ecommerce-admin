@@ -81,7 +81,6 @@ model Products {
   colorId     String    // Foreign Key to Color
   color       Colors     @relation(fields: [colorId], references: [id])
   images      Images[]   // Relation to Image model
-
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -105,7 +104,6 @@ model Sizes {
   @@index([storeId])
   
 }
-
 
 model Colors {
   id          String      @id @default(uuid())
