@@ -2,16 +2,16 @@
 //global import
 import * as z from 'zod';
 import React from 'react';
+import { Products } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trash, CircleCheckBig } from 'lucide-react';
-
+// import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
 
 //local import
-import { Products } from '@prisma/client';
 import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -24,7 +24,9 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-
+// import { AlertModal } from '@/components/modals/alert-modal';
+import ImageUpload from '@/components/ui/image-upload';
+import { Alert } from '@/components/ui/alert';
 import {
 	Dialog,
 	DialogContent,
@@ -32,23 +34,14 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
-import { Alert } from '@/components/ui/alert';
 import toast from 'react-hot-toast';
 
 const formSchema = z.object({
-	name: z
+	label: z
 		.string()
-		.trim()
-		.min(3, { message: 'Name must be at least 3 characters long.' })
-		.max(21),
-	value: z
-		.string()
-		.trim()
-		.min(4, { message: 'Value must be at least 4 characters long.' })
-		.regex(/^#/, {
-			message:
-				'Value must be a valid hex code (e.g., #FFFFFF). For more help, visit https://producthunt.co/',
-		}),
+		.min(1, 'Name is required')
+		.max(21, 'Name must be less than 21 characters'),
+	imageUrl: z.string().min(1),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -57,7 +50,9 @@ interface ProductFormProps {
 	initialData: Products | null;
 }
 
-export const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
+export const ProductForm: React.FC<ProductFormProps> = ({
+	initialData,
+}) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
@@ -68,8 +63,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
 	const form = useForm<ProductFormValues>({
 		resolver: zodResolver(formSchema),
 		defaultValues: initialData || {
-			name: '',
-			value: '',
+			label: '',
+			imageUrl: '',
 		},
 	});
 
@@ -81,13 +76,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
 		}
 	};
 
-	const title = initialData ? 'Edit Color' : 'Create Color';
-	const description = initialData ? 'Edit Color' : 'Add a new Color';
-	const action = initialData ? 'Save changes' : 'Create Color';
+	const title = initialData ? 'Edit product' : 'Create Product';
+	const description = initialData ? 'Edit product' : 'Add a new product';
+	const action = initialData ? 'Save changes' : 'Create product';
 	const toastMessage = initialData
-		? 'Color updated'
-		: 'Color created successfully';
-	console.log('initialData', initialData);
+		? 'Product updated'
+		: 'Product created successfully';
+
 	const onSubmit = async (data: ProductFormValues) => {
 		setLoading(true);
 		setError(null);
@@ -117,16 +112,19 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
 		setError(null);
 
 		try {
-			await axios.delete(`/api/${params.storeId}/products/${params.productId}`);
-			router.push(`/${params.storeId}/products`);
-			toast.success('Color deleted successfully');
-		} catch (err) {
-			handleAPIError(err);
-			toast.error(
-				`Make sure you remove all product using for product first: ${
-					typeof params.label === 'string' ? params.label.toUpperCase() : ''
-				}`,
+			await axios.delete(
+				`/api/${params.storeId}/products/${params.productId}`,
 			);
+			router.push(`/${params.storeId}/products`);
+			toast.success('Product deleted successfully');
+		} catch (err: unknown) {
+			if (axios.isAxiosError(err) && err.response?.status === 400) {
+				toast.error(
+					'Make sure you remove all categories linked to this product before deleting.',
+				);
+			} else {
+				toast.error('Something went wrong.');
+			}
 		} finally {
 			setLoading(false);
 			setDialogOpen(false);
@@ -141,7 +139,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
 				{initialData && (
 					<Button
 						variant='destructive'
-						color='icon'
+						size='icon'
 						onClick={() => setDialogOpen(true)}
 						disabled={loading}
 						data-testid='products-delete-button'
@@ -159,56 +157,45 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
 
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+					<FormField
+						data-testid='products-formField'
+						control={form.control}
+						name='imageUrl'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel data-testid='products-backgroundImage-label'>
+									Background Image
+								</FormLabel>
+
+								<FormControl>
+									<ImageUpload
+										value={field.value ? [field.value] : []}
+										disabled={loading}
+										onChange={url => field.onChange(url)}
+										onRemove={() => field.onChange('')}
+									/>
+								</FormControl>
+							</FormItem>
+						)}
+					/>
 					<div className='grid grid-cols-3 gap-8'>
 						<FormField
 							control={form.control}
-							name='name'
+							name='label'
 							render={({ field, fieldState }) => (
 								<FormItem>
-									<FormLabel data-testid='product-NameSubtitle'>Name</FormLabel>
+									<FormLabel data-testid='products-labelSubtitle'>
+										Label
+									</FormLabel>
 
 									<FormControl>
 										<div className='flex items-center'>
 											<Input
-												data-testid='product-NameInput'
+												data-testid='products-labelInput'
 												disabled={loading}
-												placeholder='Color name'
+												placeholder='Product name'
 												maxLength={21}
 												{...field}
-											/>
-											{!fieldState.error && field.value && (
-												<CircleCheckBig className='ml-2 h-4 w-4 text-green-500' />
-											)}
-										</div>
-									</FormControl>
-									<FormMessage data-testid='FormMessage'>
-										{fieldState.error?.message}
-									</FormMessage>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name='value'
-							render={({ field, fieldState }) => (
-								<FormItem>
-									<FormLabel data-testid='product-valueSubtitle'>
-										Color Value
-									</FormLabel>
-
-									<FormControl>
-										<div className='flex items-center gap-x-4'>
-											<Input
-												data-testid='product-valueInput'
-												disabled={loading}
-												placeholder='Color hex code e.g., #FFFFFF'
-												maxLength={10}
-												{...field}
-											/>
-											<div
-												data-testid='product-value-preview'
-												className='border p-4 rounded-full'
-												style={{ backgroundColor: field.value }}
 											/>
 											{!fieldState.error && field.value && (
 												<CircleCheckBig className='ml-2 h-4 w-4 text-green-500' />
@@ -224,7 +211,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
 					</div>
 					<Button
 						type='submit'
-						data-testid='product-submitButton'
+						data-testid='products-submitButton'
 						disabled={loading}
 					>
 						{loading ? 'Saving...' : action}
@@ -239,20 +226,20 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
 						<DialogTitle>Confirm Deletion</DialogTitle>
 					</DialogHeader>
 					<p>
-						Are you sure you want to delete this Color? This action cannot be
-						undone.
+						Are you sure you want to delete this product? This action cannot
+						be undone.
 					</p>
 					<DialogFooter>
 						<Button
 							variant='outline'
 							onClick={() => setDialogOpen(false)}
 							disabled={loading}
-							data-testid='product-cancelButton'
+							data-testid='products-cancelButton'
 						>
 							Cancel
 						</Button>
 						<Button
-							data-testid='product-deleteButton'
+							data-testid='products-deleteButton'
 							variant='destructive'
 							onClick={onDelete}
 							disabled={loading}
