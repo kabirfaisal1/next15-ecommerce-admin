@@ -9,6 +9,7 @@ import { toast } from 'react-hot-toast';
 import { Categories, Colors, Images, Products, Sizes } from '@prisma/client';
 import { useParams, useRouter } from 'next/navigation';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Trash, CircleCheckBig } from 'lucide-react';
 
 import Heading from '@/components/ui/heading';
 import { Input } from '@/components/ui/input';
@@ -32,6 +33,14 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import ImageUpload from '@/components/ui/image-upload';
+import { Alert } from '@/components/ui/alert';
+import {
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
 
 const formSchema = z.object({
 	name: z.string().min(1),
@@ -65,9 +74,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 }) => {
 	const params = useParams();
 	const router = useRouter();
+	const [dialogOpen, setDialogOpen] = useState(false);
 
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
 	const title = initialData ? 'Edit product' : 'Create product';
 	const description = initialData ? 'Edit a product.' : 'Add a new product';
@@ -94,6 +105,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 		resolver: zodResolver(formSchema),
 		defaultValues,
 	});
+	const handleAPIError = (err: unknown) => {
+		if (axios.isAxiosError(err)) {
+			setError(err.response?.data?.message || 'An unexpected error occurred.');
+		} else {
+			setError('An unexpected error occurred.');
+		}
+	};
 
 	const onSubmit = async (data: ProductFormValues) => {
 		try {
@@ -109,7 +127,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 			router.refresh();
 			router.push(`/${params.storeId}/products`);
 			toast.success(toastMessage);
-		} catch (error: any) {
+		} catch (err) {
+			handleAPIError(err);
 			toast.error('Something went wrong.');
 		} finally {
 			setLoading(false);
@@ -123,7 +142,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 			router.refresh();
 			router.push(`/${params.storeId}/products`);
 			toast.success('Product deleted.');
-		} catch (error: any) {
+		} catch (err) {
+			handleAPIError(err);
 			toast.error('Something went wrong.');
 		} finally {
 			setLoading(false);
@@ -148,13 +168,18 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 						size='icon'
 						onClick={() => setDialogOpen(true)}
 						disabled={loading}
-						data-testid='billboards-delete-button'
+						data-testid='products-delete-button'
 					>
 						<Trash className='h-4 w-4' />
 					</Button>
 				)}
 			</div>
 			<Separator />
+			{error && (
+				<Alert variant='destructive'>
+					<span>{error}</span>
+				</Alert>
+			)}
 			<Form {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
@@ -163,7 +188,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 					<FormField
 						control={form.control}
 						name='images'
-						render={({ field }) => (
+						render={({ field, fieldState }) => (
 							<FormItem>
 								<FormLabel data-testid='product-image-label'>Images</FormLabel>
 								<FormControl>
@@ -185,7 +210,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 										}
 									/>
 								</FormControl>
-								<FormMessage />
+								<FormMessage data-testid='FormMessage'>
+									{fieldState.error?.message}
+								</FormMessage>
 							</FormItem>
 						)}
 					/>
@@ -194,18 +221,25 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 							data-testid='product-name-label'
 							control={form.control}
 							name='name'
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<FormItem>
 									<FormLabel>Name</FormLabel>
 									<FormControl>
-										<Input
-											data-testid='product-image-input'
-											disabled={loading}
-											placeholder='Product name'
-											{...field}
-										/>
+										<div className='flex items-center'>
+											<Input
+												data-testid='product-image-input'
+												disabled={loading}
+												placeholder='Product name'
+												{...field}
+											/>
+											{!fieldState.error && field.value && (
+												<CircleCheckBig className='ml-2 h-4 w-4 text-green-500' />
+											)}
+										</div>
 									</FormControl>
-									<FormMessage />
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>
@@ -213,7 +247,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 							control={form.control}
 							data-testid='product-price-label'
 							name='price'
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<FormItem>
 									<FormLabel>Price</FormLabel>
 									<FormControl>
@@ -225,14 +259,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											{...field}
 										/>
 									</FormControl>
-									<FormMessage />
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>
 						<FormField
 							control={form.control}
 							name='categoryId'
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<FormItem>
 									<FormLabel data-testid='product-category-label'>
 										Category
@@ -264,14 +300,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											))}
 										</SelectContent>
 									</Select>
-									<FormMessage />
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>
 						<FormField
 							control={form.control}
 							name='sizeId'
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<FormItem>
 									<FormLabel data-testid='product-size-label'>Size</FormLabel>
 									<Select
@@ -301,14 +339,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											))}
 										</SelectContent>
 									</Select>
-									<FormMessage />
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>
 						<FormField
 							control={form.control}
 							name='colorId'
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<FormItem>
 									<FormLabel data-testid='product-color-label'>Color</FormLabel>
 									<Select
@@ -335,14 +375,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											))}
 										</SelectContent>
 									</Select>
-									<FormMessage />
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>
 						<FormField
 							control={form.control}
 							name='isFeatured'
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
 									<FormControl>
 										<Checkbox
@@ -356,13 +398,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											This product will appear on the home page
 										</FormDescription> */}
 									</div>
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>
 						<FormField
 							control={form.control}
 							name='isArchived'
-							render={({ field }) => (
+							render={({ field, fieldState }) => (
 								<FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
 									<FormControl>
 										<Checkbox
@@ -376,6 +421,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											This product will not appear anywhere in the store.
 										</FormDescription> */}
 									</div>
+									<FormMessage data-testid='FormMessage'>
+										{fieldState.error?.message}
+									</FormMessage>
 								</FormItem>
 							)}
 						/>
@@ -385,6 +433,37 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 					</Button>
 				</form>
 			</Form>
+			{/* <Separator /> */}
+
+			<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Confirm Deletion</DialogTitle>
+					</DialogHeader>
+					<p>
+						Are you sure you want to delete this product? This action cannot be
+						undone.
+					</p>
+					<DialogFooter>
+						<Button
+							variant='outline'
+							onClick={() => setDialogOpen(false)}
+							disabled={loading}
+							data-testid='products-cancelButton'
+						>
+							Cancel
+						</Button>
+						<Button
+							data-testid='products-deleteButton'
+							variant='destructive'
+							onClick={onDelete}
+							disabled={loading}
+						>
+							{loading ? 'Deleting...' : 'Delete'}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</>
 	);
 };
