@@ -384,7 +384,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 						<FormField
 							control={form.control}
 							name='isFeatured'
-							render={({ field, fieldState }) => (
+							render={({ field }) => (
 								<FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
 									<FormControl>
 										<Checkbox
@@ -398,16 +398,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											This product will appear on the home page
 										</FormDescription> */}
 									</div>
-									<FormMessage data-testid='FormMessage'>
-										{fieldState.error?.message}
-									</FormMessage>
 								</FormItem>
 							)}
 						/>
 						<FormField
 							control={form.control}
 							name='isArchived'
-							render={({ field, fieldState }) => (
+							render={({ field }) => (
 								<FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
 									<FormControl>
 										<Checkbox
@@ -421,9 +418,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											This product will not appear anywhere in the store.
 										</FormDescription> */}
 									</div>
-									<FormMessage data-testid='FormMessage'>
-										{fieldState.error?.message}
-									</FormMessage>
 								</FormItem>
 							)}
 						/>
