@@ -38,7 +38,7 @@ export async function GET (
             storeId: product.storeId,
             categoryId: product.categoryId,
             name: product.name,
-            price: product.price.toNumber(), // Convert Decimal to Number
+            price: product.price.toNumber(), // Ensure Decimal is converted to Number
             isFeatured: product.isFeatured,
             isArchived: product.isArchived,
             sizeId: product.sizeId,
@@ -46,15 +46,13 @@ export async function GET (
             createdAt: product.createdAt.toISOString(), // Convert Date to String
             updatedAt: product.updatedAt.toISOString(), // Convert Date to String
 
-
-            images: product.images.map( ( image ) => ( {
+            images: product.images.map( image => ( {
                 id: image.id,
                 productId: image.productId,
                 url: image.url,
                 createdAt: image.createdAt.toISOString(),
                 updatedAt: image.updatedAt.toISOString(),
             } ) ),
-
 
             category: product.category
                 ? { id: product.category.id, name: product.category.name }
@@ -63,7 +61,7 @@ export async function GET (
             color: product.color ? { id: product.color.id, name: product.color.name } : null,
         };
 
-        return NextResponse.json( formattedProduct );
+        return NextResponse.json( JSON.parse( JSON.stringify( formattedProduct ) ) );
 
     } catch ( error )
     {

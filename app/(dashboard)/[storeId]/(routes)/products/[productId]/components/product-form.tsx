@@ -88,7 +88,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 	const defaultValues = initialData
 		? {
 				...initialData,
-				price: parseFloat(String(initialData?.price)),
+				price: parseFloat(String(initialData?.price)), // Ensure Number
 			}
 		: {
 				name: '',
