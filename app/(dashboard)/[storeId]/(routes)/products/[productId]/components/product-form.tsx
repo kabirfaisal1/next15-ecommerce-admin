@@ -407,10 +407,17 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 							control={form.control}
 							name='isArchived'
 							render={({ field }) => (
-								<FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
+								<FormItem
+									//TODO: Enable this line when the initialData test
+									// className={`flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4
+									// 	${!initialData ? 'hidden' : ''}`}
+									className={
+										'flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 '
+									}
+								>
 									<FormControl>
 										<Checkbox
-											data-testid='product-featured-input'
+											data-testid='product-archived-input'
 											disabled={loading}
 											checked={field.value}
 											onCheckedChange={field.onChange}

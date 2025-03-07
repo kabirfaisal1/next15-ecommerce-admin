@@ -57,7 +57,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
 		try {
 			await axios.delete(`/api/${params.storeId}/sizes/${data.id}`);
-			router.push(`/${params.storeId}/sizes`); //TODO: Test this part
+			router.push(`/${params.storeId}/sizes`);
 			toast.success('Size deleted successfully');
 		} catch (err) {
 			handleAPIError(err);
