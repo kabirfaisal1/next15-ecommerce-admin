@@ -89,7 +89,7 @@ export function DataTable<TData, TValue>({
 												: flexRender(
 														header.column.columnDef.header,
 														header.getContext(),
-												  )}
+													)}
 
 											{header.column.columnDef.header &&
 												header.id !== 'actions' && (

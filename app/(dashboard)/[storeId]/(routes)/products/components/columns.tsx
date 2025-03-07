@@ -53,6 +53,7 @@ export const columns: ColumnDef<ProductColumn>[] = [
 				<div
 					data-testid='color-box'
 					className='h-6 w-6 rounded-full border'
+					style={{ backgroundColor: row.original.color }}
 					// The color column displays the color name and a colored box with the corresponding hex value.
 				/>
 			</div>
