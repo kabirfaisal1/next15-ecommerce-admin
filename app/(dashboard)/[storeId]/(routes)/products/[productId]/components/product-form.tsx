@@ -260,7 +260,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 						</div>
 
 						{/* Row Two: Name and Price */}
-						<div className='grid grid-cols-2 gap-4'>
+						<div className='grid grid-cols-2 gap-10'>
 							<FormField
 								control={form.control}
 								name='name'
@@ -268,12 +268,18 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 									<FormItem>
 										<FormLabel>Name</FormLabel>
 										<FormControl>
-											<Input
-												disabled={loading}
-												placeholder='Product name'
-												{...field}
-											/>
+											<div className='flex items-center'>
+												<Input
+													disabled={loading}
+													placeholder='Product name'
+													{...field}
+												/>
+												{!fieldState.error && field.value && (
+													<CircleCheckBig className='ml-2 h-4 w-4 text-green-500' />
+												)}
+											</div>
 										</FormControl>
+
 										<FormMessage>{fieldState.error?.message}</FormMessage>
 									</FormItem>
 								)}
@@ -285,12 +291,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 									<FormItem>
 										<FormLabel>Price</FormLabel>
 										<FormControl>
-											<Input
-												type='number'
-												disabled={loading}
-												placeholder='9.99'
-												{...field}
-											/>
+											<div className='flex items-center'>
+												<Input
+													type='number'
+													disabled={loading}
+													placeholder='9.99'
+													{...field}
+												/>
+											</div>
 										</FormControl>
 										<FormMessage>{fieldState.error?.message}</FormMessage>
 									</FormItem>
