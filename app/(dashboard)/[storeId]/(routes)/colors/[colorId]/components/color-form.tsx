@@ -159,7 +159,7 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-					<div className='grid grid-cols-3 gap-8'>
+					<div className='space-y-8 w-full max-w-2xl mx-auto'>
 						<FormField
 							control={form.control}
 							name='name'
@@ -197,22 +197,24 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 									</FormLabel>
 
 									<FormControl>
-										<div className='flex items-center gap-x-4'>
+										<div className='flex flex-col gap-y-2'>
+											{/* Color Input Field */}
 											<Input
 												data-testid='color-valueInput'
 												disabled={loading}
 												placeholder='Color hex code e.g., #FFFFFF'
 												maxLength={10}
 												{...field}
+												className='w-full h-10 rounded-lg border px-4'
+												style={{ boxShadow: `0 0 10px ${field.value}` }}
 											/>
+
+											{/* Color Preview Below Input */}
 											<div
 												data-testid='color-value-preview'
-												className='border p-4 rounded-full'
+												className='w-full h-10 rounded-lg border shadow-md'
 												style={{ backgroundColor: field.value }}
 											/>
-											{!fieldState.error && field.value && (
-												<CircleCheckBig className='ml-2 h-4 w-4 text-green-500' />
-											)}
 										</div>
 									</FormControl>
 									<FormMessage data-testid='FormMessage'>
@@ -222,13 +224,15 @@ export const ColorForm: React.FC<ColorFormProps> = ({ initialData }) => {
 							)}
 						/>
 					</div>
-					<Button
-						type='submit'
-						data-testid='color-submitButton'
-						disabled={loading}
-					>
-						{loading ? 'Saving...' : action}
-					</Button>
+					<div className='flex justify-center'>
+						<Button
+							type='submit'
+							data-testid='color-submitButton'
+							disabled={loading}
+						>
+							{loading ? 'Saving...' : action}
+						</Button>
+					</div>
 				</form>
 			</Form>
 			{/* <Separator /> */}
