@@ -156,66 +156,73 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 			)}
 
 			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-					<FormField
-						data-testid='billboards-formField'
-						control={form.control}
-						name='imageUrl'
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel data-testid='billboards-backgroundImage-label'>
-									Background Image
-								</FormLabel>
-
-								<FormControl>
-									<ImageUpload
-										value={field.value ? [field.value] : []}
-										disabled={loading}
-										onChange={url => field.onChange(url)}
-										onRemove={() => field.onChange('')}
-									/>
-								</FormControl>
-							</FormItem>
-						)}
-					/>
-					<div className='grid grid-cols-3 gap-8'>
+				<form
+					onSubmit={form.handleSubmit(onSubmit)}
+					className='space-y-8 w-full max-w-2xl mx-auto'
+				>
+					<div className='space-y-8  max-w-2xl '>
 						<FormField
+							data-testid='billboards-formField'
 							control={form.control}
-							name='label'
-							render={({ field, fieldState }) => (
+							name='imageUrl'
+							render={({ field }) => (
 								<FormItem>
-									<FormLabel data-testid='billboards-labelSubtitle'>
-										Label
+									<FormLabel data-testid='billboards-backgroundImage-label'>
+										Background Image
 									</FormLabel>
 
 									<FormControl>
-										<div className='flex items-center'>
-											<Input
-												data-testid='billboards-labelInput'
-												disabled={loading}
-												placeholder='Billboard name'
-												maxLength={21}
-												{...field}
-											/>
-											{!fieldState.error && field.value && (
-												<CircleCheckBig className='ml-2 h-4 w-4 text-green-500' />
-											)}
-										</div>
+										<ImageUpload
+											value={field.value ? [field.value] : []}
+											disabled={loading}
+											onChange={url => field.onChange(url)}
+											onRemove={() => field.onChange('')}
+										/>
 									</FormControl>
-									<FormMessage data-testid='FormMessage'>
-										{fieldState.error?.message}
-									</FormMessage>
 								</FormItem>
 							)}
 						/>
+						<div className='grid grid-cols-3 gap-8'>
+							<FormField
+								control={form.control}
+								name='label'
+								render={({ field, fieldState }) => (
+									<FormItem>
+										<FormLabel data-testid='billboards-labelSubtitle'>
+											Label
+										</FormLabel>
+
+										<FormControl>
+											<div className='flex items-center'>
+												<Input
+													data-testid='billboards-labelInput'
+													disabled={loading}
+													placeholder='Billboard name'
+													maxLength={21}
+													{...field}
+												/>
+												{!fieldState.error && field.value && (
+													<CircleCheckBig className='ml-2 h-4 w-4 text-green-500' />
+												)}
+											</div>
+										</FormControl>
+										<FormMessage data-testid='FormMessage'>
+											{fieldState.error?.message}
+										</FormMessage>
+									</FormItem>
+								)}
+							/>
+						</div>
+						<div className='flex justify-center'>
+							<Button
+								type='submit'
+								data-testid='billboards-submitButton'
+								disabled={loading}
+							>
+								{loading ? 'Saving...' : action}
+							</Button>
+						</div>
 					</div>
-					<Button
-						type='submit'
-						data-testid='billboards-submitButton'
-						disabled={loading}
-					>
-						{loading ? 'Saving...' : action}
-					</Button>
 				</form>
 			</Form>
 			{/* <Separator /> */}

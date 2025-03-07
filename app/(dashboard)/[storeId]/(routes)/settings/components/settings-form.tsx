@@ -157,7 +157,7 @@ export const SettingForm: React.FC<SettingFormProps> = ({ initialData }) => {
 			<Form {...form}>
 				<form
 					data-testid='setting-Form'
-					className='space-y-8 w-full'
+					className='space-y-8 w-full max-w-2xl mx-auto'
 					onSubmit={form.handleSubmit(onSubmit)}
 				>
 					<div className='grid grid-cols-3 gap-8'>

@@ -165,8 +165,11 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
 			)}
 
 			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-					<div className='grid grid-cols-3 gap-8'>
+				<form
+					onSubmit={form.handleSubmit(onSubmit)}
+					className='space-y-8 w-full max-w-2xl mx-auto'
+				>
+					<div className='space-y-8  max-w-2xl '>
 						<FormField
 							control={form.control}
 							name='name'
@@ -240,13 +243,15 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
 							)}
 						/>
 					</div>
-					<Button
-						type='submit'
-						data-testid='category-submitButton'
-						disabled={loading}
-					>
-						{loading ? 'Saving...' : action}
-					</Button>
+					<div className='flex justify-center'>
+						<Button
+							type='submit'
+							data-testid='category-submitButton'
+							disabled={loading}
+						>
+							{loading ? 'Saving...' : action}
+						</Button>
+					</div>
 				</form>
 			</Form>
 			{/* <Separator /> */}
