@@ -9,7 +9,7 @@ import { toast } from 'react-hot-toast';
 import { Categories, Colors, Images, Products, Sizes } from '@prisma/client';
 import { useParams, useRouter } from 'next/navigation';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Trash, CircleCheckBig } from 'lucide-react';
+import { Trash, CircleCheckBig, CircleAlert, Info } from 'lucide-react';
 
 import Heading from '@/components/ui/heading';
 import { Input } from '@/components/ui/input';
@@ -235,6 +235,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 										</FormControl>
 										<div className='space-y-1 leading-none'>
 											<FormLabel>Featured</FormLabel>
+											<div className='text-sm italic text-gray-500 flex items-center'>
+												<Info className='mr-2 text-blue-500' />
+												This product will appear on the home page
+											</div>
 										</div>
 									</FormItem>
 								)}
@@ -257,7 +261,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											/>
 										</FormControl>
 										<div className='space-y-1 leading-none'>
-											<FormLabel>Archived</FormLabel>
+											<FormLabel>
+												<strong>Archived</strong>
+											</FormLabel>
+
+											<div className='text-sm italic text-gray-500 flex items-center'>
+												<CircleAlert className='mr-2 text-yellow-500' />
+												This product will not appear anywhere in the store
+											</div>
 										</div>
 									</FormItem>
 								)}
