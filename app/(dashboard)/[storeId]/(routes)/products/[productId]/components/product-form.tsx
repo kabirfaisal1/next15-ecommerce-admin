@@ -227,7 +227,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 									<FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
 										<FormControl>
 											<Checkbox
-												data-testid='product-featured-input'
+												data-testid='product-featured-button'
 												disabled={loading}
 												checked={field.value}
 												onCheckedChange={field.onChange}
@@ -250,7 +250,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 									>
 										<FormControl>
 											<Checkbox
-												data-testid='product-archived-input'
+												data-testid='product-archive-button'
 												disabled={loading}
 												checked={field.value}
 												onCheckedChange={field.onChange}
@@ -271,13 +271,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 								name='name'
 								render={({ field, fieldState }) => (
 									<FormItem>
-										<FormLabel>Name</FormLabel>
+										<FormLabel data-testid='product-name-label'>Name</FormLabel>
 										<FormControl>
 											<div className='flex items-center'>
 												<Input
 													disabled={loading}
 													placeholder='Product name'
 													{...field}
+													data-testid='product-name-input'
 												/>
 												{!fieldState.error && field.value && (
 													<CircleCheckBig className='ml-2 h-4 w-4 text-green-500' />
@@ -294,7 +295,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 								name='price'
 								render={({ field, fieldState }) => (
 									<FormItem>
-										<FormLabel>Price</FormLabel>
+										<FormLabel data-testid='product-price-label'>
+											Price
+										</FormLabel>
 										<FormControl>
 											<div className='flex items-center'>
 												<Input
@@ -302,6 +305,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 													disabled={loading}
 													placeholder='9.99'
 													{...field}
+													data-testid='product-price-input'
 												/>
 											</div>
 										</FormControl>
@@ -318,7 +322,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 								name='categoryId'
 								render={({ field, fieldState }) => (
 									<FormItem>
-										<FormLabel>Category</FormLabel>
+										<FormLabel data-testid='product-category-label'>
+											Category
+										</FormLabel>
 										<Select
 											disabled={loading}
 											onValueChange={field.onChange}
@@ -326,11 +332,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											defaultValue={field.value}
 										>
 											<FormControl>
-												<SelectTrigger>
+												<SelectTrigger data-testid='product-category-input_box'>
 													<SelectValue placeholder='Select a category' />
 												</SelectTrigger>
 											</FormControl>
-											<SelectContent>
+											<SelectContent data-testid='product-categories-list'>
 												{categories.map(category => (
 													<SelectItem key={category.id} value={category.id}>
 														{category.name}
@@ -347,7 +353,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 								name='sizeId'
 								render={({ field, fieldState }) => (
 									<FormItem>
-										<FormLabel>Size</FormLabel>
+										<FormLabel data-testid='product-size-label'>Size</FormLabel>
 										<Select
 											disabled={loading}
 											onValueChange={field.onChange}
@@ -355,11 +361,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											defaultValue={field.value}
 										>
 											<FormControl>
-												<SelectTrigger>
+												<SelectTrigger data-testid='product-size-input_box'>
 													<SelectValue placeholder='Select a size' />
 												</SelectTrigger>
 											</FormControl>
-											<SelectContent>
+											<SelectContent data-testid='product-size-contentList'>
 												{sizes.map(size => (
 													<SelectItem key={size.id} value={size.id}>
 														{size.name}
@@ -376,7 +382,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 								name='colorId'
 								render={({ field, fieldState }) => (
 									<FormItem>
-										<FormLabel>Color</FormLabel>
+										<FormLabel data-testid='product-color-label'>
+											Color
+										</FormLabel>
 										<Select
 											disabled={loading}
 											onValueChange={field.onChange}
@@ -384,14 +392,21 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											defaultValue={field.value}
 										>
 											<FormControl>
-												<SelectTrigger>
+												<SelectTrigger data-testid='product-color-input_box'>
 													<SelectValue placeholder='Select a color' />
 												</SelectTrigger>
 											</FormControl>
-											<SelectContent>
+											<SelectContent data-testid='product-color-contentList'>
 												{colors.map(color => (
 													<SelectItem key={color.id} value={color.id}>
-														{color.name}
+														<div className='flex items-center'>
+															<span>{color.name}</span>
+															<div
+																data-testid='color-value-preview'
+																className='w-6 h-6 ml-2 rounded-full border'
+																style={{ backgroundColor: color.value }}
+															/>
+														</div>
 													</SelectItem>
 												))}
 											</SelectContent>
