@@ -44,6 +44,9 @@ export async function DELETE (
     { params }: { params: { productId: string, storeId: string; }; }
 )
 {
+    console.log( 'Received params:', params );
+    console.log( 'Product ID:', params?.productId );
+    console.log( 'Store ID:', params?.storeId );
     try
     {
         // Extract userId from the authentication function
@@ -140,7 +143,7 @@ export async function PATCH (
             return new NextResponse( "Size id is required", { status: 400 } );
         }
 
-        const storeByUserId = await prismadb.store.findFirst( {
+        const storeByUserId = await prismadb.stores.findFirst( {
             where: {
                 id: params.storeId,
                 userId
@@ -152,7 +155,7 @@ export async function PATCH (
             return new NextResponse( "Unauthorized", { status: 405 } );
         }
 
-        await prismadb.product.update( {
+        await prismadb.products.update( {
             where: {
                 id: params.productId
             },
@@ -170,7 +173,7 @@ export async function PATCH (
             },
         } );
 
-        const product = await prismadb.product.update( {
+        const product = await prismadb.products.update( {
             where: {
                 id: params.productId
             },
