@@ -1,6 +1,6 @@
 import AdminCategoriesPage from '@support/test_components/pages/uiAdminCategoriesPage';
 
-const storeId = '00ea910b-ecf0-4d1e-bcb6-5cb72313bb46';
+const storeId = '655eaa67-bf30-4216-98a5-8a331b34d981';
 const billboardId = '8cf24cca-eade-4952-961a-58d760b73fef';
 const updatedBillboardId = 'e63f7f1f-887b-4fd0-bbd5-690da885a34d';
 ;

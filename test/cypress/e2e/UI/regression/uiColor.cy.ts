@@ -1,6 +1,6 @@
 import AdminColorsPage from '@support/test_components/pages/uiAdminColorsPage';
 
-const storeId = '00ea910b-ecf0-4d1e-bcb6-5cb72313bb46';
+const storeId = '655eaa67-bf30-4216-98a5-8a331b34d981';
 const adminColorsPage = new AdminColorsPage();
 
 describe( 'Store Colors Management', () =>

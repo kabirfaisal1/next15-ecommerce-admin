@@ -32,8 +32,8 @@ export interface TestData
 }
 
 // ✅ Extracting reusable constants for store ID and test image URL
-const STORE_ID = 'f8c96f0e-daa1-4e61-9fe4-3d1caf5db964';
-const TEST_IMAGE_URL = 'https://res.cloudinary.com/dzsguot60/image/upload/v1738955812/samples/ForEvere.png';
+const STORE_ID = '88c76854-1b8b-4582-91b7-052e177a1b10';
+const TEST_IMAGE_URL = 'https://res.cloudinary.com/dzsguot60/image/upload/v1741460665/samples/ForeverCypressUI.png';
 
 /**
  * List of test cases for testing the Billboards API.

@@ -65,7 +65,6 @@ model Categories {
   @@index([billboardId])
 }
 
-/// The `Products` model represents the Products entity in the database.
 model Products {
   id          String    @id @default(uuid())
   storeId     String    // Foreign Key to Store
@@ -73,7 +72,7 @@ model Products {
   categoryId  String    // Foreign Key to Category
   category    Categories  @relation("CategoryToProduct", fields: [categoryId], references: [id])
   name        String
-  price       Decimal
+  price       Float  // Change from Decimal to Float
   isFeatured  Boolean   @default(false)
   isArchived  Boolean   @default(false)
   sizeId      String    // Foreign Key to Size

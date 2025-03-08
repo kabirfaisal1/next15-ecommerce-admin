@@ -6,7 +6,7 @@ import { AdminAPIRequestKeys } from '@support//utilities/apiRequestKeys';
 const adminBillboardPage = new AdminBillboardPage();
 describe( 'Store Billboard', () =>
 {
-    const storeId = '00ea910b-ecf0-4d1e-bcb6-5cb72313bb46';
+    const storeId = '655eaa67-bf30-4216-98a5-8a331b34d981';
 
     let token: string = '';
     beforeEach( () =>
@@ -52,7 +52,7 @@ describe( 'Store Billboard', () =>
                 storeId,
                 token,
                 [ new AdminAPIRequestKeys().billboardName, new AdminAPIRequestKeys().imageUrl ],
-                [ 'CypressUIBillboard', "https://res.cloudinary.com/dzsguot60/image/upload/v1738955812/samples/ForEvere.png" ]
+                [ 'CypressUIBillboard', "https://res.cloudinary.com/dzsguot60/image/upload/v1741460665/samples/ForeverCypressUI.png" ]
             );
             adminBillboardPage.actionModifyBillboard( 'CypressUIBillboard' );
             adminBillboardPage.enterBillboardName( 'ToBeDeleted' );
