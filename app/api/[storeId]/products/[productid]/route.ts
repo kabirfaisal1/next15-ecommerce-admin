@@ -31,14 +31,16 @@ export async function GET (
         {
             return new NextResponse( "Product not found", { status: 404 } );
         }
-
+         
 
         const formattedProduct = {
             id: product.id,
             storeId: product.storeId,
             categoryId: product.categoryId,
             name: product.name,
-            price: product.price.toNumber(), // Ensure Decimal is converted to Number
+            price: typeof product.price === "object" && "toNumber" in product.price
+        ? product.price.toNumber() // ✅ Convert Decimal to Number safely
+        : parseFloat(product.price), // ✅ Fallback for string-based price values
             isFeatured: product.isFeatured,
             isArchived: product.isArchived,
             sizeId: product.sizeId,
