@@ -11,6 +11,7 @@ export default defineConfig( {
     specPattern: 'test/cypress/**/**/*.cy.{js,jsx,ts,tsx}',
     downloadsFolder: 'test/cypress/downloads',
     screenshotOnRunFailure: false,
+    experimentalStudio: true,
     defaultCommandTimeout: 15000,
     viewportWidth: 1920,
     viewportHeight: 1080,

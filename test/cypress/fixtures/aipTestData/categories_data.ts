@@ -33,7 +33,7 @@ export interface TestData
 
 // ✅ Extracting reusable constants for store and billboard IDs
 const STORE_ID = '88c76854-1b8b-4582-91b7-052e177a1b10';
-const BILLBOARD_ID = '8d3626e3-694b-4594-adaf-e854b3b4ecef';
+const BILLBOARD_ID = 'dfd4ae04-13cb-4cbb-8a33-e7e781ec1653';
 
 /**
  * List of test cases for testing the Categories API.
