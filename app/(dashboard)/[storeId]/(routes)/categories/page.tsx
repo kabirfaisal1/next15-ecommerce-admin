@@ -7,9 +7,10 @@ import { CategoryClient } from './components/client';
 import { CategoryColumn } from './components/columns';
 
 const CategoriesPage = async ({ params }: { params: { storeId: string } }) => {
+	const { storeId } = await params;
 	const categories = await prismadb.categories.findMany({
 		where: {
-			storeId: params.storeId,
+			storeId: storeId,
 		},
 		include: {
 			billboard: true,

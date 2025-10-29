@@ -8,13 +8,13 @@ import { ProductsClient } from './components/client';
 import { ProductColumn } from './components/columns';
 
 const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
-	if (!params?.storeId) {
+	const { storeId } = await params;
+	if (!storeId) {
 		throw new Error('storeId is required');
 	}
-
 	const products = await prismadb.products.findMany({
 		where: {
-			storeId: params.storeId,
+			storeId: storeId,
 		},
 		include: {
 			category: true,

@@ -9,9 +9,13 @@ import { ToastProvider } from '@/providers/toast-provider';
 import { ModalProvider } from '@/providers/modal-provider';
 
 // Importing CSS
+// @ts-expect-error: allow side-effect CSS import without type declarations
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({
+	subsets: ['latin'],
+	fallback: ['system-ui', 'Arial', 'sans-serif'],
+});
 
 export const metadata = {
 	title: 'Dashboard',

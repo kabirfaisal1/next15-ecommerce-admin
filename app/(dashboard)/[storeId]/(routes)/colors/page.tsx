@@ -7,9 +7,10 @@ import { ColorsClient } from './components/client';
 import { ColorColumn } from './components/columns';
 
 const ColorsPage = async ({ params }: { params: { storeId: string } }) => {
+	const { storeId } = await params;
 	const colors = await prismadb.colors.findMany({
 		where: {
-			storeId: params.storeId,
+			storeId: storeId,
 		},
 		orderBy: {
 			createdAt: 'desc',
