@@ -13,9 +13,10 @@ interface DashboardPageProps {
 // This is a Server Component by default in the `app` directory
 const DashboardPage = async ({ params }: DashboardPageProps) => {
 	// Fetch the store details from the database using the storeId parameter
+	const { storeId } = await params;
 	const store = await prismadb.stores.findUnique({
 		where: {
-			id: params.storeId,
+			id: storeId,
 		},
 	});
 
